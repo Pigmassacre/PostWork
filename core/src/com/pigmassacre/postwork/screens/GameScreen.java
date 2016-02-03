@@ -6,14 +6,12 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.pigmassacre.postwork.PostWork;
+import com.pigmassacre.postwork.components.CollisionComponent;
 import com.pigmassacre.postwork.components.PlayerControlledComponent;
 import com.pigmassacre.postwork.components.PositionComponent;
 import com.pigmassacre.postwork.components.VisualComponent;
 import com.pigmassacre.postwork.input.PlayerInputAdapter;
-import com.pigmassacre.postwork.systems.DebugSystem;
-import com.pigmassacre.postwork.systems.TurnHandlerSystem;
-import com.pigmassacre.postwork.systems.subsystems.MovementSystem;
-import com.pigmassacre.postwork.systems.RenderSystem;
+import com.pigmassacre.postwork.systems.*;
 
 /**
  * Created by pigmassacre on 2016-01-13.
@@ -31,24 +29,48 @@ public class GameScreen extends AbstractScreen {
         camera.zoom = 1/32f;
 
         /* Main systems */
-        game.engine.addSystem(new TurnHandlerSystem());
+        game.engine.addSystem(new PreviousPositionSystem());
+        game.engine.addSystem(new MovementSystem());
+        game.engine.addSystem(new CollisionSystem());
+        game.engine.addSystem(new CollisionHandlingSystem());
         game.engine.addSystem(new RenderSystem(camera));
         //game.engine.addSystem(new DebugSystem());
-
-        /* Subsystems */
-        game.engine.addSystem(new MovementSystem());
 
         inputMultiplexer.addProcessor(new PlayerInputAdapter());
         Gdx.input.setInputProcessor(inputMultiplexer);
 
         /* Entities */
-        player = new Entity();
-        player.add(new PositionComponent());
-        VisualComponent visual = new VisualComponent();
+        createPlayer();
+        createEnemy();
+    }
+
+    private void createPlayer() {
+        player = game.engine.createEntity();
+        player.add(game.engine.createComponent(PositionComponent.class));
+        VisualComponent visual = game.engine.createComponent(VisualComponent.class);
         visual.region = new TextureRegion(new Texture(Gdx.files.internal("badlogic.jpg")), 1, 1);
         player.add(visual);
-        player.add(new PlayerControlledComponent());
+        player.add(game.engine.createComponent(PlayerControlledComponent.class));
+        CollisionComponent collision = game.engine.createComponent(CollisionComponent.class);
+        collision.init(1f, 1f);
+        player.add(collision);
         game.engine.addEntity(player);
+    }
+
+    private void createEnemy() {
+        Entity enemy = game.engine.createEntity();
+        PositionComponent position = game.engine.createComponent(PositionComponent.class);
+        position.x = 3;
+        position.y = 2;
+        enemy.add(position);
+        VisualComponent visual = game.engine.createComponent(VisualComponent.class);
+        visual.region = new TextureRegion(new Texture(Gdx.files.internal("badlogic.jpg")), 2, 2);
+        enemy.add(visual);
+        CollisionComponent collision = game.engine.createComponent(CollisionComponent.class);
+        collision.init(2f, 2f);
+        collision.movable = false;
+        enemy.add(collision);
+        game.engine.addEntity(enemy);
     }
 
     @Override

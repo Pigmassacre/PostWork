@@ -24,9 +24,6 @@ public class PlayerInputAdapter extends InputAdapter {
             case Input.Keys.DOWN:
                 MessageManager.getInstance().dispatchMessage(MessageTypes.MOVE_DOWN);
                 return true;
-            case Input.Keys.ENTER:
-                MessageManager.getInstance().dispatchMessage(MessageTypes.NEXT_TURN);
-                return true;
         }
         return false;
     }
