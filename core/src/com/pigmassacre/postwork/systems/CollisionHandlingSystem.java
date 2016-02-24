@@ -36,15 +36,31 @@ public class CollisionHandlingSystem extends MessageHandlingSystem {
         switch (message.message) {
             case MessageTypes.COLLISION_X:
                 if (Intersector.overlaps(collision.rectangle, otherCollision.rectangle)) {
-                    Gdx.app.log("CollisionHandling", "Moving X by: " + collisionData.deltaX);
-                    position.x += collisionData.deltaX;
+                    /* Calculate the actual deltaX */
+                    float deltaX = 0f;
+                    if (collisionData.collisionSide == CollisionSystem.CollisionSide.LEFT) {
+                        deltaX = otherCollision.rectangle.x - (collision.rectangle.x + collision.rectangle.width);
+                    } else if (collisionData.collisionSide == CollisionSystem.CollisionSide.RIGHT) {
+                        deltaX = (otherCollision.rectangle.x + otherCollision.rectangle.width) - collision.rectangle.x;
+                    }
+
+                    Gdx.app.log("CollisionHandling", "Moving X by: " + deltaX);
+                    position.x += deltaX;
                     collision.rectangle.x = position.x;
                 }
                 break;
             case MessageTypes.COLLISION_Y:
                 if (Intersector.overlaps(collision.rectangle, otherCollision.rectangle)) {
-                    Gdx.app.log("CollisionHandling", "Moving Y by: " + collisionData.deltaY);
-                    position.y += collisionData.deltaY;
+                    /* Calculate the actual deltaY */
+                    float deltaY = 0f;
+                    if (collisionData.collisionSide == CollisionSystem.CollisionSide.BOTTOM) {
+                        deltaY = otherCollision.rectangle.y - (collision.rectangle.y + collision.rectangle.height);
+                    } else if (collisionData.collisionSide == CollisionSystem.CollisionSide.TOP) {
+                        deltaY = (otherCollision.rectangle.y + otherCollision.rectangle.height) - collision.rectangle.y;
+                    }
+
+                    Gdx.app.log("CollisionHandling", "Moving Y by: " + deltaY);
+                    position.y += deltaY;
                     collision.rectangle.y = position.y;
                 }
                 break;

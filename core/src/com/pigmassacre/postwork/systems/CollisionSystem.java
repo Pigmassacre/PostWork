@@ -44,11 +44,11 @@ public class CollisionSystem extends IteratingSystem {
 
                 if (Intersector.overlaps(collision.rectangle, otherCollision.rectangle)) {
                     /* Gather and calculate collision data */
-                    float deltaX = (collision.rectangle.x + collision.rectangle.width / 2f) - (otherCollision.rectangle.x + otherCollision.rectangle.width / 2f);
-                    float deltaY = (collision.rectangle.y + collision.rectangle.height / 2f) - (otherCollision.rectangle.y + otherCollision.rectangle.height / 2f);
+                    float detectAxisX = (collision.rectangle.x + collision.rectangle.width / 2f) - (otherCollision.rectangle.x + otherCollision.rectangle.width / 2f);
+                    float detectAxisY = (collision.rectangle.y + collision.rectangle.height / 2f) - (otherCollision.rectangle.y + otherCollision.rectangle.height / 2f);
 
                     /* Try to decipher from which direction entity collided with otherEntity */
-                    CollisionAxis collisionAxis = decipherCollisionAxis(deltaX, deltaY);
+                    CollisionAxis collisionAxis = decipherCollisionAxis(detectAxisX, detectAxisY);
                     if (collisionAxis == CollisionAxis.UNDECIDED) {
                         /* If still undecided, use the previous positions of the entities to decide */
                         collisionAxis = decipherCollisionAxis(collision.rectangle.x - position.previousX, collision.rectangle.y - position.previousY);
@@ -56,11 +56,8 @@ public class CollisionSystem extends IteratingSystem {
                         /* If we still haven't been able to decide the axis, we simply leave it as undecided and let the receiver figure it out */
                     }
 
-                    /* Compensate for errors caused by collisionAxis detection logic */
-                    deltaX *= 2;
-                    deltaY *= 2;
-
-                    CollisionData collisionData = new CollisionData(entity, otherEntity, collisionAxis, deltaX, deltaY);
+                    CollisionSide collisionSide = decipherCollisionSide(collisionAxis, detectAxisX, detectAxisY);
+                    CollisionData collisionData = new CollisionData(entity, otherEntity, collisionAxis, collisionSide);
 
                     /* Dispatch messages */
                     if (collisionAxis == CollisionAxis.X) {
@@ -84,24 +81,43 @@ public class CollisionSystem extends IteratingSystem {
         return CollisionAxis.UNDECIDED;
     }
 
+    private CollisionSide decipherCollisionSide(CollisionAxis detectedAxis, float detectAxisX, double detectAxisY) {
+        if (detectedAxis == CollisionAxis.X) {
+            if (detectAxisX < 0) {
+                return CollisionSide.LEFT;
+            } else if (detectAxisX > 0) {
+                return CollisionSide.RIGHT;
+            }
+        } else if (detectedAxis == CollisionAxis.Y) {
+            if (detectAxisY < 0) {
+                return CollisionSide.BOTTOM;
+            } else if (detectAxisY > 0) {
+                return CollisionSide.TOP;
+            }
+        }
+        return CollisionSide.UNDECIDED;
+    }
+
     public class CollisionData {
         public final Entity collidingEntity;
         public final Entity otherCollidingEntity;
-        public final CollisionAxis primaryCollisionAxis;
-        public final float deltaX;
-        public final float deltaY;
+        public final CollisionAxis collisionAxis;
+        public final CollisionSide collisionSide;
 
-        public CollisionData(Entity collidingEntity, Entity otherCollidingEntity, CollisionAxis primaryCollisionAxis, float deltaX, float deltaY) {
+        public CollisionData(Entity collidingEntity, Entity otherCollidingEntity, CollisionAxis collisionAxis, CollisionSide collisionSide) {
             this.collidingEntity = collidingEntity;
             this.otherCollidingEntity = otherCollidingEntity;
-            this.primaryCollisionAxis = primaryCollisionAxis;
-            this.deltaX = deltaX;
-            this.deltaY = deltaY;
+            this.collisionAxis = collisionAxis;
+            this.collisionSide = collisionSide;
         }
     }
 
     public enum CollisionAxis {
         X, Y, UNDECIDED
+    }
+
+    public enum CollisionSide {
+        LEFT, RIGHT, TOP, BOTTOM, UNDECIDED
     }
 
 }
