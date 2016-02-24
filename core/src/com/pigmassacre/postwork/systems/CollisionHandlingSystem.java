@@ -25,6 +25,7 @@ public class CollisionHandlingSystem extends MessageHandlingSystem {
     protected void processMessage(Telegram message, float deltaTime) {
         CollisionSystem.CollisionData collisionData = ((CollisionSystem.CollisionData) message.extraInfo);
 
+        /* We assume that these components exist on a colliding entity because logic and reasons */
         PositionComponent position = Mappers.position.get(collisionData.collidingEntity);
         CollisionComponent collision = Mappers.collision.get(collisionData.collidingEntity);
         CollisionComponent otherCollision = Mappers.collision.get(collisionData.otherCollidingEntity);

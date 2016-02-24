@@ -13,4 +13,5 @@ public class Mappers {
     public static final ComponentMapper<AccelerationComponent> acceleration = ComponentMapper.getFor(AccelerationComponent.class);
     public static final ComponentMapper<VisualComponent> visual = ComponentMapper.getFor(VisualComponent.class);
     public static final ComponentMapper<CollisionComponent> collision = ComponentMapper.getFor(CollisionComponent.class);
+    public static final ComponentMapper<StopMovementOnCollisionComponent> stopMovement = ComponentMapper.getFor(StopMovementOnCollisionComponent.class);
 }

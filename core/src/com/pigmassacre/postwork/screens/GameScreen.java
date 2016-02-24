@@ -34,6 +34,7 @@ public class GameScreen extends AbstractScreen {
         game.engine.addSystem(new VelocitySystem());
         game.engine.addSystem(new CollisionSystem());
         game.engine.addSystem(new CollisionHandlingSystem());
+        game.engine.addSystem(new StopMovementOnCollisionSystem());
         game.engine.addSystem(new RenderSystem(camera));
         //game.engine.addSystem(new DebugSystem());
 
@@ -55,6 +56,7 @@ public class GameScreen extends AbstractScreen {
         CollisionComponent collision = game.engine.createComponent(CollisionComponent.class);
         collision.init(1f, 1f);
         player.add(collision);
+        player.add(game.engine.createComponent(StopMovementOnCollisionComponent.class));
         player.add(game.engine.createComponent(AccelerationComponent.class));
         player.add(game.engine.createComponent(DragComponent.class));
         player.add(game.engine.createComponent(VelocityComponent.class));
