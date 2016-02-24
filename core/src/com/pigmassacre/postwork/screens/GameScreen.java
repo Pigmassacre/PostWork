@@ -44,12 +44,15 @@ public class GameScreen extends AbstractScreen {
         /* Entities */
         createPlayer(1, -1, 1, 1);
         //createPlayer(-1, 2, 1, 1);
-        createEnemy(-5, -4, 1, 9);
-        createEnemy(0, 0, 1, 3);
-        createEnemy(5, -4, 1, 9);
-        createEnemy(-4, -5, 9, 1);
-        createEnemy(-4, 5, 9, 1);
+        for (int x = 0; x < 8; x++) {
+            createEnemy(x - 5, 5, 1, 1);
+            createEnemy(x - 5, -5, 1, 1);
+        }
 
+        for (int y = 0; y < 8; y++) {
+            createEnemy(5, y - 5, 1, 1);
+            createEnemy(-5, y - 5, 1, 1);
+        }
     }
 
     private void createPlayer(float x, float y, float width, float height) {
@@ -67,7 +70,7 @@ public class GameScreen extends AbstractScreen {
         CollisionComponent collision = game.engine.createComponent(CollisionComponent.class);
         collision.init(width, height);
         player.add(collision);
-        //player.add(game.engine.createComponent(StopMovementOnCollisionComponent.class));
+        player.add(game.engine.createComponent(StopMovementOnCollisionComponent.class));
         player.add(game.engine.createComponent(AccelerationComponent.class));
         player.add(game.engine.createComponent(DragComponent.class));
         player.add(game.engine.createComponent(VelocityComponent.class));

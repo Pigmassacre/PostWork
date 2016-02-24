@@ -44,7 +44,7 @@ public class CollisionSystem extends IteratingSystem {
 
                 if (Intersector.overlaps(collision.rectangle, otherCollision.rectangle)) {
                     /* Gather and calculate collision data */
-                    float collisionX = collision.rectangle.x;
+                    /*float collisionX = collision.rectangle.x;
                     float collisionY = collision.rectangle.y;
                     float collisionWidth = collision.rectangle.width;
                     float collisionHeight = collision.rectangle.height;
@@ -62,7 +62,6 @@ public class CollisionSystem extends IteratingSystem {
                     float sum = v + h;
 
                     if (sum > 0) {
-                        /* Normalize width and height so that the CollisionAxis can be correctly assumed */
                         if (collision.rectangle.width < collision.rectangle.height) {
                             collisionFactor = collisionHeight / collisionWidth;
                             collisionX *= collisionFactor;
@@ -73,7 +72,6 @@ public class CollisionSystem extends IteratingSystem {
                             collisionHeight = collisionWidth;
                         }
                     } else {
-                        /* Normalize width and height so that the CollisionAxis can be correctly assumed */
                         if (otherCollision.rectangle.width < otherCollision.rectangle.height) {
                             otherCollisionFactor = otherCollisionHeight / otherCollisionWidth;
                             otherCollisionX *= otherCollisionFactor;
@@ -93,10 +91,10 @@ public class CollisionSystem extends IteratingSystem {
                     } else if (otherCollisionFactor != 1f) {
                         detectAxisX = (collision.rectangle.x + collision.rectangle.width / 2f) - (otherCollisionX + otherCollisionWidth / 2f);
                         detectAxisY = (collision.rectangle.y + collision.rectangle.height / 2f) - (otherCollisionY + otherCollisionHeight / 2f);
-                    } else {
-                        detectAxisX = (collision.rectangle.x + collision.rectangle.width / 2f) - (otherCollision.rectangle.x + otherCollision.rectangle.width / 2f);
-                        detectAxisY = (collision.rectangle.y + collision.rectangle.height / 2f) - (otherCollision.rectangle.y + otherCollision.rectangle.height / 2f);
-                    }
+                    } else {*/
+                        float detectAxisX = (collision.rectangle.x + collision.rectangle.width / 2f) - (otherCollision.rectangle.x + otherCollision.rectangle.width / 2f);
+                        float detectAxisY = (collision.rectangle.y + collision.rectangle.height / 2f) - (otherCollision.rectangle.y + otherCollision.rectangle.height / 2f);
+                    //}
 
                     /* Try to decipher from which direction entity collided with otherEntity */
                     CollisionAxis collisionAxis = decipherCollisionAxis(detectAxisX, detectAxisY);
