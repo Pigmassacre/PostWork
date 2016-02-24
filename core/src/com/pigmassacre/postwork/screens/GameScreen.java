@@ -42,38 +42,51 @@ public class GameScreen extends AbstractScreen {
         Gdx.input.setInputProcessor(inputMultiplexer);
 
         /* Entities */
-        createPlayer();
-        createEnemy();
+        createPlayer(1, -1, 1, 1);
+        //createPlayer(-1, 2, 1, 1);
+        createEnemy(-5, -4, 1, 9);
+        createEnemy(0, 0, 1, 3);
+        createEnemy(5, -4, 1, 9);
+        createEnemy(-4, -5, 9, 1);
+        createEnemy(-4, 5, 9, 1);
+
     }
 
-    private void createPlayer() {
+    private void createPlayer(float x, float y, float width, float height) {
         player = game.engine.createEntity();
-        player.add(game.engine.createComponent(PositionComponent.class));
+        PositionComponent position = game.engine.createComponent(PositionComponent.class);
+        position.x = x;
+        position.y = y;
+        player.add(position);
         VisualComponent visual = game.engine.createComponent(VisualComponent.class);
         visual.region = new TextureRegion(new Texture(Gdx.files.internal("badlogic.jpg")), 1, 1);
+        visual.width = width;
+        visual.height = height;
         player.add(visual);
         player.add(game.engine.createComponent(PlayerControllerComponent.class));
         CollisionComponent collision = game.engine.createComponent(CollisionComponent.class);
-        collision.init(1f, 1f);
+        collision.init(width, height);
         player.add(collision);
-        player.add(game.engine.createComponent(StopMovementOnCollisionComponent.class));
+        //player.add(game.engine.createComponent(StopMovementOnCollisionComponent.class));
         player.add(game.engine.createComponent(AccelerationComponent.class));
         player.add(game.engine.createComponent(DragComponent.class));
         player.add(game.engine.createComponent(VelocityComponent.class));
         game.engine.addEntity(player);
     }
 
-    private void createEnemy() {
+    private void createEnemy(float x, float y, float width, float height) {
         Entity enemy = game.engine.createEntity();
         PositionComponent position = game.engine.createComponent(PositionComponent.class);
-        position.x = 3;
-        position.y = 0;
+        position.x = x;
+        position.y = y;
         enemy.add(position);
         VisualComponent visual = game.engine.createComponent(VisualComponent.class);
         visual.region = new TextureRegion(new Texture(Gdx.files.internal("badlogic.jpg")), 2, 2);
+        visual.width = width;
+        visual.height = height;
         enemy.add(visual);
         CollisionComponent collision = game.engine.createComponent(CollisionComponent.class);
-        collision.init(2f, 2f);
+        collision.init(width, height);
         collision.movable = false;
         enemy.add(collision);
         game.engine.addEntity(enemy);

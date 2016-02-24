@@ -9,9 +9,13 @@ import com.badlogic.gdx.utils.Pool;
  */
 public class VisualComponent implements Component, Pool.Poolable {
     public TextureRegion region;
+    public float width = 0f;
+    public float height = 0f;
 
     @Override
     public void reset() {
         region = null;
+        width = 0f;
+        height = 0f;
     }
 }

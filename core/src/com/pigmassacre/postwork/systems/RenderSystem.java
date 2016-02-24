@@ -45,6 +45,6 @@ public class RenderSystem extends IteratingSystem {
         PositionComponent position = Mappers.position.get(entity);
         VisualComponent visual = Mappers.visual.get(entity);
 
-        batch.draw(visual.region, position.x, position.y);
+        batch.draw(visual.region, position.x, position.y, visual.width, visual.height);
     }
 }
