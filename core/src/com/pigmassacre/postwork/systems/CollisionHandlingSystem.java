@@ -1,6 +1,5 @@
 package com.pigmassacre.postwork.systems;
 
-import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
@@ -36,15 +35,15 @@ public class CollisionHandlingSystem extends MessageHandlingSystem {
 
         switch (message.message) {
             case MessageTypes.COLLISION_X:
-                Gdx.app.log("CollisionHandling", "Handling X: " + collisionData.deltaX);
                 if (Intersector.overlaps(collision.rectangle, otherCollision.rectangle)) {
+                    Gdx.app.log("CollisionHandling", "Moving X by: " + collisionData.deltaX);
                     position.x += collisionData.deltaX;
                     collision.rectangle.x = position.x;
                 }
                 break;
             case MessageTypes.COLLISION_Y:
-                Gdx.app.log("CollisionHandling", "Handling Y: " + collisionData.deltaY);
                 if (Intersector.overlaps(collision.rectangle, otherCollision.rectangle)) {
+                    Gdx.app.log("CollisionHandling", "Moving Y by: " + collisionData.deltaY);
                     position.y += collisionData.deltaY;
                     collision.rectangle.y = position.y;
                 }

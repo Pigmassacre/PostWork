@@ -4,17 +4,12 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.math.Intersector;
 import com.pigmassacre.postwork.components.CollisionComponent;
 import com.pigmassacre.postwork.components.PositionComponent;
 import com.pigmassacre.postwork.input.MessageTypes;
 import com.pigmassacre.postwork.utils.Mappers;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by pigmassacre on 2016-01-20.
@@ -56,18 +51,16 @@ public class CollisionSystem extends IteratingSystem {
                     CollisionAxis collisionAxis = decipherCollisionAxis(deltaX, deltaY);
                     if (collisionAxis == CollisionAxis.UNDECIDED) {
                         /* If still undecided, use the previous positions of the entities to decide */
-                        deltaX = (position.previousX + collision.rectangle.width / 2f) - (otherPosition.previousX + otherCollision.rectangle.width / 2f);
-                        deltaY = (position.previousY + collision.rectangle.height / 2f) - (otherPosition.previousY + otherCollision.rectangle.height / 2f);
-
-                        Gdx.app.log("", "deltaX: " + deltaX);
-                        Gdx.app.log("", "deltaY: " + deltaY);
-
-                        collisionAxis = decipherCollisionAxis(deltaX, deltaY);
+                        collisionAxis = decipherCollisionAxis(collision.rectangle.x - position.previousX, collision.rectangle.y - position.previousY);
 
                         /* If we still haven't been able to decide the axis, we simply leave it as undecided and let the receiver figure it out */
                     }
 
-                        CollisionData collisionData = new CollisionData(entity, otherEntity, collisionAxis, deltaX, deltaY);
+                    /* Compensate for errors caused by collisionAxis detection logic */
+                    deltaX *= 2;
+                    deltaY *= 2;
+
+                    CollisionData collisionData = new CollisionData(entity, otherEntity, collisionAxis, deltaX, deltaY);
 
                     /* Dispatch messages */
                     if (collisionAxis == CollisionAxis.X) {
