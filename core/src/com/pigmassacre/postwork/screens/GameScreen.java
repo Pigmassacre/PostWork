@@ -6,10 +6,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.pigmassacre.postwork.PostWork;
-import com.pigmassacre.postwork.components.CollisionComponent;
-import com.pigmassacre.postwork.components.PlayerControlledComponent;
-import com.pigmassacre.postwork.components.PositionComponent;
-import com.pigmassacre.postwork.components.VisualComponent;
+import com.pigmassacre.postwork.components.*;
 import com.pigmassacre.postwork.input.PlayerInputAdapter;
 import com.pigmassacre.postwork.systems.*;
 
@@ -30,7 +27,11 @@ public class GameScreen extends AbstractScreen {
 
         /* Main systems */
         game.engine.addSystem(new PreviousPositionSystem());
-        game.engine.addSystem(new MovementSystem());
+        game.engine.addSystem(new PlayerControllerSystem());
+        game.engine.addSystem(new PlayerMovementSystem());
+        game.engine.addSystem(new AccelerationSystem());
+        game.engine.addSystem(new DragSystem());
+        game.engine.addSystem(new VelocitySystem());
         game.engine.addSystem(new CollisionSystem());
         game.engine.addSystem(new CollisionHandlingSystem());
         game.engine.addSystem(new RenderSystem(camera));
@@ -50,10 +51,13 @@ public class GameScreen extends AbstractScreen {
         VisualComponent visual = game.engine.createComponent(VisualComponent.class);
         visual.region = new TextureRegion(new Texture(Gdx.files.internal("badlogic.jpg")), 1, 1);
         player.add(visual);
-        player.add(game.engine.createComponent(PlayerControlledComponent.class));
+        player.add(game.engine.createComponent(PlayerControllerComponent.class));
         CollisionComponent collision = game.engine.createComponent(CollisionComponent.class);
         collision.init(1f, 1f);
         player.add(collision);
+        player.add(game.engine.createComponent(AccelerationComponent.class));
+        player.add(game.engine.createComponent(DragComponent.class));
+        player.add(game.engine.createComponent(VelocityComponent.class));
         game.engine.addEntity(player);
     }
 
@@ -61,7 +65,7 @@ public class GameScreen extends AbstractScreen {
         Entity enemy = game.engine.createEntity();
         PositionComponent position = game.engine.createComponent(PositionComponent.class);
         position.x = 3;
-        position.y = 2;
+        position.y = 0;
         enemy.add(position);
         VisualComponent visual = game.engine.createComponent(VisualComponent.class);
         visual.region = new TextureRegion(new Texture(Gdx.files.internal("badlogic.jpg")), 2, 2);

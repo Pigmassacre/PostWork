@@ -27,4 +27,23 @@ public class PlayerInputAdapter extends InputAdapter {
         }
         return false;
     }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        switch (keycode) {
+            case Input.Keys.LEFT:
+                MessageManager.getInstance().dispatchMessage(MessageTypes.STOP_MOVE_LEFT);
+                return true;
+            case Input.Keys.RIGHT:
+                MessageManager.getInstance().dispatchMessage(MessageTypes.STOP_MOVE_RIGHT);
+                return true;
+            case Input.Keys.UP:
+                MessageManager.getInstance().dispatchMessage(MessageTypes.STOP_MOVE_UP);
+                return true;
+            case Input.Keys.DOWN:
+                MessageManager.getInstance().dispatchMessage(MessageTypes.STOP_MOVE_DOWN);
+                return true;
+        }
+        return false;
+    }
 }
