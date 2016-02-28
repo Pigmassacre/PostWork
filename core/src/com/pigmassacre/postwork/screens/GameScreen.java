@@ -24,7 +24,6 @@ public class GameScreen extends AbstractScreen {
         super(game);
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camera.zoom = 1/32f;
 
         /* Main systems */
         game.engine.addSystem(new PreviousPositionSystem());
@@ -35,12 +34,10 @@ public class GameScreen extends AbstractScreen {
 
         game.engine.addSystem(new XCollisionSystem());
         game.engine.addSystem(new XCollisionHandlingSystem());
-
         game.engine.addSystem(new YCollisionSystem());
         game.engine.addSystem(new YCollisionHandlingSystem());
 
         game.engine.addSystem(new VelocitySystem());
-        //game.engine.addSystem(new CollisionSystem());
         game.engine.addSystem(new StopMovementOnCollisionSystem());
 
         game.engine.addSystem(new CameraSystem(camera));
