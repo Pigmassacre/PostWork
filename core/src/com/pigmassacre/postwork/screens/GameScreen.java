@@ -42,14 +42,14 @@ public class GameScreen extends AbstractScreen {
         Gdx.input.setInputProcessor(inputMultiplexer);
 
         /* Entities */
-        createPlayer(1, -1, 1, 1);
-        //createPlayer(-1, 2, 1, 1);
-        for (int x = 0; x < 8; x++) {
+        createPlayer(1, -1, 1, 3);
+        createPlayer(-1, 2, 2, 1);
+        for (int x = 0; x < 10; x++) {
             createEnemy(x - 5, 5, 1, 1);
             createEnemy(x - 5, -5, 1, 1);
         }
 
-        for (int y = 0; y < 8; y++) {
+        for (int y = 0; y < 10; y++) {
             createEnemy(5, y - 5, 1, 1);
             createEnemy(-5, y - 5, 1, 1);
         }
