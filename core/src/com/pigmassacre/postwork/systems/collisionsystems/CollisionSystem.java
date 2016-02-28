@@ -1,4 +1,4 @@
-package com.pigmassacre.postwork.systems;
+package com.pigmassacre.postwork.systems.collisionsystems;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
@@ -21,12 +21,7 @@ public class CollisionSystem extends IteratingSystem {
     }
 
     @Override
-    public void update(float deltaTime) {
-        super.update(deltaTime);
-    }
-
-    @Override
-    protected void processEntity(Entity entity, float deltaTime) {
+    public void processEntity(Entity entity, float deltaTime) {
         final PositionComponent position = Mappers.position.get(entity);
         final CollisionComponent collision = Mappers.collision.get(entity);
 
@@ -112,7 +107,7 @@ public class CollisionSystem extends IteratingSystem {
         }
     }
 
-    private CollisionAxis decipherCollisionAxis(float deltaX, float deltaY) {
+    protected CollisionAxis decipherCollisionAxis(float deltaX, float deltaY) {
         if (Math.abs(deltaX) > Math.abs(deltaY)) {
             return CollisionAxis.X;
         } else if (Math.abs(deltaY) > Math.abs(deltaX)) {
@@ -121,7 +116,7 @@ public class CollisionSystem extends IteratingSystem {
         return CollisionAxis.UNDECIDED;
     }
 
-    private CollisionSide decipherCollisionSide(CollisionAxis detectedAxis, float detectAxisX, double detectAxisY) {
+    protected CollisionSide decipherCollisionSide(CollisionAxis detectedAxis, float detectAxisX, double detectAxisY) {
         if (detectedAxis == CollisionAxis.X) {
             if (detectAxisX < 0) {
                 return CollisionSide.LEFT;

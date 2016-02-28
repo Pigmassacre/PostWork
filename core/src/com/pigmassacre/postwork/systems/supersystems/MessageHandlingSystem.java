@@ -3,38 +3,41 @@ package com.pigmassacre.postwork.systems.supersystems;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
-import com.badlogic.gdx.utils.Queue;
 import com.pigmassacre.postwork.utils.TelegramPool;
 
-import java.util.Iterator;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 
 /**
  * Created by pigmassacre on 2016-02-03.
  */
 public abstract class MessageHandlingSystem extends EntitySystem implements Telegraph {
 
-    private Queue<Telegram> messagesToHandle;
+    private static final int INITIAL_CAPACITY = 128;
+    private PriorityQueue<Telegram> messagesToHandle;
 
     public MessageHandlingSystem() {
-        messagesToHandle = new Queue<Telegram>();
+        messagesToHandle = new PriorityQueue<>();
+    }
+
+    public MessageHandlingSystem(Comparator<Telegram> queueComparator) {
+        messagesToHandle = new PriorityQueue<>(INITIAL_CAPACITY, queueComparator);
     }
 
     @Override
     public void update(float deltaTime) {
-        Iterator<Telegram> iterator = messagesToHandle.iterator();
-        while (iterator.hasNext()) {
-            Telegram next = iterator.next();
+        while (messagesToHandle.peek() != null) {
+            final Telegram next = messagesToHandle.poll();
             processMessage(next, deltaTime);
             TelegramPool.pool.free(next);
         }
-        messagesToHandle.clear();
     }
 
     protected abstract void processMessage(Telegram message, float deltaTime);
 
     @Override
     public boolean handleMessage(Telegram msg) {
-        messagesToHandle.addLast(TelegramPool.copyTelegram(msg));
+        messagesToHandle.add(TelegramPool.copyTelegram(msg));
         return true;
     }
 

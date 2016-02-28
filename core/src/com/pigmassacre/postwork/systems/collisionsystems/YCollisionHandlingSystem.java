@@ -1,4 +1,4 @@
-package com.pigmassacre.postwork.systems;
+package com.pigmassacre.postwork.systems.collisionsystems;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.msg.MessageManager;
@@ -11,34 +11,15 @@ import com.pigmassacre.postwork.systems.collisionsystems.CollisionSystem;
 import com.pigmassacre.postwork.systems.supersystems.MessageHandlingSystem;
 import com.pigmassacre.postwork.utils.Mappers;
 
-import java.util.Comparator;
-
 /**
  * Created by pigmassacre on 2016-01-20.
  */
-public class CollisionHandlingSystem extends MessageHandlingSystem {
+public class YCollisionHandlingSystem extends MessageHandlingSystem {
 
-    public CollisionHandlingSystem() {
-        super(new Comparator<Telegram>() {
-            @Override
-            public int compare(Telegram o1, Telegram o2) {
-                CollisionSystem.CollisionData o1Data = ((CollisionSystem.CollisionData) o1.extraInfo);
-                CollisionSystem.CollisionData o2Data = ((CollisionSystem.CollisionData) o2.extraInfo);
-                if (o1Data.collisionAxis == CollisionSystem.CollisionAxis.X) {
-                    if (o2Data.collisionAxis == CollisionSystem.CollisionAxis.Y) {
-                        return -1;
-                    }
-                } else {
-                    if (o2Data.collisionAxis == CollisionSystem.CollisionAxis.X) {
-                        return 1;
-                    }
-                }
-                return 0;
-            }
-        });
+    public YCollisionHandlingSystem() {
         MessageManager.getInstance().addListeners(this,
-                MessageTypes.COLLISION_X,
                 MessageTypes.COLLISION_Y);
+        setProcessing(false);
     }
 
     @Override
@@ -55,21 +36,6 @@ public class CollisionHandlingSystem extends MessageHandlingSystem {
         }
 
         switch (message.message) {
-            case MessageTypes.COLLISION_X:
-                if (Intersector.overlaps(collision.rectangle, otherCollision.rectangle)) {
-                    /* Calculate the actual deltaX */
-                    float deltaX = 0f;
-                    if (collisionData.collisionSide == CollisionSystem.CollisionSide.LEFT) {
-                        deltaX = otherCollision.rectangle.x - (collision.rectangle.x + collision.rectangle.width);
-                    } else if (collisionData.collisionSide == CollisionSystem.CollisionSide.RIGHT) {
-                        deltaX = (otherCollision.rectangle.x + otherCollision.rectangle.width) - collision.rectangle.x;
-                    }
-
-                    Gdx.app.log("CollisionHandling", "Moving X by: " + deltaX);
-                    position.x += deltaX;
-                    collision.rectangle.x = position.x;
-                }
-                break;
             case MessageTypes.COLLISION_Y:
                 if (Intersector.overlaps(collision.rectangle, otherCollision.rectangle)) {
                     /* Calculate the actual deltaY */
