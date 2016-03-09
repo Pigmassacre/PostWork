@@ -2,11 +2,13 @@ package com.pigmassacre.postwork.screens;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.pigmassacre.postwork.PostWork;
 import com.pigmassacre.postwork.components.*;
+import com.pigmassacre.postwork.input.ControllerInputAdapter;
 import com.pigmassacre.postwork.input.PlayerInputAdapter;
 import com.pigmassacre.postwork.systems.*;
 import com.pigmassacre.postwork.systems.collisionsystems.*;
@@ -27,8 +29,9 @@ public class GameScreen extends AbstractScreen {
 
         /* Main systems */
         game.engine.addSystem(new PreviousPositionSystem());
-        game.engine.addSystem(new PlayerControllerSystem());
-        game.engine.addSystem(new PlayerMovementSystem());
+        //game.engine.addSystem(new PlayerControllerSystem());
+        //game.engine.addSystem(new PlayerMovementSystem());
+        game.engine.addSystem(new JoystickMovementSystem());
         game.engine.addSystem(new AccelerationSystem());
         game.engine.addSystem(new DragSystem());
 
@@ -47,9 +50,14 @@ public class GameScreen extends AbstractScreen {
         inputMultiplexer.addProcessor(new PlayerInputAdapter());
         Gdx.input.setInputProcessor(inputMultiplexer);
 
+        ControllerInputAdapter controllerInputAdapter = new ControllerInputAdapter();
+        Controllers.addListener(controllerInputAdapter);
+
         /* Entities */
-        createPlayer(1, -1, 1, 3);
+        Entity player = createPlayer(1, -1, 1, 3);
         createPlayer(3, -1, 4, 2);
+
+        controllerInputAdapter.setControlledEntity(player);
 
         createMapObject(-20, -20, 1, 40);
         createMapObject(20, -20, 1, 40);
@@ -57,7 +65,7 @@ public class GameScreen extends AbstractScreen {
         createMapObject(-20, -20, 40, 1);
     }
 
-    private void createPlayer(float x, float y, float width, float height) {
+    private Entity createPlayer(float x, float y, float width, float height) {
         player = game.engine.createEntity();
         PositionComponent position = game.engine.createComponent(PositionComponent.class);
         position.x = x;
@@ -69,6 +77,7 @@ public class GameScreen extends AbstractScreen {
         visual.height = height;
         player.add(visual);
         player.add(game.engine.createComponent(PlayerControllerComponent.class));
+        player.add(game.engine.createComponent(JoystickControllerComponent.class));
         CollisionComponent collision = game.engine.createComponent(CollisionComponent.class);
         collision.init(width, height);
         player.add(collision);
@@ -78,24 +87,28 @@ public class GameScreen extends AbstractScreen {
         player.add(game.engine.createComponent(VelocityComponent.class));
         player.add(game.engine.createComponent(CameraFocusComponent.class));
         game.engine.addEntity(player);
+
+        return player;
     }
 
-    private void createMapObject(float x, float y, float width, float height) {
-        Entity enemy = game.engine.createEntity();
+    private Entity createMapObject(float x, float y, float width, float height) {
+        Entity mapObject = game.engine.createEntity();
         PositionComponent position = game.engine.createComponent(PositionComponent.class);
         position.x = x;
         position.y = y;
-        enemy.add(position);
+        mapObject.add(position);
         VisualComponent visual = game.engine.createComponent(VisualComponent.class);
         visual.region = new TextureRegion(new Texture(Gdx.files.internal("badlogic.jpg")), 2, 2);
         visual.width = width;
         visual.height = height;
-        enemy.add(visual);
+        mapObject.add(visual);
         CollisionComponent collision = game.engine.createComponent(CollisionComponent.class);
         collision.init(width, height);
         collision.movable = false;
-        enemy.add(collision);
-        game.engine.addEntity(enemy);
+        mapObject.add(collision);
+        game.engine.addEntity(mapObject);
+
+        return mapObject;
     }
 
     @Override
