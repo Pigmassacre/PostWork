@@ -49,18 +49,18 @@ public class GameScreen extends AbstractScreen {
 
         /* Entities */
         createPlayer(1, -1, 1, 3);
-        createPlayer(-1, 2, 2, 1);
+        createPlayer(3, -1, 4, 2);
         for (int x = 0; x < 10; x++) {
-            createEnemy(x - 10, 10, 1, 1);
-            createEnemy(x - 10, -10, 1, 1);
+            createMapObject(x - 10, 10, 1, 1);
+            createMapObject(x - 10, -10, 1, 1);
         }
 
         for (int y = 0; y < 10; y++) {
-            createEnemy(10, y - 10, 1, 1);
-            createEnemy(-10, y - 10, 1, 1);
+            createMapObject(10, y - 10, 1, 1);
+            createMapObject(-10, y - 10, 1, 1);
         }
 
-        createEnemy(1, 0, 2, 5);
+        createMapObject(1, 0, 2, 5);
     }
 
     private void createPlayer(float x, float y, float width, float height) {
@@ -86,7 +86,7 @@ public class GameScreen extends AbstractScreen {
         game.engine.addEntity(player);
     }
 
-    private void createEnemy(float x, float y, float width, float height) {
+    private void createMapObject(float x, float y, float width, float height) {
         Entity enemy = game.engine.createEntity();
         PositionComponent position = game.engine.createComponent(PositionComponent.class);
         position.x = x;

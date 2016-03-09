@@ -31,7 +31,7 @@ public class YCollisionHandlingSystem extends MessageHandlingSystem {
         CollisionComponent collision = Mappers.collision.get(collisionData.collidingEntity);
         CollisionComponent otherCollision = Mappers.collision.get(collisionData.otherCollidingEntity);
 
-        if (!collision.movable) {
+        if (!collision.movable || otherCollision.movable) {
             return;
         }
 

@@ -3,6 +3,7 @@ package com.pigmassacre.postwork.systems;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
+import com.pigmassacre.postwork.components.CollisionComponent;
 import com.pigmassacre.postwork.components.StopMovementOnCollisionComponent;
 import com.pigmassacre.postwork.components.VelocityComponent;
 import com.pigmassacre.postwork.input.MessageTypes;
@@ -25,8 +26,15 @@ public class StopMovementOnCollisionSystem extends MessageHandlingSystem {
     protected void processMessage(Telegram message, float deltaTime) {
         CollisionSystem.CollisionData collisionData = ((CollisionSystem.CollisionData) message.extraInfo);
 
-        stopMovement(message, collisionData.collidingEntity);
-        stopMovement(message, collisionData.otherCollidingEntity);
+        stopMovementIfMovable(message, collisionData.collidingEntity, collisionData.otherCollidingEntity);
+        stopMovementIfMovable(message, collisionData.otherCollidingEntity, collisionData.collidingEntity);
+    }
+
+    private void stopMovementIfMovable(Telegram message, Entity entity, Entity otherEntity) {
+        CollisionComponent otherCollision = Mappers.collision.get(otherEntity);
+        if (!otherCollision.movable) {
+            stopMovement(message, entity);
+        }
     }
 
     private void stopMovement(Telegram message, Entity entity) {
