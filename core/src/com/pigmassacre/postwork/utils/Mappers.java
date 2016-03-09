@@ -16,4 +16,6 @@ public class Mappers {
     public static final ComponentMapper<MapComponent> map = ComponentMapper.getFor(MapComponent.class);
     public static final ComponentMapper<StopMovementOnCollisionComponent> stopMovement = ComponentMapper.getFor(StopMovementOnCollisionComponent.class);
     public static final ComponentMapper<JoystickControllerComponent> joystickController = ComponentMapper.getFor(JoystickControllerComponent.class);
+    public static final ComponentMapper<HomingComponent> homing = ComponentMapper.getFor(HomingComponent.class);
+    public static final ComponentMapper<AngleComponent> angle = ComponentMapper.getFor(AngleComponent.class);
 }

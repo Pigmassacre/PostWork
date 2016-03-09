@@ -32,6 +32,9 @@ public class GameScreen extends AbstractScreen {
         //game.engine.addSystem(new PlayerControllerSystem());
         //game.engine.addSystem(new PlayerMovementSystem());
         game.engine.addSystem(new JoystickMovementSystem());
+
+        game.engine.addSystem(new HomingSystem());
+
         game.engine.addSystem(new AccelerationSystem());
         game.engine.addSystem(new DragSystem());
 
@@ -42,23 +45,34 @@ public class GameScreen extends AbstractScreen {
 
         game.engine.addSystem(new CameraSystem(camera));
         game.engine.addSystem(new RenderSystem(camera));
-        //game.engine.addSystem(new DebugSystem());
 
         inputMultiplexer.addProcessor(new PlayerInputAdapter());
         Gdx.input.setInputProcessor(inputMultiplexer);
 
-        ControllerInputAdapter controllerInputAdapter = new ControllerInputAdapter();
-        Controllers.addListener(controllerInputAdapter);
-
         /* Entities */
         Entity player = createPlayer(-1, -1, 2, 2);
-        createPlayer(5, 5, 4, 2);
 
+        ControllerInputAdapter controllerInputAdapter = new ControllerInputAdapter();
+        Controllers.addListener(controllerInputAdapter);
         controllerInputAdapter.setControlledEntity(player);
+
+        Entity other = createPlayer(200, 200, 1, 1);
+        HomingComponent homing = game.engine.createComponent(HomingComponent.class);
+        homing.target = player;
+        other.add(homing);
+//        other.remove(CameraFocusComponent.class);
+        AngleComponent angle = game.engine.createComponent(AngleComponent.class);
+        other.add(angle);
+
+        controllerInputAdapter = new ControllerInputAdapter();
+        Controllers.addListener(controllerInputAdapter);
+        controllerInputAdapter.setControlledEntity(other);
 
         Entity map = game.engine.createEntity();
         MapComponent mapComponent = game.engine.createComponent(MapComponent.class);
-        mapComponent.init(24, 24);
+        mapComponent.init(256, 256);
+        mapComponent.rectangle.x = -128;
+        mapComponent.rectangle.y = -128;
         map.add(mapComponent);
         game.engine.addEntity(map);
     }
