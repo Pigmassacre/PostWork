@@ -22,4 +22,7 @@ public class MessageTypes {
     public static final int COLLISION_X = 13;
     public static final int COLLISION_Y = 14;
 
+    public static final int START_SHOOTING = 15;
+    public static final int STOP_SHOOTING = 16;
+
 }

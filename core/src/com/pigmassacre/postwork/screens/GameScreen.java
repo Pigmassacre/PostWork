@@ -50,17 +50,11 @@ public class GameScreen extends AbstractScreen {
         /* Entities */
         createPlayer(1, -1, 1, 3);
         createPlayer(3, -1, 4, 2);
-        for (int x = 0; x < 10; x++) {
-            createMapObject(x - 10, 10, 1, 1);
-            createMapObject(x - 10, -10, 1, 1);
-        }
 
-        for (int y = 0; y < 10; y++) {
-            createMapObject(10, y - 10, 1, 1);
-            createMapObject(-10, y - 10, 1, 1);
-        }
-
-        createMapObject(1, 0, 2, 5);
+        createMapObject(-20, -20, 1, 40);
+        createMapObject(20, -20, 1, 40);
+        createMapObject(-20, 20, 40, 1);
+        createMapObject(-20, -20, 40, 1);
     }
 
     private void createPlayer(float x, float y, float width, float height) {
