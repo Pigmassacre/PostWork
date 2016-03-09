@@ -18,23 +18,13 @@ public class StopMovementOnCollisionSystem extends MessageHandlingSystem {
 
     public StopMovementOnCollisionSystem() {
         MessageManager.getInstance().addListeners(this,
-                MessageTypes.COLLISION_X,
-                MessageTypes.COLLISION_Y);
+                MessageTypes.MAP_COLLISION_X,
+                MessageTypes.MAP_COLLISION_Y);
     }
 
     @Override
     protected void processMessage(Telegram message, float deltaTime) {
-        CollisionSystem.CollisionData collisionData = ((CollisionSystem.CollisionData) message.extraInfo);
-
-        stopMovementIfMovable(message, collisionData.collidingEntity, collisionData.otherCollidingEntity);
-        stopMovementIfMovable(message, collisionData.otherCollidingEntity, collisionData.collidingEntity);
-    }
-
-    private void stopMovementIfMovable(Telegram message, Entity entity, Entity otherEntity) {
-        CollisionComponent otherCollision = Mappers.collision.get(otherEntity);
-        if (!otherCollision.movable) {
-            stopMovement(message, entity);
-        }
+        stopMovement(message, ((Entity) message.extraInfo));
     }
 
     private void stopMovement(Telegram message, Entity entity) {

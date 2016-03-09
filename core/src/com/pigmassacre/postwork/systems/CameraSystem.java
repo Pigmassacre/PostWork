@@ -81,7 +81,7 @@ public class CameraSystem extends EntitySystem {
         float yZoom = height / camera.viewportHeight;
 
         final float newZoom = MathUtils.clamp(Math.max(xZoom, yZoom), 1f / 32f, Float.POSITIVE_INFINITY);//Math.min(Level.getMapWidth() / camera.viewportWidth, Level.getMapHeight() / camera.viewportHeight));
-        camera.zoom = MathUtils.lerp(camera.zoom, newZoom, deltaTime);
+        camera.zoom = MathUtils.lerp(camera.zoom, newZoom, deltaTime * 3f);
 
         float effectiveViewportWidth = camera.viewportWidth * camera.zoom;
         float effectiveViewportHeight = camera.viewportHeight * camera.zoom;

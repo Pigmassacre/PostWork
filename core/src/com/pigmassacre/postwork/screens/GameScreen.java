@@ -35,12 +35,9 @@ public class GameScreen extends AbstractScreen {
         game.engine.addSystem(new AccelerationSystem());
         game.engine.addSystem(new DragSystem());
 
-        game.engine.addSystem(new XCollisionSystem());
-        game.engine.addSystem(new XCollisionHandlingSystem());
-        game.engine.addSystem(new YCollisionSystem());
-        game.engine.addSystem(new YCollisionHandlingSystem());
-
         game.engine.addSystem(new VelocitySystem());
+        game.engine.addSystem(new CollisionSystem());
+        game.engine.addSystem(new MapCollisionSystem());
         game.engine.addSystem(new StopMovementOnCollisionSystem());
 
         game.engine.addSystem(new CameraSystem(camera));
@@ -54,15 +51,16 @@ public class GameScreen extends AbstractScreen {
         Controllers.addListener(controllerInputAdapter);
 
         /* Entities */
-        Entity player = createPlayer(1, -1, 1, 3);
-        createPlayer(3, -1, 4, 2);
+        Entity player = createPlayer(-1, -1, 2, 2);
+        createPlayer(5, 5, 4, 2);
 
         controllerInputAdapter.setControlledEntity(player);
 
-        createMapObject(-20, -20, 1, 40);
-        createMapObject(20, -20, 1, 40);
-        createMapObject(-20, 20, 40, 1);
-        createMapObject(-20, -20, 40, 1);
+        Entity map = game.engine.createEntity();
+        MapComponent mapComponent = game.engine.createComponent(MapComponent.class);
+        mapComponent.init(24, 24);
+        map.add(mapComponent);
+        game.engine.addEntity(map);
     }
 
     private Entity createPlayer(float x, float y, float width, float height) {
@@ -89,26 +87,6 @@ public class GameScreen extends AbstractScreen {
         game.engine.addEntity(player);
 
         return player;
-    }
-
-    private Entity createMapObject(float x, float y, float width, float height) {
-        Entity mapObject = game.engine.createEntity();
-        PositionComponent position = game.engine.createComponent(PositionComponent.class);
-        position.x = x;
-        position.y = y;
-        mapObject.add(position);
-        VisualComponent visual = game.engine.createComponent(VisualComponent.class);
-        visual.region = new TextureRegion(new Texture(Gdx.files.internal("badlogic.jpg")), 2, 2);
-        visual.width = width;
-        visual.height = height;
-        mapObject.add(visual);
-        CollisionComponent collision = game.engine.createComponent(CollisionComponent.class);
-        collision.init(width, height);
-        collision.movable = false;
-        mapObject.add(collision);
-        game.engine.addEntity(mapObject);
-
-        return mapObject;
     }
 
     @Override

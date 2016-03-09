@@ -21,7 +21,63 @@ public class CollisionSystem extends IteratingSystem {
     }
 
     @Override
-    protected void processEntity(Entity entity, float deltaTime) {
+    public void processEntity(Entity entity, float deltaTime) {
+        final PositionComponent position = Mappers.position.get(entity);
+        final CollisionComponent collision = Mappers.collision.get(entity);
+
+        collision.rectangle.x = position.x;
+        collision.rectangle.y = position.y;
+
+        ImmutableArray<Entity> entities = getEntities();
+        for (Entity otherEntity : entities) {
+            if (!entity.equals(otherEntity)) {
+                final PositionComponent otherPosition = Mappers.position.get(otherEntity);
+                final CollisionComponent otherCollision = Mappers.collision.get(otherEntity);
+
+                otherCollision.rectangle.x = otherPosition.x;
+                otherCollision.rectangle.y = otherPosition.y;
+
+                if (Intersector.overlaps(collision.rectangle, otherCollision.rectangle)) {
+                    /* Gather and calclate collision data */
+                    float collisionX = collision.rectangle.x;
+                    float collisionWidth = collision.rectangle.width;
+
+                    float otherCollisionX = otherCollision.rectangle.x;
+                    float otherCollisionWidth = otherCollision.rectangle.width;
+
+                    float detectAxisX = (collisionX + collisionWidth / 2f) - (otherCollisionX + otherCollisionWidth / 2f);
+
+                    float collisionY = collision.rectangle.y;
+                    float collisionHeight = collision.rectangle.height;
+
+                    float otherCollisionY = otherCollision.rectangle.y;
+                    float otherCollisionHeight = otherCollision.rectangle.height;
+
+                    float detectAxisY = (collisionY + collisionHeight / 2f) - (otherCollisionY + otherCollisionHeight / 2f);
+
+                    CollisionAxis collisionAxis = decipherCollisionAxis(detectAxisX, detectAxisY);
+                    CollisionSide collisionSide = decipherCollisionSide(collisionAxis, detectAxisX, detectAxisY);
+                    CollisionData collisionData = new CollisionData(entity, otherEntity, collisionAxis, collisionSide);
+
+                    /* Dispatch messages */
+                    if (collisionAxis == CollisionAxis.X) {
+                        MessageManager.getInstance().dispatchMessage(MessageTypes.COLLISION_X, collisionData);
+                    } else if (collisionAxis == CollisionAxis.Y) {
+                        MessageManager.getInstance().dispatchMessage(MessageTypes.COLLISION_Y, collisionData);
+                    }
+                    MessageManager.getInstance().dispatchMessage(MessageTypes.COLLISION, collisionData);
+                }
+            }
+        }
+    }
+
+    private CollisionAxis decipherCollisionAxis(float deltaX, float deltaY) {
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+            return CollisionAxis.X;
+        } else if (Math.abs(deltaY) > Math.abs(deltaX)) {
+            return CollisionAxis.Y;
+        }
+        return CollisionAxis.UNDECIDED;
     }
 
     protected CollisionSide decipherCollisionSide(CollisionAxis detectedAxis, float detectAxisX, double detectAxisY) {

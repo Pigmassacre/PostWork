@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.Pool;
 /**
  * Created by pigmassacre on 2016-02-03.
  */
-public class CollisionComponent implements Component, Pool.Poolable {
+public class MapComponent implements Component, Pool.Poolable {
     public Rectangle rectangle;
 
     public void init(float width, float height) {
