@@ -1,4 +1,4 @@
-package com.pigmassacre.postwork.systems.collisionsystems;
+package com.pigmassacre.postwork.systems.collision;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;

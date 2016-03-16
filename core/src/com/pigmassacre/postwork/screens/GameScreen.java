@@ -11,7 +11,9 @@ import com.pigmassacre.postwork.components.*;
 import com.pigmassacre.postwork.input.ControllerInputAdapter;
 import com.pigmassacre.postwork.input.PlayerInputAdapter;
 import com.pigmassacre.postwork.systems.*;
-import com.pigmassacre.postwork.systems.collisionsystems.*;
+import com.pigmassacre.postwork.systems.collision.*;
+import com.pigmassacre.postwork.systems.joystick.JoystickCameraSystem;
+import com.pigmassacre.postwork.systems.joystick.JoystickMovementSystem;
 
 /**
  * Created by pigmassacre on 2016-01-13.

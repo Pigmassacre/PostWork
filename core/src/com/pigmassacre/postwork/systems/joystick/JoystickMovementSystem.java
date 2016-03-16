@@ -1,4 +1,4 @@
-package com.pigmassacre.postwork.systems;
+package com.pigmassacre.postwork.systems.joystick;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;

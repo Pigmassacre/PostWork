@@ -67,11 +67,6 @@ public class CameraSystem extends EntitySystem {
         maxX += minimumXSpace;
         maxY += minimumYSpace;
 
-        //if (minX < 0) minX = 0;
-        //if (minY < 0) minY = 0;
-        //if (maxX > 64f) maxX = 64f;
-        //if (maxY > 64f) maxY = 64f;
-
         float width = maxX - minX;
         float height = maxY - minY;
 
@@ -82,12 +77,6 @@ public class CameraSystem extends EntitySystem {
 
         final float newZoom = MathUtils.clamp(Math.max(xZoom, yZoom), 1f / 32f, Float.POSITIVE_INFINITY);//Math.min(Level.getMapWidth() / camera.viewportWidth, Level.getMapHeight() / camera.viewportHeight));
         camera.zoom = MathUtils.lerp(camera.zoom, newZoom, deltaTime * 3f);
-
-        float effectiveViewportWidth = camera.viewportWidth * camera.zoom;
-        float effectiveViewportHeight = camera.viewportHeight * camera.zoom;
-
-//        camera.position.x = MathUtils.clamp(camera.position.x, effectiveViewportWidth / 2f, maxX);//Level.getMapWidth() - effectiveViewportWidth / 2f);
-//        camera.position.y = MathUtils.clamp(camera.position.y, effectiveViewportHeight / 2f, maxY);//Level.getMapHeight() - effectiveViewportHeight / 2f);
 
         camera.update();
     }

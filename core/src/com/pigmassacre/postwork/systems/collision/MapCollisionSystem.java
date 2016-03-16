@@ -1,13 +1,11 @@
-package com.pigmassacre.postwork.systems.collisionsystems;
+package com.pigmassacre.postwork.systems.collision;
 
-import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.msg.MessageManager;
-import com.badlogic.gdx.ai.steer.utils.Collision;
 import com.pigmassacre.postwork.components.CollisionComponent;
 import com.pigmassacre.postwork.components.MapComponent;
 import com.pigmassacre.postwork.components.PositionComponent;

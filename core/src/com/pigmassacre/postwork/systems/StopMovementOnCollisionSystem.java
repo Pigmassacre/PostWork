@@ -3,11 +3,9 @@ package com.pigmassacre.postwork.systems;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
-import com.pigmassacre.postwork.components.CollisionComponent;
 import com.pigmassacre.postwork.components.StopMovementOnCollisionComponent;
 import com.pigmassacre.postwork.components.VelocityComponent;
 import com.pigmassacre.postwork.input.MessageTypes;
-import com.pigmassacre.postwork.systems.collisionsystems.CollisionSystem;
 import com.pigmassacre.postwork.systems.supersystems.MessageHandlingSystem;
 import com.pigmassacre.postwork.utils.Mappers;
 
