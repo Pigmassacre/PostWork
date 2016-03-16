@@ -51,12 +51,10 @@ public class MapCollisionSystem extends IteratingSystem {
             position.x = collision.rectangle.x;
 
             if (collision.rectangle.y < map.rectangle.y) {
-                Gdx.app.log("Map", "DOWN");
                 collision.rectangle.y = map.rectangle.y;
                 MessageManager.getInstance().dispatchMessage(MessageTypes.MAP_COLLISION_Y, entity);
                 MessageManager.getInstance().dispatchMessage(MessageTypes.MAP_COLLISION_DOWN, entity);
             } else if (collision.rectangle.y + collision.rectangle.height > map.rectangle.y + map.rectangle.height) {
-                Gdx.app.log("Map", "UP");
                 collision.rectangle.y = map.rectangle.y + map.rectangle.height - collision.rectangle.height;
                 MessageManager.getInstance().dispatchMessage(MessageTypes.MAP_COLLISION_Y, entity);
                 MessageManager.getInstance().dispatchMessage(MessageTypes.MAP_COLLISION_UP, entity);

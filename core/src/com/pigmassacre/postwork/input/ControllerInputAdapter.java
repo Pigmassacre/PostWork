@@ -41,14 +41,23 @@ public class ControllerInputAdapter extends ControllerAdapter {
 
     @Override
     public boolean buttonDown(Controller controller, int buttonIndex) {
-        Gdx.app.log("Controllers", String.valueOf(buttonIndex));
+        Gdx.app.log("Button Down", String.valueOf(buttonIndex));
         switch (buttonIndex) {
-            default:
+            case 1:
                 MessageManager.getInstance().dispatchMessage(MessageTypes.START_SHOOTING);
-                MessageManager.getInstance().dispatchMessage(MessageTypes.STOP_SHOOTING);
                 break;
         }
         return false;
     }
 
+    @Override
+    public boolean buttonUp(Controller controller, int buttonIndex) {
+        Gdx.app.log("Button Up", String.valueOf(buttonIndex));
+        switch (buttonIndex) {
+            case 1:
+                MessageManager.getInstance().dispatchMessage(MessageTypes.STOP_SHOOTING);
+                break;
+        }
+        return false;
+    }
 }

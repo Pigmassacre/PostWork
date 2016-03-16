@@ -15,7 +15,6 @@ import com.pigmassacre.postwork.utils.Mappers;
 public class HomingSystem extends IteratingSystem {
 
     private static final float ANGLE_CORRECTION = 24f;
-    private static final float SPEED = 6f;
 
     public HomingSystem() {
         super(Family.all(HomingComponent.class, AngleComponent.class, VelocityComponent.class).get());
@@ -45,8 +44,8 @@ public class HomingSystem extends IteratingSystem {
 
         angle.angle += keepWithinBounds(relativeAngleToTarget * ANGLE_CORRECTION * deltaTime);
 
-        velocity.velocity.x += MathUtils.cos(angle.angle) * SPEED * deltaTime;
-        velocity.velocity.y += MathUtils.sin(angle.angle) * SPEED * deltaTime;
+        velocity.velocity.x += MathUtils.cos(angle.angle) * homing.speed * deltaTime;
+        velocity.velocity.y += MathUtils.sin(angle.angle) * homing.speed * deltaTime;
     }
 
     private float keepWithinBounds(float angle) {

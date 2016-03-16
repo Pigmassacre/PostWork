@@ -4,15 +4,14 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.pigmassacre.postwork.PostWork;
-import com.pigmassacre.postwork.components.*;
 import com.pigmassacre.postwork.input.ControllerInputAdapter;
 import com.pigmassacre.postwork.input.PlayerInputAdapter;
 import com.pigmassacre.postwork.managers.EntityCreator;
+import com.pigmassacre.postwork.managers.GameManager;
 import com.pigmassacre.postwork.systems.*;
 import com.pigmassacre.postwork.systems.collision.*;
+import com.pigmassacre.postwork.systems.ShootingSystem;
 import com.pigmassacre.postwork.systems.joystick.JoystickCameraSystem;
 import com.pigmassacre.postwork.systems.joystick.JoystickMovementSystem;
 
@@ -26,6 +25,8 @@ public class GameScreen extends AbstractScreen {
     public GameScreen(PostWork game) {
         super(game);
 
+        GameManager.setGame(game);
+
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         /* Main systems */
@@ -34,6 +35,7 @@ public class GameScreen extends AbstractScreen {
         //game.engine.addSystem(new PlayerMovementSystem());
         game.engine.addSystem(new JoystickMovementSystem());
         game.engine.addSystem(new JoystickCameraSystem(camera));
+        game.engine.addSystem(new ShootingSystem());
 
         game.engine.addSystem(new HomingSystem());
 
@@ -53,18 +55,18 @@ public class GameScreen extends AbstractScreen {
         Gdx.input.setInputProcessor(inputMultiplexer);
 
         /* Entities */
-        Entity player = EntityCreator.createPlayer(game.engine, -1, -1, 2, 2);
+        Entity player = EntityCreator.createPlayer(-1, -1, 2, 2);
 
         ControllerInputAdapter controllerInputAdapter = new ControllerInputAdapter();
         Controllers.addListener(controllerInputAdapter);
         controllerInputAdapter.setControlledEntity(player);
 
-        EntityCreator.createBullet(game.engine, 200, 200, 3, 3, player);
-        EntityCreator.createBullet(game.engine, -200, 200, 3, 3, player);
-        EntityCreator.createBullet(game.engine, 200, -200, 3, 3, player);
-        EntityCreator.createBullet(game.engine, -200, -200, 3, 3, player);
+        EntityCreator.createBullet(200, 200, 3, 3, player);
+        EntityCreator.createBullet(-200, 200, 3, 3, player);
+        EntityCreator.createBullet(200, -200, 3, 3, player);
+        EntityCreator.createBullet(-200, -200, 3, 3, player);
 
-        EntityCreator.createMap(game.engine);
+        EntityCreator.createMap();
     }
 
     @Override

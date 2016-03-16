@@ -1,11 +1,11 @@
 package com.pigmassacre.postwork.managers;
 
-import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.PooledEngine;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.pigmassacre.postwork.PostWork;
 import com.pigmassacre.postwork.components.*;
 
 /**
@@ -13,70 +13,72 @@ import com.pigmassacre.postwork.components.*;
  */
 public class EntityCreator {
 
-    public static Entity createPlayer(PooledEngine engine, float x, float y, float width, float height) {
-        Entity entity = engine.createEntity();
-        PositionComponent position = engine.createComponent(PositionComponent.class);
+    public static Entity createPlayer(float x, float y, float width, float height) {
+        Entity entity = GameManager.getGame().engine.createEntity();
+        PositionComponent position = GameManager.getGame().engine.createComponent(PositionComponent.class);
         position.x = x;
         position.y = y;
         entity.add(position);
-        VisualComponent visual = engine.createComponent(VisualComponent.class);
+        VisualComponent visual = GameManager.getGame().engine.createComponent(VisualComponent.class);
         visual.region = new TextureRegion(new Texture(Gdx.files.internal("badlogic.jpg")), 1, 1);
         visual.width = width;
         visual.height = height;
         entity.add(visual);
-        entity.add(engine.createComponent(PlayerControllerComponent.class));
-        entity.add(engine.createComponent(JoystickControllerComponent.class));
-        CollisionComponent collision = engine.createComponent(CollisionComponent.class);
+        entity.add(GameManager.getGame().engine.createComponent(PlayerOwnedComponent.class));
+        entity.add(GameManager.getGame().engine.createComponent(PlayerControllerComponent.class));
+        entity.add(GameManager.getGame().engine.createComponent(JoystickControllerComponent.class));
+        entity.add(GameManager.getGame().engine.createComponent(ShootingComponent.class));
+        CollisionComponent collision = GameManager.getGame().engine.createComponent(CollisionComponent.class);
         collision.init(width, height);
         entity.add(collision);
-        entity.add(engine.createComponent(StopMovementOnCollisionComponent.class));
-        entity.add(engine.createComponent(AccelerationComponent.class));
-        entity.add(engine.createComponent(DragComponent.class));
-        entity.add(engine.createComponent(VelocityComponent.class));
-        entity.add(engine.createComponent(CameraFocusComponent.class));
+        entity.add(GameManager.getGame().engine.createComponent(StopMovementOnCollisionComponent.class));
+        entity.add(GameManager.getGame().engine.createComponent(AccelerationComponent.class));
+        entity.add(GameManager.getGame().engine.createComponent(DragComponent.class));
+        entity.add(GameManager.getGame().engine.createComponent(VelocityComponent.class));
+        entity.add(GameManager.getGame().engine.createComponent(CameraFocusComponent.class));
 
-        engine.addEntity(entity);
+        GameManager.getGame().engine.addEntity(entity);
 
         return entity;
     }
 
-    public static Entity createBullet(PooledEngine engine, float x, float y, float width, float height, Entity homingTarget) {
-        Entity entity = engine.createEntity();
-        PositionComponent position = engine.createComponent(PositionComponent.class);
+    public static Entity createBullet(float x, float y, float width, float height, Entity homingTarget) {
+        Entity entity = GameManager.getGame().engine.createEntity();
+        PositionComponent position = GameManager.getGame().engine.createComponent(PositionComponent.class);
         position.x = x;
         position.y = y;
         entity.add(position);
-        VisualComponent visual = engine.createComponent(VisualComponent.class);
+        VisualComponent visual = GameManager.getGame().engine.createComponent(VisualComponent.class);
         visual.region = new TextureRegion(new Texture(Gdx.files.internal("badlogic.jpg")), 1, 1);
         visual.width = width;
         visual.height = height;
         entity.add(visual);
-        CollisionComponent collision = engine.createComponent(CollisionComponent.class);
+        CollisionComponent collision = GameManager.getGame().engine.createComponent(CollisionComponent.class);
         collision.init(width, height);
         entity.add(collision);
-        entity.add(engine.createComponent(StopMovementOnCollisionComponent.class));
-        entity.add(engine.createComponent(AccelerationComponent.class));
-        entity.add(engine.createComponent(DragComponent.class));
-        entity.add(engine.createComponent(VelocityComponent.class));
+        entity.add(GameManager.getGame().engine.createComponent(StopMovementOnCollisionComponent.class));
+        entity.add(GameManager.getGame().engine.createComponent(AccelerationComponent.class));
+        entity.add(GameManager.getGame().engine.createComponent(DragComponent.class));
+        entity.add(GameManager.getGame().engine.createComponent(VelocityComponent.class));
 
-        HomingComponent homing = engine.createComponent(HomingComponent.class);
+        HomingComponent homing = GameManager.getGame().engine.createComponent(HomingComponent.class);
         homing.target = homingTarget;
         entity.add(homing);
-        entity.add(engine.createComponent(AngleComponent.class));
+        entity.add(GameManager.getGame().engine.createComponent(AngleComponent.class));
 
-        engine.addEntity(entity);
+        GameManager.getGame().engine.addEntity(entity);
 
         return entity;
     }
 
-    public static Entity createMap(PooledEngine engine) {
-        Entity map = engine.createEntity();
-        MapComponent mapComponent = engine.createComponent(MapComponent.class);
+    public static Entity createMap() {
+        Entity map = GameManager.getGame().engine.createEntity();
+        MapComponent mapComponent = GameManager.getGame().engine.createComponent(MapComponent.class);
         mapComponent.init(256, 256);
         mapComponent.rectangle.x = -128;
         mapComponent.rectangle.y = -128;
         map.add(mapComponent);
-        engine.addEntity(map);
+        GameManager.getGame().engine.addEntity(map);
 
         return map;
     }
