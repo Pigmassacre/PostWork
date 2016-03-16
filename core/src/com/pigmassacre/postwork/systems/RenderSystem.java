@@ -28,8 +28,8 @@ public class RenderSystem extends IteratingSystem {
         batch = new SpriteBatch();
         this.camera = camera;
 
-        bgColor.l = 0.225f;
-        bgColor.s = 0.15f;
+        bgColor.l = 0.3f;
+        bgColor.s = 0.2f;
     }
 
     @Override

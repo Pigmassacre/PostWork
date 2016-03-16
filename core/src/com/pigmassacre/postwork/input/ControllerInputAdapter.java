@@ -30,8 +30,6 @@ public class ControllerInputAdapter extends ControllerAdapter {
         if (controlledEntity != null) {
             JoystickControllerComponent joystick = Mappers.joystickController.get(controlledEntity);
             if (Math.abs(value) > 0.1f) {
-                Gdx.app.log("Controllers: Axis", String.valueOf(axisIndex));
-                Gdx.app.log("Controllers: Value", String.valueOf(value));
                 joystick.axes[axisIndex] = value;
             } else {
                 joystick.axes[axisIndex] = 0f;

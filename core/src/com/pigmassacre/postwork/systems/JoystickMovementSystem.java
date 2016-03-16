@@ -16,7 +16,7 @@ public class JoystickMovementSystem extends IteratingSystem {
     private static final float FACTOR = 0.1f;
 
     public JoystickMovementSystem() {
-        super(Family.all(AccelerationComponent.class, PlayerControllerComponent.class).get());
+        super(Family.all(AccelerationComponent.class, JoystickControllerComponent.class).get());
     }
 
     @Override

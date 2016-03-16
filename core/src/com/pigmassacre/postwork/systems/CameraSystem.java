@@ -19,8 +19,8 @@ import com.pigmassacre.postwork.utils.Mappers;
  */
 public class CameraSystem extends EntitySystem {
 
-    private static final float minimumXSpace = 16f;
-    private static final float minimumYSpace = 16f;
+    private static final float minimumXSpace = 32f;
+    private static final float minimumYSpace = 32f;
     private ImmutableArray<Entity> entities;
     private OrthographicCamera camera;
     private Family family;

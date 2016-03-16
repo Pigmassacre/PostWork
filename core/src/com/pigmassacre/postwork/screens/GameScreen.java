@@ -32,6 +32,7 @@ public class GameScreen extends AbstractScreen {
         //game.engine.addSystem(new PlayerControllerSystem());
         //game.engine.addSystem(new PlayerMovementSystem());
         game.engine.addSystem(new JoystickMovementSystem());
+        game.engine.addSystem(new JoystickCameraSystem(camera));
 
         game.engine.addSystem(new HomingSystem());
 
@@ -45,6 +46,7 @@ public class GameScreen extends AbstractScreen {
 
         game.engine.addSystem(new CameraSystem(camera));
         game.engine.addSystem(new RenderSystem(camera));
+        game.engine.addSystem(new DebugRenderSystem(camera));
 
         inputMultiplexer.addProcessor(new PlayerInputAdapter());
         Gdx.input.setInputProcessor(inputMultiplexer);
@@ -60,7 +62,7 @@ public class GameScreen extends AbstractScreen {
         HomingComponent homing = game.engine.createComponent(HomingComponent.class);
         homing.target = player;
         other.add(homing);
-//        other.remove(CameraFocusComponent.class);
+        other.remove(CameraFocusComponent.class);
         AngleComponent angle = game.engine.createComponent(AngleComponent.class);
         other.add(angle);
 
