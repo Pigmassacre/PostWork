@@ -14,11 +14,11 @@ import com.pigmassacre.postwork.utils.Mappers;
  */
 public class HomingSystem extends IteratingSystem {
 
-    private static final float ANGLE_CORRECTION = 16f;
-    private static final float SPEED = 64f;
+    private static final float ANGLE_CORRECTION = 48f;
+    private static final float SPEED = 1f;
 
     public HomingSystem() {
-        super(Family.all(HomingComponent.class, AngleComponent.class, AccelerationComponent.class).get());
+        super(Family.all(HomingComponent.class, AngleComponent.class, VelocityComponent.class).get());
     }
 
     @Override
@@ -26,7 +26,7 @@ public class HomingSystem extends IteratingSystem {
         final HomingComponent homing = Mappers.homing.get(entity);
         final AngleComponent angle = Mappers.angle.get(entity);
         CollisionComponent collision = Mappers.collision.get(entity);
-        AccelerationComponent acceleration = Mappers.acceleration.get(entity);
+        VelocityComponent velocity = Mappers.velocity.get(entity);
 
         angle.angle = keepWithinBounds(angle.angle);
 
@@ -41,23 +41,21 @@ public class HomingSystem extends IteratingSystem {
         Vector2 delta = targetCenter.cpy().sub(center);
         final float angleToTarget = MathUtils.atan2(delta.y, delta.x);
 
-        float relativeAngleToTarget = angleToTarget - angle.angle;
+        final float relativeAngleToTarget = angleToTarget - angle.angle;
 
-        relativeAngleToTarget = keepWithinBounds(relativeAngleToTarget);
+        angle.angle += keepWithinBounds(relativeAngleToTarget * ANGLE_CORRECTION * deltaTime);
 
-        angle.angle += relativeAngleToTarget * ANGLE_CORRECTION * deltaTime;
-
-        acceleration.acceleration.x += MathUtils.cos(angle.angle) * SPEED * deltaTime;
-        acceleration.acceleration.y += MathUtils.sin(angle.angle) * SPEED * deltaTime;
+        velocity.velocity.x += MathUtils.cos(angle.angle) * SPEED * deltaTime;
+        velocity.velocity.y += MathUtils.sin(angle.angle) * SPEED * deltaTime;
 
         Gdx.app.log("Angle", String.valueOf(angle.angle));
     }
 
     private float keepWithinBounds(float angle) {
         if (angle > MathUtils.PI) {
-            return angle - MathUtils.PI * 2f;
+            return angle - MathUtils.PI;
         } else if (angle < -MathUtils.PI) {
-            return angle + MathUtils.PI * 2f;
+            return angle + MathUtils.PI;
         }
         return angle;
     }
