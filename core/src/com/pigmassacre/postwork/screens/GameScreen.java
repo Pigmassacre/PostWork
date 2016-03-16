@@ -10,6 +10,7 @@ import com.pigmassacre.postwork.PostWork;
 import com.pigmassacre.postwork.components.*;
 import com.pigmassacre.postwork.input.ControllerInputAdapter;
 import com.pigmassacre.postwork.input.PlayerInputAdapter;
+import com.pigmassacre.postwork.managers.EntityCreator;
 import com.pigmassacre.postwork.systems.*;
 import com.pigmassacre.postwork.systems.collision.*;
 import com.pigmassacre.postwork.systems.joystick.JoystickCameraSystem;
@@ -52,86 +53,18 @@ public class GameScreen extends AbstractScreen {
         Gdx.input.setInputProcessor(inputMultiplexer);
 
         /* Entities */
-        Entity player = createPlayer(-1, -1, 2, 2);
+        Entity player = EntityCreator.createPlayer(game.engine, -1, -1, 2, 2);
 
         ControllerInputAdapter controllerInputAdapter = new ControllerInputAdapter();
         Controllers.addListener(controllerInputAdapter);
         controllerInputAdapter.setControlledEntity(player);
 
-        createBullet(200, 200, 3, 3, player);
-        createBullet(-200, 200, 3, 3, player);
-        createBullet(200, -200, 3, 3, player);
-        createBullet(-200, -200, 3, 3, player);
+        EntityCreator.createBullet(game.engine, 200, 200, 3, 3, player);
+        EntityCreator.createBullet(game.engine, -200, 200, 3, 3, player);
+        EntityCreator.createBullet(game.engine, 200, -200, 3, 3, player);
+        EntityCreator.createBullet(game.engine, -200, -200, 3, 3, player);
 
-        createMap();
-    }
-
-    private Entity createPlayer(float x, float y, float width, float height) {
-        Entity entity = game.engine.createEntity();
-        PositionComponent position = game.engine.createComponent(PositionComponent.class);
-        position.x = x;
-        position.y = y;
-        entity.add(position);
-        VisualComponent visual = game.engine.createComponent(VisualComponent.class);
-        visual.region = new TextureRegion(new Texture(Gdx.files.internal("badlogic.jpg")), 1, 1);
-        visual.width = width;
-        visual.height = height;
-        entity.add(visual);
-        entity.add(game.engine.createComponent(PlayerControllerComponent.class));
-        entity.add(game.engine.createComponent(JoystickControllerComponent.class));
-        CollisionComponent collision = game.engine.createComponent(CollisionComponent.class);
-        collision.init(width, height);
-        entity.add(collision);
-        entity.add(game.engine.createComponent(StopMovementOnCollisionComponent.class));
-        entity.add(game.engine.createComponent(AccelerationComponent.class));
-        entity.add(game.engine.createComponent(DragComponent.class));
-        entity.add(game.engine.createComponent(VelocityComponent.class));
-        entity.add(game.engine.createComponent(CameraFocusComponent.class));
-
-        game.engine.addEntity(entity);
-
-        return entity;
-    }
-
-    private Entity createBullet(float x, float y, float width, float height, Entity homingTarget) {
-        Entity entity = game.engine.createEntity();
-        PositionComponent position = game.engine.createComponent(PositionComponent.class);
-        position.x = x;
-        position.y = y;
-        entity.add(position);
-        VisualComponent visual = game.engine.createComponent(VisualComponent.class);
-        visual.region = new TextureRegion(new Texture(Gdx.files.internal("badlogic.jpg")), 1, 1);
-        visual.width = width;
-        visual.height = height;
-        entity.add(visual);
-        CollisionComponent collision = game.engine.createComponent(CollisionComponent.class);
-        collision.init(width, height);
-        entity.add(collision);
-        entity.add(game.engine.createComponent(StopMovementOnCollisionComponent.class));
-        entity.add(game.engine.createComponent(AccelerationComponent.class));
-        entity.add(game.engine.createComponent(DragComponent.class));
-        entity.add(game.engine.createComponent(VelocityComponent.class));
-
-        HomingComponent homing = game.engine.createComponent(HomingComponent.class);
-        homing.target = homingTarget;
-        entity.add(homing);
-        entity.add(game.engine.createComponent(AngleComponent.class));
-
-        game.engine.addEntity(entity);
-
-        return entity;
-    }
-
-    private Entity createMap() {
-        Entity map = game.engine.createEntity();
-        MapComponent mapComponent = game.engine.createComponent(MapComponent.class);
-        mapComponent.init(256, 256);
-        mapComponent.rectangle.x = -128;
-        mapComponent.rectangle.y = -128;
-        map.add(mapComponent);
-        game.engine.addEntity(map);
-
-        return map;
+        EntityCreator.createMap(game.engine);
     }
 
     @Override
