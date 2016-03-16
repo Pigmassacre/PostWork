@@ -46,6 +46,7 @@ public class GameScreen extends AbstractScreen {
         game.engine.addSystem(new CollisionSystem());
         game.engine.addSystem(new MapCollisionSystem());
         game.engine.addSystem(new StopMovementOnCollisionSystem());
+        game.engine.addSystem(new DamageOnCollisionSystem());
 
         game.engine.addSystem(new CameraSystem(camera));
         game.engine.addSystem(new RenderSystem(camera));
@@ -61,10 +62,10 @@ public class GameScreen extends AbstractScreen {
         Controllers.addListener(controllerInputAdapter);
         controllerInputAdapter.setControlledEntity(player);
 
-        EntityCreator.createBullet(200, 200, 3, 3, player);
-        EntityCreator.createBullet(-200, 200, 3, 3, player);
-        EntityCreator.createBullet(200, -200, 3, 3, player);
-        EntityCreator.createBullet(-200, -200, 3, 3, player);
+        EntityCreator.createHomingEnemy(200, 200, 3, 3, player);
+        EntityCreator.createHomingEnemy(-200, 200, 3, 3, player);
+        EntityCreator.createHomingEnemy(200, -200, 3, 3, player);
+        EntityCreator.createHomingEnemy(-200, -200, 3, 3, player);
 
         EntityCreator.createMap();
     }

@@ -6,8 +6,8 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.msg.MessageManager;
-import com.pigmassacre.postwork.components.CollisionComponent;
-import com.pigmassacre.postwork.components.MapComponent;
+import com.pigmassacre.postwork.components.collision.CollisionComponent;
+import com.pigmassacre.postwork.components.collision.MapComponent;
 import com.pigmassacre.postwork.components.PositionComponent;
 import com.pigmassacre.postwork.input.MessageTypes;
 import com.pigmassacre.postwork.utils.Mappers;
@@ -61,7 +61,7 @@ public class MapCollisionSystem extends IteratingSystem {
             }
             position.y = collision.rectangle.y;
 
-            MessageManager.getInstance().dispatchMessage(MessageTypes.COLLISION, entity);
+            MessageManager.getInstance().dispatchMessage(MessageTypes.MAP_COLLISION, entity);
         }
     }
 

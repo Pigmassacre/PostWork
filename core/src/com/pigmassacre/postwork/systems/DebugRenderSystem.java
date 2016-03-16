@@ -5,8 +5,8 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.pigmassacre.postwork.components.CollisionComponent;
-import com.pigmassacre.postwork.components.MapComponent;
+import com.pigmassacre.postwork.components.collision.CollisionComponent;
+import com.pigmassacre.postwork.components.collision.MapComponent;
 import com.pigmassacre.postwork.utils.Mappers;
 
 /**

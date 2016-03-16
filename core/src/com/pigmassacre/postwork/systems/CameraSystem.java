@@ -4,13 +4,11 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.utils.Array;
 import com.pigmassacre.postwork.components.CameraFocusComponent;
-import com.pigmassacre.postwork.components.CollisionComponent;
+import com.pigmassacre.postwork.components.collision.CollisionComponent;
 import com.pigmassacre.postwork.components.PositionComponent;
 import com.pigmassacre.postwork.utils.Mappers;
 

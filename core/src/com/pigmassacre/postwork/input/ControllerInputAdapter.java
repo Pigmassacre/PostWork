@@ -7,7 +7,9 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerAdapter;
+import com.badlogic.gdx.math.MathUtils;
 import com.pigmassacre.postwork.components.JoystickControllerComponent;
+import com.pigmassacre.postwork.managers.EntityCreator;
 import com.pigmassacre.postwork.utils.Mappers;
 
 /**
@@ -56,6 +58,9 @@ public class ControllerInputAdapter extends ControllerAdapter {
         switch (buttonIndex) {
             case 1:
                 MessageManager.getInstance().dispatchMessage(MessageTypes.STOP_SHOOTING);
+                break;
+            case 0:
+                EntityCreator.createHomingEnemy(MathUtils.random(-200, 200), MathUtils.random(-200, 200), 3, 3, controlledEntity);
                 break;
         }
         return false;

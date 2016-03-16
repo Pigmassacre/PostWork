@@ -6,7 +6,7 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.math.Intersector;
-import com.pigmassacre.postwork.components.CollisionComponent;
+import com.pigmassacre.postwork.components.collision.CollisionComponent;
 import com.pigmassacre.postwork.components.PositionComponent;
 import com.pigmassacre.postwork.input.MessageTypes;
 import com.pigmassacre.postwork.utils.Mappers;

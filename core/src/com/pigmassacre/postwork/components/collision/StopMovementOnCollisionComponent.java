@@ -1,4 +1,4 @@
-package com.pigmassacre.postwork.components;
+package com.pigmassacre.postwork.components.collision;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.math.Rectangle;

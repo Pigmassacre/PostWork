@@ -3,10 +3,13 @@ package com.pigmassacre.postwork.systems;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.pigmassacre.postwork.components.*;
+import com.pigmassacre.postwork.components.collision.CollisionComponent;
+import com.pigmassacre.postwork.managers.GameManager;
 import com.pigmassacre.postwork.utils.Mappers;
 
 /**
@@ -30,6 +33,21 @@ public class HomingSystem extends IteratingSystem {
         angle.angle = keepWithinBounds(angle.angle);
 
         CollisionComponent targetCollision = Mappers.collision.get(homing.target);
+
+        if (targetCollision == null) {
+            Gdx.app.log("", "Target no longer exists");
+            ImmutableArray<Entity> newEntities = GameManager.getGame().engine.getEntitiesFor(Family.all(CollisionComponent.class).exclude(PlayerOwnedComponent.class).get());
+
+            if (newEntities.size() > 0) {
+                Gdx.app.log("", "Updated target");
+                homing.target = newEntities.random();
+                targetCollision = Mappers.collision.get(homing.target);
+            } else {
+                Gdx.app.log("", "Couldnt get new target, killing self");
+                GameManager.getGame().engine.removeEntity(entity);
+                return;
+            }
+        }
 
         Vector2 center = new Vector2();
         collision.rectangle.getCenter(center);
