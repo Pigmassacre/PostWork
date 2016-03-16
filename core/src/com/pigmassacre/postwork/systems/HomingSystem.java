@@ -14,8 +14,8 @@ import com.pigmassacre.postwork.utils.Mappers;
  */
 public class HomingSystem extends IteratingSystem {
 
-    private static final float ANGLE_CORRECTION = 48f;
-    private static final float SPEED = 1f;
+    private static final float ANGLE_CORRECTION = 24f;
+    private static final float SPEED = 8f;
 
     public HomingSystem() {
         super(Family.all(HomingComponent.class, AngleComponent.class, VelocityComponent.class).get());
@@ -47,8 +47,6 @@ public class HomingSystem extends IteratingSystem {
 
         velocity.velocity.x += MathUtils.cos(angle.angle) * SPEED * deltaTime;
         velocity.velocity.y += MathUtils.sin(angle.angle) * SPEED * deltaTime;
-
-        Gdx.app.log("Angle", String.valueOf(angle.angle));
     }
 
     private float keepWithinBounds(float angle) {
