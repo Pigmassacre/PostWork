@@ -17,10 +17,8 @@ import com.pigmassacre.postwork.utils.Mappers;
  */
 public class HomingSystem extends IteratingSystem {
 
-    private static final float ANGLE_CORRECTION = 24f;
-
     public HomingSystem() {
-        super(Family.all(HomingComponent.class, AngleComponent.class, VelocityComponent.class).get());
+        super(Family.all(HomingComponent.class, AngleComponent.class, AccelerationComponent.class).get());
     }
 
     @Override
@@ -28,7 +26,7 @@ public class HomingSystem extends IteratingSystem {
         final HomingComponent homing = Mappers.homing.get(entity);
         final AngleComponent angle = Mappers.angle.get(entity);
         CollisionComponent collision = Mappers.collision.get(entity);
-        VelocityComponent velocity = Mappers.velocity.get(entity);
+        AccelerationComponent acceleration = Mappers.acceleration.get(entity);
 
         angle.angle = keepWithinBounds(angle.angle);
 
@@ -56,14 +54,10 @@ public class HomingSystem extends IteratingSystem {
         targetCollision.rectangle.getCenter(targetCenter);
 
         Vector2 delta = targetCenter.cpy().sub(center);
-        final float angleToTarget = MathUtils.atan2(delta.y, delta.x);
+        angle.angle = keepWithinBounds(MathUtils.atan2(delta.y, delta.x));
 
-        final float relativeAngleToTarget = angleToTarget - angle.angle;
-
-        angle.angle += keepWithinBounds(relativeAngleToTarget * ANGLE_CORRECTION * deltaTime);
-
-        velocity.velocity.x += MathUtils.cos(angle.angle) * homing.speed * deltaTime;
-        velocity.velocity.y += MathUtils.sin(angle.angle) * homing.speed * deltaTime;
+        acceleration.acceleration.x = MathUtils.cos(angle.angle) * homing.speed * deltaTime;
+        acceleration.acceleration.y = MathUtils.sin(angle.angle) * homing.speed * deltaTime;
     }
 
     private float keepWithinBounds(float angle) {
