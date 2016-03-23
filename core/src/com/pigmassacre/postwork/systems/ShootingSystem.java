@@ -23,9 +23,10 @@ public class ShootingSystem extends IteratingMessageHandlingSystem {
     private static final float CHARGE_PER_FRAME = 1f;
     private static final float CHARGE_REQUIRED_PER_SHOT = 30f;
 
-    private final Family targetFamily;
     private boolean charging = false;
     private float chargeLevel = 0f;
+
+    private final Family targetFamily;
     private ImmutableArray<Entity> targetedEntities;
 
     public ShootingSystem() {
@@ -53,12 +54,15 @@ public class ShootingSystem extends IteratingMessageHandlingSystem {
 
     @Override
     protected void processMessage(Telegram message, Entity entity, float deltaTime) {
+        VelocityComponent velocity = Mappers.velocity.get(entity);
         switch (message.message) {
             case MessageTypes.START_SHOOTING:
                 charging = true;
+                velocity.max = 0.5f;
                 break;
             case MessageTypes.STOP_SHOOTING:
                 charging = false;
+                velocity.max = -1f;
                 fire(entity);
                 break;
         }
@@ -72,8 +76,8 @@ public class ShootingSystem extends IteratingMessageHandlingSystem {
             Gdx.app.log("", "Missilecount: " + missileCount);
             for (int i = 0; i < missileCount; i++) {
                 Entity bullet = EntityCreator.createBullet(position.x, position.y, 1f, 1f, targetedEntity);
-                HomingComponent homing = Mappers.homing.get(bullet);
-                homing.speed = 9f;
+                AngleComponent angle = Mappers.angle.get(bullet);
+                angle.speed = 8f;
                 bullet.add(GameManager.getGame().engine.createComponent(PlayerOwnedComponent.class));
             }
         }

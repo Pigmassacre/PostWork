@@ -9,9 +9,11 @@ import com.badlogic.gdx.utils.Pool;
  */
 public class VelocityComponent implements Component, Pool.Poolable {
     public Vector2 velocity = new Vector2();
+    public float max = -1f;
 
     @Override
     public void reset() {
         velocity.set(Vector2.Zero);
+        max = -1f;
     }
 }

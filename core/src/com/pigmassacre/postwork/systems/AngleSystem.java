@@ -19,8 +19,6 @@ import com.pigmassacre.postwork.utils.Mappers;
  */
 public class AngleSystem extends IteratingSystem {
 
-    private static final float ANGLE_SPEED = 5f;
-
     public AngleSystem() {
         super(Family.all(AngleComponent.class, AccelerationComponent.class).get());
     }
@@ -31,8 +29,8 @@ public class AngleSystem extends IteratingSystem {
         AccelerationComponent acceleration = Mappers.acceleration.get(entity);
 
         angle.angle = keepWithinBounds(angle.angle);
-        acceleration.acceleration.x = MathUtils.cos(angle.angle) * ANGLE_SPEED * deltaTime;
-        acceleration.acceleration.y = MathUtils.sin(angle.angle) * ANGLE_SPEED * deltaTime;
+        acceleration.acceleration.x = MathUtils.cos(angle.angle) * angle.speed * deltaTime;
+        acceleration.acceleration.y = MathUtils.sin(angle.angle) * angle.speed * deltaTime;
     }
 
     private float keepWithinBounds(float angle) {
