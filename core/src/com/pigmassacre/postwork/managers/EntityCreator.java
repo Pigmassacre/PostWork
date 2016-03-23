@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.Array;
 import com.pigmassacre.postwork.components.*;
 import com.pigmassacre.postwork.components.collision.CollisionComponent;
 import com.pigmassacre.postwork.components.collision.DamageOnCollisionComponent;
@@ -14,6 +15,14 @@ import com.pigmassacre.postwork.components.collision.StopMovementOnCollisionComp
  * Created by pigmassacre on 2016-03-16.
  */
 public class EntityCreator {
+
+    private static Array<String> images = new Array<String>();
+
+    static {
+        images.add("froglet_enemy1.png");
+        images.add("starball_enemy1.png");
+        images.add("yellowcrab_enemy1.png");
+    }
 
     public static Entity createPlayer(float x, float y, float width, float height) {
         Entity entity = createBasicMovingEntity(x, y, width, height);
@@ -80,7 +89,7 @@ public class EntityCreator {
 
     public static Entity makeVisual(Entity entity, float width, float height) {
         VisualComponent visual = GameManager.getGame().engine.createComponent(VisualComponent.class);
-        visual.region = new TextureRegion(new Texture(Gdx.files.internal("froglet_enemy1.png")), 8, 8);
+        visual.region = new TextureRegion(new Texture(Gdx.files.internal(images.random())), 8, 8);
         visual.width = width;
         visual.height = height;
         entity.add(visual);

@@ -7,7 +7,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.pigmassacre.postwork.components.AngleComponent;
 import com.pigmassacre.postwork.components.PositionComponent;
@@ -24,6 +26,7 @@ public class RenderSystem extends IteratingSystem {
     private OrthographicCamera camera;
 
     private HSL bgColor = new HSL();
+    private TextureRegion background;
 
     public RenderSystem(OrthographicCamera camera) {
         super(Family.all(PositionComponent.class, VisualComponent.class).get());
@@ -32,6 +35,8 @@ public class RenderSystem extends IteratingSystem {
 
         bgColor.l = 0.3f;
         bgColor.s = 0.2f;
+
+        background = new TextureRegion(new Texture("bg.png"), 8, 8);
     }
 
     @Override
@@ -50,6 +55,15 @@ public class RenderSystem extends IteratingSystem {
         batch.begin();
         batch.setProjectionMatrix(camera.combined);
 
+        Color temp = batch.getColor();
+        batch.setColor(color);
+        for (int i = 0; i < 256 / 8; i++) {
+            for (int j = 0; j < 256 / 8; j++) {
+                batch.draw(background, -128 + i * 8, -128 + j * 8, 8, 8);
+            }
+        }
+
+        batch.setColor(temp);
         super.update(deltaTime);
 
         batch.end();
