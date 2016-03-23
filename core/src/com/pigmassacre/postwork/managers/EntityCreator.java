@@ -74,6 +74,7 @@ public class EntityCreator {
         entity.add(GameManager.getGame().engine.createComponent(AccelerationComponent.class));
         entity.add(GameManager.getGame().engine.createComponent(DragComponent.class));
         entity.add(GameManager.getGame().engine.createComponent(VelocityComponent.class));
+        entity.add(GameManager.getGame().engine.createComponent(AngleComponent.class));
         entity.add(GameManager.getGame().engine.createComponent(StopMovementOnCollisionComponent.class));
 
         return entity;
@@ -101,7 +102,6 @@ public class EntityCreator {
         HomingComponent homing = GameManager.getGame().engine.createComponent(HomingComponent.class);
         homing.target = homingTarget;
         entity.add(homing);
-        entity.add(GameManager.getGame().engine.createComponent(AngleComponent.class));
 
         return entity;
     }
