@@ -22,6 +22,7 @@ public class ShootingSystem extends IteratingMessageHandlingSystem {
 
     private static final float CHARGE_PER_FRAME = 1f;
     private static final float CHARGE_REQUIRED_PER_SHOT = 30f;
+
     private final Family targetFamily;
     private boolean charging = false;
     private float chargeLevel = 0f;
@@ -40,6 +41,7 @@ public class ShootingSystem extends IteratingMessageHandlingSystem {
         super.update(deltaTime);
         if (charging) {
             chargeLevel += CHARGE_PER_FRAME;
+            Gdx.app.log("", "ChargeLevel: " + chargeLevel);
         }
     }
 
@@ -64,8 +66,6 @@ public class ShootingSystem extends IteratingMessageHandlingSystem {
 
     private void fire(Entity entity) {
         PositionComponent position = Mappers.position.get(entity);
-
-        Gdx.app.log("", "ChargeLevel: " + chargeLevel);
 
         for (Entity targetedEntity : targetedEntities) {
             float missileCount = chargeLevel / CHARGE_REQUIRED_PER_SHOT;

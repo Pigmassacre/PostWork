@@ -1,6 +1,5 @@
 package com.pigmassacre.postwork.systems;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.pigmassacre.postwork.components.PlayerOwnedComponent;
