@@ -51,7 +51,7 @@ public class GameScreen extends AbstractScreen {
 
         game.engine.addSystem(new CameraSystem(camera));
         game.engine.addSystem(new RenderSystem(camera));
-        game.engine.addSystem(new DebugRenderSystem(camera));
+        //game.engine.addSystem(new DebugRenderSystem(camera));
 
         inputMultiplexer.addProcessor(new PlayerInputAdapter());
         Gdx.input.setInputProcessor(inputMultiplexer);

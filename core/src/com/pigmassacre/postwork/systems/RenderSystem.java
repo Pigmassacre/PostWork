@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
+import com.pigmassacre.postwork.components.AngleComponent;
 import com.pigmassacre.postwork.components.PositionComponent;
 import com.pigmassacre.postwork.components.VisualComponent;
 import com.pigmassacre.postwork.utils.HSL;
@@ -57,7 +59,22 @@ public class RenderSystem extends IteratingSystem {
     protected void processEntity(Entity entity, float deltaTime) {
         PositionComponent position = Mappers.position.get(entity);
         VisualComponent visual = Mappers.visual.get(entity);
+        AngleComponent angle = Mappers.angle.get(entity);
 
-        batch.draw(visual.region, position.x, position.y, visual.width, visual.height);
+        float drawAngle = 0f;
+        if (angle != null) {
+            drawAngle = angle.angle - MathUtils.PI / 2f;
+        }
+
+        batch.draw(visual.region,
+                position.x,
+                position.y,
+                visual.width / 2f,
+                visual.height / 2f,
+                visual.width,
+                visual.height,
+                1f,
+                1f,
+                drawAngle * 180 / MathUtils.PI);
     }
 }

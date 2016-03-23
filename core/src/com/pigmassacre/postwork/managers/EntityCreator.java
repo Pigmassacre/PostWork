@@ -80,7 +80,7 @@ public class EntityCreator {
 
     public static Entity makeVisual(Entity entity, float width, float height) {
         VisualComponent visual = GameManager.getGame().engine.createComponent(VisualComponent.class);
-        visual.region = new TextureRegion(new Texture(Gdx.files.internal("badlogic.jpg")), 1, 1);
+        visual.region = new TextureRegion(new Texture(Gdx.files.internal("froglet_enemy1.png")), 8, 8);
         visual.width = width;
         visual.height = height;
         entity.add(visual);
