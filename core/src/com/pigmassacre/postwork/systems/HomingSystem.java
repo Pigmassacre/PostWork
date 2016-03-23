@@ -33,15 +33,12 @@ public class HomingSystem extends IteratingSystem {
         CollisionComponent targetCollision = Mappers.collision.get(homing.target);
 
         if (targetCollision == null) {
-            Gdx.app.log("", "Target no longer exists");
             ImmutableArray<Entity> newEntities = GameManager.getGame().engine.getEntitiesFor(Family.all(CollisionComponent.class).exclude(PlayerOwnedComponent.class).get());
 
             if (newEntities.size() > 0) {
-                Gdx.app.log("", "Updated target");
                 homing.target = newEntities.random();
                 targetCollision = Mappers.collision.get(homing.target);
             } else {
-                Gdx.app.log("", "Couldnt get new target, killing self");
                 GameManager.getGame().engine.removeEntity(entity);
                 return;
             }

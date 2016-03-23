@@ -33,7 +33,6 @@ public class DamageOnCollisionSystem extends MessageHandlingSystem {
             PlayerOwnedComponent playerOwned = Mappers.playerOwned.get(data.collidingEntity);
             PlayerOwnedComponent playerOwnedOther = Mappers.playerOwned.get(data.otherCollidingEntity);
             if (playerOwned != null && playerOwnedOther == null) {
-                Gdx.app.log("", "deelin de dmg");
                 GameManager.getGame().engine.removeEntity(data.otherCollidingEntity);
             }
         }

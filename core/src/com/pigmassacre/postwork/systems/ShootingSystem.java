@@ -72,7 +72,7 @@ public class ShootingSystem extends IteratingMessageHandlingSystem {
             Gdx.app.log("", "Missilecount: " + missileCount);
             for (int i = 0; i < missileCount; i++) {
                 Entity bullet = EntityCreator.createBullet(position.x, position.y, 1f, 1f, targetedEntity);
-                HomingComponent homing = bullet.getComponent(HomingComponent.class);
+                HomingComponent homing = Mappers.homing.get(bullet);
                 homing.speed = 9f;
                 bullet.add(GameManager.getGame().engine.createComponent(PlayerOwnedComponent.class));
             }
