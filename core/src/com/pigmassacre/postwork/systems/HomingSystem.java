@@ -18,7 +18,7 @@ import com.pigmassacre.postwork.utils.Mappers;
 public class HomingSystem extends IteratingSystem {
 
     public HomingSystem() {
-        super(Family.all(HomingComponent.class, AngleComponent.class, AccelerationComponent.class).get());
+        super(Family.all(HomingComponent.class, AngleComponent.class).one(CollisionComponent.class, PositionComponent.class).get());
     }
 
     @Override
@@ -26,9 +26,6 @@ public class HomingSystem extends IteratingSystem {
         final HomingComponent homing = Mappers.homing.get(entity);
         final AngleComponent angle = Mappers.angle.get(entity);
         CollisionComponent collision = Mappers.collision.get(entity);
-        AccelerationComponent acceleration = Mappers.acceleration.get(entity);
-
-        angle.angle = keepWithinBounds(angle.angle);
 
         CollisionComponent targetCollision = Mappers.collision.get(homing.target);
 
@@ -45,25 +42,18 @@ public class HomingSystem extends IteratingSystem {
         }
 
         Vector2 center = new Vector2();
-        collision.rectangle.getCenter(center);
+        if (collision != null) {
+            collision.rectangle.getCenter(center);
+        } else {
+            PositionComponent position = Mappers.position.get(entity);
+            center.set(position.x, position.y);
+        }
 
         Vector2 targetCenter = new Vector2();
         targetCollision.rectangle.getCenter(targetCenter);
 
         Vector2 delta = targetCenter.cpy().sub(center);
-        angle.angle = keepWithinBounds(MathUtils.atan2(delta.y, delta.x));
-
-        acceleration.acceleration.x = MathUtils.cos(angle.angle) * homing.speed * deltaTime;
-        acceleration.acceleration.y = MathUtils.sin(angle.angle) * homing.speed * deltaTime;
-    }
-
-    private float keepWithinBounds(float angle) {
-        if (angle > MathUtils.PI) {
-            return angle - MathUtils.PI;
-        } else if (angle < -MathUtils.PI) {
-            return angle + MathUtils.PI;
-        }
-        return angle;
+        angle.angle = MathUtils.atan2(delta.y, delta.x);
     }
 
 }
