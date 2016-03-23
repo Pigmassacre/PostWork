@@ -70,10 +70,10 @@ public class CameraSystem extends EntitySystem {
 
         camera.position.set(minX + (width / 2f), minY + (height / 2f), 0);
 
-        float xZoom = width / camera.viewportWidth;
-        float yZoom = height / camera.viewportHeight;
+        float xZoom = MathUtils.clamp(width / camera.viewportWidth, 1f, 16f);
+        float yZoom = MathUtils.clamp(height / camera.viewportHeight, 1f, 16f);
 
-        final float newZoom = MathUtils.clamp(Math.max(xZoom, yZoom), 1f / 32f, Float.POSITIVE_INFINITY);//Math.min(Level.getMapWidth() / camera.viewportWidth, Level.getMapHeight() / camera.viewportHeight));
+        final float newZoom = MathUtils.clamp(Math.max(xZoom, yZoom), 1f / 32f, 32f);
         camera.zoom = MathUtils.lerp(camera.zoom, newZoom, deltaTime * 3f);
 
         camera.update();
