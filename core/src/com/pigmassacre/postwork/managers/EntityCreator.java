@@ -6,10 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 import com.pigmassacre.postwork.components.*;
-import com.pigmassacre.postwork.components.collision.CollisionComponent;
-import com.pigmassacre.postwork.components.collision.DamageOnCollisionComponent;
-import com.pigmassacre.postwork.components.collision.MapComponent;
-import com.pigmassacre.postwork.components.collision.StopMovementOnCollisionComponent;
+import com.pigmassacre.postwork.components.collision.*;
 import com.pigmassacre.postwork.utils.Mappers;
 
 /**
@@ -57,6 +54,7 @@ public class EntityCreator {
         makeVisual(bullet, width, height);
 
         bullet.add(GameManager.getGame().engine.createComponent(DamageOnCollisionComponent.class));
+        bullet.add(GameManager.getGame().engine.createComponent(DestroyOnMapCollisionComponent.class));
 
         GameManager.getGame().engine.addEntity(bullet);
 

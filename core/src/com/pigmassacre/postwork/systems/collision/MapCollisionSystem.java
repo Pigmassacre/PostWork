@@ -38,12 +38,10 @@ public class MapCollisionSystem extends IteratingSystem {
             final MapComponent map = Mappers.map.get(mapEntity);
 
             if (collision.rectangle.x < map.rectangle.x) {
-                Gdx.app.log("Map", "LEFT");
                 collision.rectangle.x = map.rectangle.x;
                 MessageManager.getInstance().dispatchMessage(MessageTypes.MAP_COLLISION_X, entity);
                 MessageManager.getInstance().dispatchMessage(MessageTypes.MAP_COLLISION_LEFT, entity);
             } else if (collision.rectangle.x + collision.rectangle.width > map.rectangle.x + map.rectangle.width) {
-                Gdx.app.log("Map", "RIGHT");
                 collision.rectangle.x = map.rectangle.x + map.rectangle.width - collision.rectangle.width;
                 MessageManager.getInstance().dispatchMessage(MessageTypes.MAP_COLLISION_X, entity);
                 MessageManager.getInstance().dispatchMessage(MessageTypes.MAP_COLLISION_RIGHT, entity);
@@ -63,15 +61,6 @@ public class MapCollisionSystem extends IteratingSystem {
 
             MessageManager.getInstance().dispatchMessage(MessageTypes.MAP_COLLISION, entity);
         }
-    }
-
-    private CollisionSystem.CollisionAxis decipherCollisionAxis(float deltaX, float deltaY) {
-        if (Math.abs(deltaX) > Math.abs(deltaY)) {
-            return CollisionSystem.CollisionAxis.X;
-        } else if (Math.abs(deltaY) > Math.abs(deltaX)) {
-            return CollisionSystem.CollisionAxis.Y;
-        }
-        return CollisionSystem.CollisionAxis.UNDECIDED;
     }
 
 }

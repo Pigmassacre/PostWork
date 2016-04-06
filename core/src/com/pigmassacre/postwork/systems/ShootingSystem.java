@@ -2,6 +2,7 @@ package com.pigmassacre.postwork.systems;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.math.MathUtils;
@@ -66,7 +67,9 @@ public class ShootingSystem extends IteratingMessageHandlingSystem {
         PositionComponent position = Mappers.position.get(entity);
 
         Entity bullet = EntityCreator.createBullet(position.x, position.y, 1f, 1f);
-        Mappers.angle.get(bullet).angle = Mappers.angle.get(entity).angle - MathUtils.PI;
+        float v = Mappers.angle.get(entity).angle - MathUtils.PI;
+        Gdx.app.log("Fire", "" + v);
+        Mappers.angle.get(bullet).angle = v;
         Mappers.propel.get(bullet).speed = 8f;
         bullet.add(GameManager.getGame().engine.createComponent(PlayerOwnedComponent.class));
     }

@@ -43,12 +43,13 @@ public class GameScreen extends AbstractScreen {
         game.engine.addSystem(new PropelSystem());
         game.engine.addSystem(new AccelerationSystem());
         game.engine.addSystem(new DragSystem());
-
         game.engine.addSystem(new VelocitySystem());
+
         game.engine.addSystem(new CollisionSystem());
         game.engine.addSystem(new MapCollisionSystem());
         game.engine.addSystem(new StopMovementOnCollisionSystem());
         game.engine.addSystem(new DamageOnCollisionSystem());
+        game.engine.addSystem(new DestroyOnMapCollisionSystem());
 
         game.engine.addSystem(new CameraSystem(camera));
         game.engine.addSystem(new RenderSystem(camera));

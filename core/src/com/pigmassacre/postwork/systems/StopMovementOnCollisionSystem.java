@@ -6,35 +6,26 @@ import com.badlogic.gdx.ai.msg.Telegram;
 import com.pigmassacre.postwork.components.collision.StopMovementOnCollisionComponent;
 import com.pigmassacre.postwork.components.VelocityComponent;
 import com.pigmassacre.postwork.input.MessageTypes;
+import com.pigmassacre.postwork.systems.supersystems.HandleCollisionSystem;
 import com.pigmassacre.postwork.systems.supersystems.MessageHandlingSystem;
 import com.pigmassacre.postwork.utils.Mappers;
 
 /**
  * Created by pigmassacre on 2016-01-20.
  */
-public class StopMovementOnCollisionSystem extends MessageHandlingSystem {
-
-    public StopMovementOnCollisionSystem() {
-        MessageManager.getInstance().addListeners(this,
-                MessageTypes.MAP_COLLISION_X,
-                MessageTypes.MAP_COLLISION_Y);
-    }
+public class StopMovementOnCollisionSystem extends HandleCollisionSystem {
 
     @Override
-    protected void processMessage(Telegram message, float deltaTime) {
-        stopMovement(message, ((Entity) message.extraInfo));
-    }
-
-    private void stopMovement(Telegram message, Entity entity) {
+    protected void handleMapCollision(int message, Entity entity) {
         StopMovementOnCollisionComponent stopMovement = Mappers.stopMovement.get(entity);
         VelocityComponent velocity = Mappers.velocity.get(entity);
 
         if (stopMovement != null && velocity != null) {
-            switch (message.message) {
-                case MessageTypes.COLLISION_X:
+            switch (message) {
+                case MessageTypes.MAP_COLLISION_X:
                     velocity.velocity.x = 0f;
                     break;
-                case MessageTypes.COLLISION_Y:
+                case MessageTypes.MAP_COLLISION_Y:
                     velocity.velocity.y = 0f;
                     break;
             }
