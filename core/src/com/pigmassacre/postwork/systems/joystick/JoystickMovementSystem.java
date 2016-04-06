@@ -4,10 +4,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.math.MathUtils;
-import com.pigmassacre.postwork.components.AccelerationComponent;
-import com.pigmassacre.postwork.components.AngleComponent;
-import com.pigmassacre.postwork.components.JoystickControllerComponent;
-import com.pigmassacre.postwork.components.PlayerControllerComponent;
+import com.pigmassacre.postwork.components.*;
 import com.pigmassacre.postwork.utils.Mappers;
 
 /**
@@ -23,11 +20,17 @@ public class JoystickMovementSystem extends IteratingSystem {
     protected void processEntity(Entity entity, float deltaTime) {
         final JoystickControllerComponent joystick = Mappers.joystickController.get(entity);
         AngleComponent angle = Mappers.angle.get(entity);
+        PropelComponent propel = Mappers.propel.get(entity);
 
         float y = -joystick.axes[1];
         float x = joystick.axes[0];
-        if (Math.abs(y) > 0.1f || Math.abs(x) > 0.1f) {
+        float absY = Math.abs(y);
+        float absX = Math.abs(x);
+        if (absY > 0.1f || absX > 0.1f) {
             angle.angle = MathUtils.atan2(y, x);
+            propel.speed = Math.max(absY, absX) * 3f;
+        } else {
+            propel.speed = 0f;
         }
     }
 

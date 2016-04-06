@@ -40,6 +40,7 @@ public class GameScreen extends AbstractScreen {
         game.engine.addSystem(new HomingSystem());
 
         game.engine.addSystem(new AngleSystem());
+        game.engine.addSystem(new PropelSystem());
         game.engine.addSystem(new AccelerationSystem());
         game.engine.addSystem(new DragSystem());
 

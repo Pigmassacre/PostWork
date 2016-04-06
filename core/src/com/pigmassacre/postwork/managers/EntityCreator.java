@@ -10,6 +10,7 @@ import com.pigmassacre.postwork.components.collision.CollisionComponent;
 import com.pigmassacre.postwork.components.collision.DamageOnCollisionComponent;
 import com.pigmassacre.postwork.components.collision.MapComponent;
 import com.pigmassacre.postwork.components.collision.StopMovementOnCollisionComponent;
+import com.pigmassacre.postwork.utils.Mappers;
 
 /**
  * Created by pigmassacre on 2016-03-16.
@@ -43,6 +44,7 @@ public class EntityCreator {
 
         makeVisual(entity, width, height);
         makeHoming(entity, homingTarget);
+        Mappers.homing.get(entity).speed = 2f;
 
         GameManager.getGame().engine.addEntity(entity);
 
@@ -80,6 +82,7 @@ public class EntityCreator {
         entity.add(GameManager.getGame().engine.createComponent(DragComponent.class));
         entity.add(GameManager.getGame().engine.createComponent(VelocityComponent.class));
         entity.add(GameManager.getGame().engine.createComponent(AngleComponent.class));
+        entity.add(GameManager.getGame().engine.createComponent(PropelComponent.class));
         entity.add(GameManager.getGame().engine.createComponent(StopMovementOnCollisionComponent.class));
 
         return entity;

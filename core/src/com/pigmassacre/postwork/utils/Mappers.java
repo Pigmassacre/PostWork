@@ -23,6 +23,7 @@ public class Mappers {
     public static final ComponentMapper<JoystickControllerComponent> joystickController = ComponentMapper.getFor(JoystickControllerComponent.class);
     public static final ComponentMapper<HomingComponent> homing = ComponentMapper.getFor(HomingComponent.class);
     public static final ComponentMapper<AngleComponent> angle = ComponentMapper.getFor(AngleComponent.class);
+    public static final ComponentMapper<PropelComponent> propel = ComponentMapper.getFor(PropelComponent.class);
     public static final ComponentMapper<ShootingComponent> shooting = ComponentMapper.getFor(ShootingComponent.class);
     public static final ComponentMapper<PlayerOwnedComponent> playerOwned = ComponentMapper.getFor(PlayerOwnedComponent.class);
 }

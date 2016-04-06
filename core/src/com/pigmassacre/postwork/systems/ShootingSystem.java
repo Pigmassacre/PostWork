@@ -42,7 +42,6 @@ public class ShootingSystem extends IteratingMessageHandlingSystem {
         super.update(deltaTime);
         if (charging) {
             chargeLevel += CHARGE_PER_FRAME;
-            Gdx.app.log("", "ChargeLevel: " + chargeLevel);
         }
     }
 
@@ -73,9 +72,9 @@ public class ShootingSystem extends IteratingMessageHandlingSystem {
 
         for (Entity targetedEntity : targetedEntities) {
             float missileCount = chargeLevel / CHARGE_REQUIRED_PER_SHOT;
-            Gdx.app.log("", "Missilecount: " + missileCount);
             for (int i = 0; i < missileCount; i++) {
                 Entity bullet = EntityCreator.createHomingBullet(position.x, position.y, 1f, 1f, targetedEntity);
+                Mappers.propel.get(bullet).speed = 8f;
                 bullet.add(GameManager.getGame().engine.createComponent(PlayerOwnedComponent.class));
             }
         }
