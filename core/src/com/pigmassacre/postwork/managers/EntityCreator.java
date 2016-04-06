@@ -49,17 +49,22 @@ public class EntityCreator {
         return entity;
     }
 
-    public static Entity createBullet(float x, float y, float width, float height, Entity homingTarget) {
-        Entity entity = createBasicMovingEntity(x, y, width, height);
+    public static Entity createBullet(float x, float y, float width, float height) {
+        Entity bullet = createBasicMovingEntity(x, y, width, height);
 
-        makeVisual(entity, width, height);
-        makeHoming(entity, homingTarget);
+        makeVisual(bullet, width, height);
 
-        entity.add(GameManager.getGame().engine.createComponent(DamageOnCollisionComponent.class));
+        bullet.add(GameManager.getGame().engine.createComponent(DamageOnCollisionComponent.class));
 
-        GameManager.getGame().engine.addEntity(entity);
+        GameManager.getGame().engine.addEntity(bullet);
 
-        return entity;
+        return bullet;
+    }
+
+    public static Entity createHomingBullet(float x, float y, float width, float height, Entity homingTarget) {
+        Entity bullet = createBullet(x, y, width, height);
+        makeHoming(bullet, homingTarget);
+        return bullet;
     }
 
     public static Entity createBasicMovingEntity(float x, float y, float width, float height) {

@@ -75,9 +75,7 @@ public class ShootingSystem extends IteratingMessageHandlingSystem {
             float missileCount = chargeLevel / CHARGE_REQUIRED_PER_SHOT;
             Gdx.app.log("", "Missilecount: " + missileCount);
             for (int i = 0; i < missileCount; i++) {
-                Entity bullet = EntityCreator.createBullet(position.x, position.y, 1f, 1f, targetedEntity);
-                AngleComponent angle = Mappers.angle.get(bullet);
-                angle.speed = 8f;
+                Entity bullet = EntityCreator.createHomingBullet(position.x, position.y, 1f, 1f, targetedEntity);
                 bullet.add(GameManager.getGame().engine.createComponent(PlayerOwnedComponent.class));
             }
         }

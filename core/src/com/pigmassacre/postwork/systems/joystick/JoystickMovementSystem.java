@@ -28,9 +28,6 @@ public class JoystickMovementSystem extends IteratingSystem {
         float x = joystick.axes[0];
         if (Math.abs(y) > 0.1f || Math.abs(x) > 0.1f) {
             angle.angle = MathUtils.atan2(y, x);
-            angle.speed = 5f;
-        } else {
-            angle.speed = 0f;
         }
     }
 

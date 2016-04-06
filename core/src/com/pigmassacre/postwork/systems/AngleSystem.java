@@ -29,8 +29,8 @@ public class AngleSystem extends IteratingSystem {
         AccelerationComponent acceleration = Mappers.acceleration.get(entity);
 
         angle.angle = keepWithinBounds(angle.angle);
-        acceleration.acceleration.x = MathUtils.cos(angle.angle) * angle.speed * deltaTime;
-        acceleration.acceleration.y = MathUtils.sin(angle.angle) * angle.speed * deltaTime;
+        //acceleration.acceleration.x = MathUtils.cos(angle.angle) * angle.speed * deltaTime;
+        //acceleration.acceleration.y = MathUtils.sin(angle.angle) * angle.speed * deltaTime;
     }
 
     private float keepWithinBounds(float angle) {
