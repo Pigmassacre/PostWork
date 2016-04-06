@@ -8,7 +8,12 @@ import com.badlogic.gdx.utils.Pool;
  */
 public class ShootingComponent implements Component, Pool.Poolable {
 
+    public boolean shooting = false;
+    public float timeSinceLastShot = 0f;
+
     @Override
     public void reset() {
+        shooting = false;
+        timeSinceLastShot = 0f;
     }
 }
