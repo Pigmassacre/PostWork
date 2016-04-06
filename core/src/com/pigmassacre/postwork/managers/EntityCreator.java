@@ -26,7 +26,7 @@ public class EntityCreator {
         Entity entity = createBasicMovingEntity(x, y, width, height);
 
         makePlayerControlled(entity);
-        makeVisual(entity, width, height);
+        makeVisual(entity, width, height, "player_ship1.png");
 
         entity.add(GameManager.getGame().engine.createComponent(ShootingComponent.class));
         entity.add(GameManager.getGame().engine.createComponent(CameraFocusComponent.class));
@@ -39,9 +39,9 @@ public class EntityCreator {
     public static Entity createHomingEnemy(float x, float y, float width, float height, Entity homingTarget) {
         Entity entity = createBasicMovingEntity(x, y, width, height);
 
-        makeVisual(entity, width, height);
+        makeVisual(entity, width, height, null);
         makeHoming(entity, homingTarget);
-        Mappers.homing.get(entity).speed = 2f;
+        Mappers.propel.get(entity).speed = 2f;
 
         GameManager.getGame().engine.addEntity(entity);
 
@@ -51,10 +51,10 @@ public class EntityCreator {
     public static Entity createBullet(float x, float y, float width, float height) {
         Entity bullet = createBasicMovingEntity(x, y, width, height);
 
-        makeVisual(bullet, width, height);
+        makeVisual(bullet, width, height, null);
 
         bullet.add(GameManager.getGame().engine.createComponent(DamageOnCollisionComponent.class));
-        bullet.add(GameManager.getGame().engine.createComponent(DestroyOnMapCollisionComponent.class));
+//        bullet.add(GameManager.getGame().engine.createComponent(DestroyOnMapCollisionComponent.class));
 
         GameManager.getGame().engine.addEntity(bullet);
 
@@ -94,9 +94,10 @@ public class EntityCreator {
         return entity;
     }
 
-    public static Entity makeVisual(Entity entity, float width, float height) {
+    public static Entity makeVisual(Entity entity, float width, float height, String image) {
         VisualComponent visual = GameManager.getGame().engine.createComponent(VisualComponent.class);
-        visual.region = new TextureRegion(new Texture(Gdx.files.internal(images.random())), 8, 8);
+        final Texture texture = new Texture(Gdx.files.internal(image != null ? image : images.random()));
+        visual.region = new TextureRegion(texture, texture.getWidth(), texture.getHeight());
         visual.width = width;
         visual.height = height;
         entity.add(visual);

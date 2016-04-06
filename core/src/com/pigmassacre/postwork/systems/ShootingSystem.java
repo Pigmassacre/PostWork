@@ -6,10 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.math.MathUtils;
-import com.pigmassacre.postwork.components.PlayerOwnedComponent;
-import com.pigmassacre.postwork.components.PositionComponent;
-import com.pigmassacre.postwork.components.ShootingComponent;
-import com.pigmassacre.postwork.components.VelocityComponent;
+import com.pigmassacre.postwork.components.*;
 import com.pigmassacre.postwork.input.MessageTypes;
 import com.pigmassacre.postwork.managers.EntityCreator;
 import com.pigmassacre.postwork.managers.GameManager;
@@ -48,29 +45,29 @@ public class ShootingSystem extends IteratingMessageHandlingSystem {
 
     @Override
     protected void processMessage(Telegram message, Entity entity, float deltaTime) {
-        final VelocityComponent velocity = Mappers.velocity.get(entity);
         final ShootingComponent shooting = Mappers.shooting.get(entity);
 
         switch (message.message) {
             case MessageTypes.START_SHOOTING:
                 shooting.shooting = true;
-                velocity.max = 0.5f;
                 break;
             case MessageTypes.STOP_SHOOTING:
                 shooting.shooting = false;
-                velocity.max = -1f;
                 break;
         }
     }
 
     private void fire(Entity entity) {
         PositionComponent position = Mappers.position.get(entity);
+        VisualComponent visual = Mappers.visual.get(entity);
 
-        Entity bullet = EntityCreator.createBullet(position.x, position.y, 1f, 1f);
-        float v = Mappers.angle.get(entity).angle - MathUtils.PI;
-        Gdx.app.log("Fire", "" + v);
+        float width = 3f;
+        float height = 3f;
+        Entity bullet = EntityCreator.createBullet(position.x + visual.width / 2f - width / 2f, position.y + visual.height / 2f - height / 2f, width, height);
+        float v = Mappers.angle.get(entity).angle;
+        Mappers.angle.get(bullet).desiredAngle = v;
         Mappers.angle.get(bullet).angle = v;
-        Mappers.propel.get(bullet).speed = 8f;
+        Mappers.propel.get(bullet).speed = 14f;
         bullet.add(GameManager.getGame().engine.createComponent(PlayerOwnedComponent.class));
     }
 

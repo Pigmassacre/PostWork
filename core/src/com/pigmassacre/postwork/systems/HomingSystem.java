@@ -53,7 +53,7 @@ public class HomingSystem extends IteratingSystem {
         targetCollision.rectangle.getCenter(targetCenter);
 
         Vector2 delta = targetCenter.cpy().sub(center);
-        angle.angle = MathUtils.atan2(delta.y, delta.x);
+        angle.desiredAngle = MathUtils.atan2(delta.y, delta.x);
     }
 
 }

@@ -10,11 +10,9 @@ import com.badlogic.gdx.utils.Pool;
  */
 public class HomingComponent implements Component, Pool.Poolable {
     public Entity target;
-    public float speed = 5f;
 
     @Override
     public void reset() {
         target = null;
-        speed = 6f;
     }
 }

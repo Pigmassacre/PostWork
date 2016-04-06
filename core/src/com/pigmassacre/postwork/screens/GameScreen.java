@@ -59,16 +59,11 @@ public class GameScreen extends AbstractScreen {
         Gdx.input.setInputProcessor(inputMultiplexer);
 
         /* Entities */
-        Entity player = EntityCreator.createPlayer(-1, -1, 2, 2);
+        Entity player = EntityCreator.createPlayer(-1, -1, 10, 10);
 
         ControllerInputAdapter controllerInputAdapter = new ControllerInputAdapter();
         Controllers.addListener(controllerInputAdapter);
         controllerInputAdapter.setControlledEntity(player);
-
-        EntityCreator.createHomingEnemy(200, 200, 3, 3, player);
-        EntityCreator.createHomingEnemy(-200, 200, 3, 3, player);
-        EntityCreator.createHomingEnemy(200, -200, 3, 3, player);
-        EntityCreator.createHomingEnemy(-200, -200, 3, 3, player);
 
         EntityCreator.createMap();
     }

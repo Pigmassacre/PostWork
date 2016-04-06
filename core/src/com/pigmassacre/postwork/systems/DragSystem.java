@@ -13,7 +13,7 @@ import com.pigmassacre.postwork.utils.Mappers;
  */
 public class DragSystem extends IteratingSystem {
 
-    private static final float DRAG_FACTOR = 0.95f;
+    private static final float DRAG_FACTOR = 0.985f;
 
     public DragSystem() {
         super(Family.all(VelocityComponent.class, DragComponent.class).get());
