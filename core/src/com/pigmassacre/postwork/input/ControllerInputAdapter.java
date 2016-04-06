@@ -60,7 +60,7 @@ public class ControllerInputAdapter extends ControllerAdapter {
                 MessageManager.getInstance().dispatchMessage(MessageTypes.STOP_SHOOTING);
                 break;
             case 0:
-                EntityCreator.createHomingEnemy(MathUtils.random(-200, 200), MathUtils.random(-200, 200), 3, 3, controlledEntity);
+                EntityCreator.createHomingEnemy(MathUtils.random(-150, 150), MathUtils.random(-150, 150), 3, 3, controlledEntity);
                 break;
         }
         return false;

@@ -27,14 +27,9 @@ public class JoystickCameraSystem extends IteratingSystem {
     protected void processEntity(Entity entity, float deltaTime) {
         final JoystickControllerComponent joystick = Mappers.joystickController.get(entity);
 
-        if (joystick.axes[2] > 0f) {
-            camera.viewportWidth *= 1f + joystick.axes[2] * FACTOR;
-            camera.viewportHeight *= 1f + joystick.axes[2] * FACTOR;
-        }
-
-        if (joystick.axes[5] > 0f) {
-            camera.viewportWidth *= 1f + -joystick.axes[5] * FACTOR;
-            camera.viewportHeight *= 1f + -joystick.axes[5] * FACTOR;
+        if (joystick.axes[4] > 0f || joystick.axes[4] < 0f) {
+            camera.viewportWidth *= 1f + joystick.axes[4] * FACTOR;
+            camera.viewportHeight *= 1f + joystick.axes[4] * FACTOR;
         }
     }
 

@@ -12,6 +12,8 @@ import com.pigmassacre.postwork.utils.Mappers;
  */
 public class JoystickMovementSystem extends IteratingSystem {
 
+    private static float MIN_JOYSTICK_LIMIT_FOR_MOVEMENT = 0.2f;
+
     public JoystickMovementSystem() {
         super(Family.all(AccelerationComponent.class, JoystickControllerComponent.class).get());
     }
@@ -26,12 +28,15 @@ public class JoystickMovementSystem extends IteratingSystem {
         float x = joystick.axes[0];
         float absY = Math.abs(y);
         float absX = Math.abs(x);
-        if (absY > 0.1f || absX > 0.1f) {
+
+        if (absY > MIN_JOYSTICK_LIMIT_FOR_MOVEMENT || absX > MIN_JOYSTICK_LIMIT_FOR_MOVEMENT) {
             angle.angle = MathUtils.atan2(y, x);
             propel.speed = Math.max(absY, absX) * 3f;
         } else {
             propel.speed = 0f;
         }
+
+
     }
 
 }
