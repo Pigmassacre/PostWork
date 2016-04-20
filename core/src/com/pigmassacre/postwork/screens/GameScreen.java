@@ -55,11 +55,13 @@ public class GameScreen extends AbstractScreen {
         game.engine.addSystem(new RenderSystem(camera));
         //game.engine.addSystem(new DebugRenderSystem(camera));
 
-        inputMultiplexer.addProcessor(new PlayerInputAdapter());
-        Gdx.input.setInputProcessor(inputMultiplexer);
-
         /* Entities */
         Entity player = EntityCreator.createPlayer(-1, -1, 10, 10);
+
+        PlayerInputAdapter inputAdapter = new PlayerInputAdapter();
+        inputAdapter.setControlledEntity(player);
+        inputMultiplexer.addProcessor(inputAdapter);
+        Gdx.input.setInputProcessor(inputMultiplexer);
 
         ControllerInputAdapter controllerInputAdapter = new ControllerInputAdapter();
         Controllers.addListener(controllerInputAdapter);
