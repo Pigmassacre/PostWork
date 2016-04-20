@@ -1,5 +1,6 @@
 package com.pigmassacre.postwork.systems;
 
+import com.pigmassacre.postwork.components.HealthComponent;
 import com.pigmassacre.postwork.components.PlayerOwnedComponent;
 import com.pigmassacre.postwork.components.collision.DamageOnCollisionComponent;
 import com.pigmassacre.postwork.managers.GameManager;
@@ -20,8 +21,10 @@ public class DamageOnCollisionSystem extends HandleCollisionSystem {
             PlayerOwnedComponent playerOwned = Mappers.playerOwned.get(data.collidingEntity);
             PlayerOwnedComponent playerOwnedOther = Mappers.playerOwned.get(data.otherCollidingEntity);
             if (playerOwned != null && playerOwnedOther == null) {
-                GameManager.getGame().engine.removeEntity(data.otherCollidingEntity);
-                GameManager.getGame().engine.removeEntity(data.collidingEntity);
+                HealthComponent otherHealth = Mappers.health.get(data.otherCollidingEntity);
+                if (otherHealth != null) {
+                    otherHealth.health -= damage.damage;
+                }
             }
         }
     }
