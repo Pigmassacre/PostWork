@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.pigmassacre.postwork.screens.GameScreen;
+import com.pigmassacre.postwork.screens.StartScreen;
 
 public class PostWork extends Game {
 
@@ -12,7 +13,8 @@ public class PostWork extends Game {
 	@Override
 	public void create () {
         engine = new PooledEngine();
-		setScreen(new GameScreen(this));
+        setScreen(new StartScreen(this));
+		//setScreen(new GameScreen(this));
 	}
 
 	@Override
