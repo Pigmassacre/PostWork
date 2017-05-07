@@ -22,7 +22,7 @@ public abstract class IteratingMessageHandlingSystem extends IteratingSystem imp
 
     public IteratingMessageHandlingSystem(Family family) {
         super(family);
-        messagesToHandle = new Queue<Telegram>();
+        messagesToHandle = new Queue<>();
     }
 
     @Override

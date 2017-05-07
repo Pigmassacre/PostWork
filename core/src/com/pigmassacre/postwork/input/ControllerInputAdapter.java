@@ -1,12 +1,8 @@
 package com.pigmassacre.postwork.input;
 
-import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.controllers.Controller;
-import com.badlogic.gdx.controllers.ControllerAdapter;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.math.MathUtils;
@@ -69,7 +65,7 @@ public class ControllerInputAdapter extends EntityController implements Controll
         Gdx.app.log("Button Down", String.valueOf(buttonIndex));
         switch (buttonIndex) {
             case 1:
-                MessageManager.getInstance().dispatchMessage(MessageTypes.START_SHOOTING);
+                MessageManager.getInstance().dispatchMessage(MessageTypes.PAUSE_SHOOTING);
                 break;
         }
         return false;
@@ -80,7 +76,7 @@ public class ControllerInputAdapter extends EntityController implements Controll
         Gdx.app.log("Button Up", String.valueOf(buttonIndex));
         switch (buttonIndex) {
             case 1:
-                MessageManager.getInstance().dispatchMessage(MessageTypes.STOP_SHOOTING);
+                MessageManager.getInstance().dispatchMessage(MessageTypes.UNPAUSE_SHOOTING);
                 break;
             case 0:
                 EntityCreator.createHomingEnemy(MathUtils.random(-150, 150), MathUtils.random(-150, 150), 5, 5, getControlledEntity());

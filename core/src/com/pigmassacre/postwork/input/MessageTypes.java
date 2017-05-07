@@ -22,15 +22,15 @@ public class MessageTypes {
     public static final int COLLISION_X = 13;
     public static final int COLLISION_Y = 14;
 
-    public static final int MAP_COLLISION_LEFT = 15;
-    public static final int MAP_COLLISION_RIGHT = 16;
-    public static final int MAP_COLLISION_UP = 17;
-    public static final int MAP_COLLISION_DOWN = 18;
-    public static final int MAP_COLLISION = 19;
-    public static final int MAP_COLLISION_X = 20;
-    public static final int MAP_COLLISION_Y = 21;
+    public static final int LEVEL_COLLISION_LEFT = 15;
+    public static final int LEVEL_COLLISION_RIGHT = 16;
+    public static final int LEVEL_COLLISION_UP = 17;
+    public static final int LEVEL_COLLISION_DOWN = 18;
+    public static final int LEVEL_COLLISION = 19;
+    public static final int LEVEL_COLLISION_X = 20;
+    public static final int LEVEL_COLLISION_Y = 21;
 
-    public static final int START_SHOOTING = 22;
-    public static final int STOP_SHOOTING = 23;
+    public static final int PAUSE_SHOOTING = 22;
+    public static final int UNPAUSE_SHOOTING = 23;
 
 }

@@ -2,9 +2,8 @@ package com.pigmassacre.postwork.systems;
 
 import com.pigmassacre.postwork.components.HealthComponent;
 import com.pigmassacre.postwork.components.PlayerOwnedComponent;
-import com.pigmassacre.postwork.components.collision.DamageOnCollisionComponent;
-import com.pigmassacre.postwork.managers.GameManager;
-import com.pigmassacre.postwork.systems.collision.CollisionSystem;
+import com.pigmassacre.postwork.components.collision.DamageOnEntityCollisionComponent;
+import com.pigmassacre.postwork.systems.collision.EntityCollisionSystem;
 import com.pigmassacre.postwork.systems.supersystems.HandleCollisionSystem;
 import com.pigmassacre.postwork.utils.Mappers;
 
@@ -14,8 +13,8 @@ import com.pigmassacre.postwork.utils.Mappers;
 public class DamageOnCollisionSystem extends HandleCollisionSystem {
 
     @Override
-    protected void handleCollision(int message, CollisionSystem.CollisionData data) {
-        DamageOnCollisionComponent damage = Mappers.damageCollision.get(data.collidingEntity);
+    protected void handleCollision(int message, EntityCollisionSystem.CollisionData data) {
+        DamageOnEntityCollisionComponent damage = Mappers.damageCollision.get(data.collidingEntity);
 
         if (damage != null) {
             PlayerOwnedComponent playerOwned = Mappers.playerOwned.get(data.collidingEntity);

@@ -2,6 +2,7 @@ package com.pigmassacre.postwork.screens;
 
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.pigmassacre.postwork.PostWork;
 
 /**
@@ -11,6 +12,8 @@ public class AbstractScreen implements Screen {
 
     final PostWork game;
     final InputMultiplexer inputMultiplexer;
+
+    Viewport viewport;
 
     public AbstractScreen(PostWork game) {
         this.game = game;
@@ -30,7 +33,9 @@ public class AbstractScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-
+        if (viewport != null) {
+            viewport.update(width, height   );
+        }
     }
 
     @Override

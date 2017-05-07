@@ -17,8 +17,8 @@ import com.pigmassacre.postwork.utils.Mappers;
  */
 public class CameraSystem extends EntitySystem {
 
-    private static final float minimumXSpace = 32f;
-    private static final float minimumYSpace = 32f;
+    private static final float minimumXSpace = 64f;
+    private static final float minimumYSpace = 64f;
     private ImmutableArray<Entity> entities;
     private OrthographicCamera camera;
     private Family family;
@@ -74,7 +74,8 @@ public class CameraSystem extends EntitySystem {
         float yZoom = MathUtils.clamp(height / camera.viewportHeight, 1f, 16f);
 
         final float newZoom = MathUtils.clamp(Math.max(xZoom, yZoom), 1f / 32f, 32f);
-        camera.zoom = MathUtils.lerp(camera.zoom, newZoom, deltaTime * 3f);
+        //camera.zoom = MathUtils.lerp(camera.zoom, newZoom, deltaTime * 3f);
+        camera.zoom = 1f;
 
         camera.update();
     }

@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.Pool;
 /**
  * Created by pigmassacre on 2016-02-03.
  */
-public class DestroyOnMapCollisionComponent implements Component, Pool.Poolable {
+public class DestroyOnLevelCollisionComponent implements Component, Pool.Poolable {
 
     @Override
     public void reset() {

@@ -18,11 +18,11 @@ public class Mappers {
     public static final ComponentMapper<VisualComponent> visual = ComponentMapper.getFor(VisualComponent.class);
 
     public static final ComponentMapper<CollisionComponent> collision = ComponentMapper.getFor(CollisionComponent.class);
-    public static final ComponentMapper<MapComponent> map = ComponentMapper.getFor(MapComponent.class);
+    public static final ComponentMapper<LevelComponent> level = ComponentMapper.getFor(LevelComponent.class);
 
     public static final ComponentMapper<StopMovementOnCollisionComponent> stopMovement = ComponentMapper.getFor(StopMovementOnCollisionComponent.class);
-    public static final ComponentMapper<DestroyOnMapCollisionComponent> destroyMapCollision = ComponentMapper.getFor(DestroyOnMapCollisionComponent.class);
-    public static final ComponentMapper<DamageOnCollisionComponent> damageCollision = ComponentMapper.getFor(DamageOnCollisionComponent.class);
+    public static final ComponentMapper<DestroyOnLevelCollisionComponent> destroyOnLevelCollision = ComponentMapper.getFor(DestroyOnLevelCollisionComponent.class);
+    public static final ComponentMapper<DamageOnEntityCollisionComponent> damageCollision = ComponentMapper.getFor(DamageOnEntityCollisionComponent.class);
 
     public static final ComponentMapper<JoystickControllerComponent> joystickController = ComponentMapper.getFor(JoystickControllerComponent.class);
     public static final ComponentMapper<HomingComponent> homing = ComponentMapper.getFor(HomingComponent.class);

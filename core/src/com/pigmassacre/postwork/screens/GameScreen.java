@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.pigmassacre.postwork.PostWork;
 import com.pigmassacre.postwork.input.ControllerInputAdapter;
 import com.pigmassacre.postwork.input.PlayerInputAdapter;
@@ -12,7 +13,6 @@ import com.pigmassacre.postwork.managers.GameManager;
 import com.pigmassacre.postwork.systems.*;
 import com.pigmassacre.postwork.systems.collision.*;
 import com.pigmassacre.postwork.systems.ShootingSystem;
-import com.pigmassacre.postwork.systems.joystick.JoystickCameraSystem;
 import com.pigmassacre.postwork.systems.joystick.JoystickMovementSystem;
 
 /**
@@ -28,13 +28,14 @@ public class GameScreen extends AbstractScreen {
         GameManager.setGame(game);
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        viewport = new ExtendViewport(640, 320, camera);
 
         /* Main systems */
         game.engine.addSystem(new PreviousPositionSystem());
         //game.engine.addSystem(new PlayerControllerSystem());
         //game.engine.addSystem(new PlayerMovementSystem());
         game.engine.addSystem(new JoystickMovementSystem());
-        game.engine.addSystem(new JoystickCameraSystem(camera));
+        //game.engine.addSystem(new JoystickCameraSystem(camera));
         game.engine.addSystem(new ShootingSystem());
 
         game.engine.addSystem(new HomingSystem());
@@ -45,8 +46,8 @@ public class GameScreen extends AbstractScreen {
         game.engine.addSystem(new DragSystem());
         game.engine.addSystem(new VelocitySystem());
 
-        game.engine.addSystem(new CollisionSystem());
-        game.engine.addSystem(new MapCollisionSystem());
+        game.engine.addSystem(new EntityCollisionSystem());
+        game.engine.addSystem(new LevelCollisionSystem());
         game.engine.addSystem(new StopMovementOnCollisionSystem());
         game.engine.addSystem(new DamageOnCollisionSystem());
         game.engine.addSystem(new DestroyOnMapCollisionSystem());
@@ -67,42 +68,43 @@ public class GameScreen extends AbstractScreen {
         Controllers.addListener(controllerInputAdapter);
         controllerInputAdapter.setControlledEntity(player);
 
-        EntityCreator.createMap();
+        EntityCreator.createLevel();
     }
 
     @Override
     public void show() {
-
+        super.show();
     }
 
     @Override
     public void render(float delta) {
+        super.render(delta);
         game.engine.update(delta);
     }
 
     @Override
     public void resize(int width, int height) {
-
+        super.resize(width, height);
     }
 
     @Override
     public void pause() {
-
+        super.pause();
     }
 
     @Override
     public void resume() {
-
+        super.resume();
     }
 
     @Override
     public void hide() {
-
+        super.hide();
     }
 
     @Override
     public void dispose() {
-
+        super.dispose();
     }
 
 }

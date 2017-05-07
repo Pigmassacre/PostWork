@@ -2,10 +2,8 @@ package com.pigmassacre.postwork.systems;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
-import com.badlogic.gdx.math.MathUtils;
 import com.pigmassacre.postwork.components.*;
 import com.pigmassacre.postwork.input.MessageTypes;
 import com.pigmassacre.postwork.managers.EntityCreator;
@@ -18,13 +16,13 @@ import com.pigmassacre.postwork.utils.Mappers;
  */
 public class ShootingSystem extends IteratingMessageHandlingSystem {
 
-    private static final float TIME_PER_SHOT = 1f / 16f;
+    private static final float COOLDOWN_TIME_BETWEEN_SHOTS = 1f / 16f;
 
     public ShootingSystem() {
         super(Family.all(PositionComponent.class, ShootingComponent.class).get());
         MessageManager.getInstance().addListeners(this,
-                MessageTypes.START_SHOOTING,
-                MessageTypes.STOP_SHOOTING);
+                MessageTypes.PAUSE_SHOOTING,
+                MessageTypes.UNPAUSE_SHOOTING);
     }
 
     @Override
@@ -36,7 +34,7 @@ public class ShootingSystem extends IteratingMessageHandlingSystem {
         if (shooting.shooting) {
             shooting.timeSinceLastShot += deltaTime;
 
-            if (shooting.timeSinceLastShot > TIME_PER_SHOT) {
+            if (shooting.timeSinceLastShot > COOLDOWN_TIME_BETWEEN_SHOTS) {
                 fire(entity);
                 shooting.timeSinceLastShot = 0f;
             }
@@ -48,11 +46,11 @@ public class ShootingSystem extends IteratingMessageHandlingSystem {
         final ShootingComponent shooting = Mappers.shooting.get(entity);
 
         switch (message.message) {
-            case MessageTypes.START_SHOOTING:
-                shooting.shooting = true;
-                break;
-            case MessageTypes.STOP_SHOOTING:
+            case MessageTypes.PAUSE_SHOOTING:
                 shooting.shooting = false;
+                break;
+            case MessageTypes.UNPAUSE_SHOOTING:
+                shooting.shooting = true;
                 break;
         }
     }

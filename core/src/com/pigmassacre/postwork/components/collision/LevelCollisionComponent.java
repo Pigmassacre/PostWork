@@ -6,11 +6,9 @@ import com.badlogic.gdx.utils.Pool;
 /**
  * Created by pigmassacre on 2016-02-03.
  */
-public class DamageOnCollisionComponent implements Component, Pool.Poolable {
-    public float damage = 0f;
-
+public class LevelCollisionComponent implements Component, Pool.Poolable {
     @Override
     public void reset() {
-        damage = 0f;
+
     }
 }

@@ -29,6 +29,11 @@ public class EntityCreator {
         makeVisual(entity, width, height, "player_ship1.png");
 
         entity.add(GameManager.getGame().engine.createComponent(ShootingComponent.class));
+        CollisionComponent collisionComponent = GameManager.getGame().engine.createComponent(CollisionComponent.class);
+        collisionComponent.init(16f, 16f);
+        entity.add(collisionComponent);
+        entity.add(GameManager.getGame().engine.createComponent(EntityCollisionComponent.class));
+        entity.add(GameManager.getGame().engine.createComponent(LevelCollisionComponent.class));
         entity.add(GameManager.getGame().engine.createComponent(CameraFocusComponent.class));
 
         GameManager.getGame().engine.addEntity(entity);
@@ -53,8 +58,9 @@ public class EntityCreator {
 
         makeVisual(bullet, width, height, null);
 
-        bullet.add(GameManager.getGame().engine.createComponent(DamageOnCollisionComponent.class));
-//        bullet.add(GameManager.getGame().engine.createComponent(DestroyOnMapCollisionComponent.class));
+        bullet.add(GameManager.getGame().engine.createComponent(LevelCollisionComponent.class));
+        bullet.add(GameManager.getGame().engine.createComponent(DamageOnEntityCollisionComponent.class));
+        bullet.add(GameManager.getGame().engine.createComponent(DestroyOnLevelCollisionComponent.class));
 
         GameManager.getGame().engine.addEntity(bullet);
 
@@ -113,16 +119,16 @@ public class EntityCreator {
         return entity;
     }
 
-    public static Entity createMap() {
-        Entity map = GameManager.getGame().engine.createEntity();
-        MapComponent mapComponent = GameManager.getGame().engine.createComponent(MapComponent.class);
-        mapComponent.init(256, 256);
-        mapComponent.rectangle.x = -128;
-        mapComponent.rectangle.y = -128;
-        map.add(mapComponent);
-        GameManager.getGame().engine.addEntity(map);
+    public static Entity createLevel() {
+        Entity level = GameManager.getGame().engine.createEntity();
+        LevelComponent levelComponent = GameManager.getGame().engine.createComponent(LevelComponent.class);
+        levelComponent.init(256, 256);
+        levelComponent.rectangle.x = -128;
+        levelComponent.rectangle.y = -128;
+        level.add(levelComponent);
+        GameManager.getGame().engine.addEntity(level);
 
-        return map;
+        return level;
     }
 
 }

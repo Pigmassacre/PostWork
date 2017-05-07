@@ -6,7 +6,7 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.pigmassacre.postwork.components.collision.CollisionComponent;
-import com.pigmassacre.postwork.components.collision.MapComponent;
+import com.pigmassacre.postwork.components.collision.LevelComponent;
 import com.pigmassacre.postwork.utils.Mappers;
 
 /**
@@ -18,7 +18,7 @@ public class DebugRenderSystem extends IteratingSystem {
     private OrthographicCamera camera;
 
     public DebugRenderSystem(OrthographicCamera camera) {
-        super(Family.one(MapComponent.class, CollisionComponent.class).get());
+        super(Family.one(LevelComponent.class, CollisionComponent.class).get());
         shapeRenderer = new ShapeRenderer();
         this.camera = camera;
     }
@@ -38,7 +38,7 @@ public class DebugRenderSystem extends IteratingSystem {
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         CollisionComponent collision = Mappers.collision.get(entity);
-        MapComponent map = Mappers.map.get(entity);
+        LevelComponent map = Mappers.level.get(entity);
 
         if (collision != null) {
             shapeRenderer.rect(collision.rectangle.x, collision.rectangle.y, collision.rectangle.width, collision.rectangle.height);

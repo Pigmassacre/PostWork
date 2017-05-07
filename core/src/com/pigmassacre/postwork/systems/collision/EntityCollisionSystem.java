@@ -8,16 +8,18 @@ import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.math.Intersector;
 import com.pigmassacre.postwork.components.collision.CollisionComponent;
 import com.pigmassacre.postwork.components.PositionComponent;
+import com.pigmassacre.postwork.components.collision.EntityCollisionComponent;
+import com.pigmassacre.postwork.components.collision.LevelComponent;
 import com.pigmassacre.postwork.input.MessageTypes;
 import com.pigmassacre.postwork.utils.Mappers;
 
 /**
  * Created by pigmassacre on 2016-01-20.
  */
-public class CollisionSystem extends IteratingSystem {
+public class EntityCollisionSystem extends IteratingSystem {
 
-    public CollisionSystem() {
-        super(Family.all(PositionComponent.class, CollisionComponent.class).get());
+    public EntityCollisionSystem() {
+        super(Family.all(PositionComponent.class, CollisionComponent.class, EntityCollisionComponent.class).get());
     }
 
     @Override
@@ -38,7 +40,7 @@ public class CollisionSystem extends IteratingSystem {
                 otherCollision.rectangle.y = otherPosition.y;
 
                 if (Intersector.overlaps(collision.rectangle, otherCollision.rectangle)) {
-                    /* Gather and calclate collision data */
+                    /* Gather and calculate collision data */
                     float collisionX = collision.rectangle.x;
                     float collisionWidth = collision.rectangle.width;
 

@@ -2,10 +2,8 @@ package com.pigmassacre.postwork.input;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ai.msg.MessageManager;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.pigmassacre.postwork.components.JoystickControllerComponent;
 import com.pigmassacre.postwork.utils.Mappers;
 
@@ -56,7 +54,7 @@ public class PlayerInputAdapter extends EntityController implements InputProcess
                 }
                 return true;
             case Input.Keys.SPACE:
-                MessageManager.getInstance().dispatchMessage(MessageTypes.START_SHOOTING);
+                MessageManager.getInstance().dispatchMessage(MessageTypes.PAUSE_SHOOTING);
                 return true;
         }
         return false;
@@ -104,7 +102,7 @@ public class PlayerInputAdapter extends EntityController implements InputProcess
                 }
                 return true;
             case Input.Keys.SPACE:
-                MessageManager.getInstance().dispatchMessage(MessageTypes.STOP_SHOOTING);
+                MessageManager.getInstance().dispatchMessage(MessageTypes.UNPAUSE_SHOOTING);
                 return true;
         }
         return false;
