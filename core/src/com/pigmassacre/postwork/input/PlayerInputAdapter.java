@@ -20,28 +20,24 @@ public class PlayerInputAdapter extends EntityController implements InputProcess
             joystick = Mappers.joystickController.get(controlledEntity);
         }
         switch (keycode) {
-            case Input.Keys.LEFT:
             case Input.Keys.A:
                 if (joystick != null) {
                     joystick.axes[0] = -1;
                 }
                 MessageManager.getInstance().dispatchMessage(MessageTypes.MOVE_LEFT);
                 return true;
-            case Input.Keys.RIGHT:
             case Input.Keys.D:
                 if (joystick != null) {
                     joystick.axes[0] = 1;
                 }
                 MessageManager.getInstance().dispatchMessage(MessageTypes.MOVE_RIGHT);
                 return true;
-            case Input.Keys.UP:
             case Input.Keys.W:
                 if (joystick != null) {
                     joystick.axes[1] = -1;
                 }
                 MessageManager.getInstance().dispatchMessage(MessageTypes.MOVE_UP);
                 return true;
-            case Input.Keys.DOWN:
             case Input.Keys.S:
                 if (joystick != null) {
                     joystick.axes[1] = 1;
@@ -68,28 +64,24 @@ public class PlayerInputAdapter extends EntityController implements InputProcess
             joystick = Mappers.joystickController.get(controlledEntity);
         }
         switch (keycode) {
-            case Input.Keys.LEFT:
             case Input.Keys.A:
                 if (joystick != null) {
                     joystick.axes[0] = 0;
                 }
                 MessageManager.getInstance().dispatchMessage(MessageTypes.STOP_MOVE_LEFT);
                 return true;
-            case Input.Keys.RIGHT:
             case Input.Keys.D:
                 if (joystick != null) {
                     joystick.axes[0] = 0;
                 }
                 MessageManager.getInstance().dispatchMessage(MessageTypes.STOP_MOVE_RIGHT);
                 return true;
-            case Input.Keys.UP:
             case Input.Keys.W:
                 if (joystick != null) {
                     joystick.axes[1] = 0;
                 }
                 MessageManager.getInstance().dispatchMessage(MessageTypes.STOP_MOVE_UP);
                 return true;
-            case Input.Keys.DOWN:
             case Input.Keys.S:
                 if (joystick != null) {
                     joystick.axes[1] = 0;

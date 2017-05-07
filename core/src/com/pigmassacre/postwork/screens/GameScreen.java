@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.pigmassacre.postwork.PostWork;
 import com.pigmassacre.postwork.input.ControllerInputAdapter;
@@ -64,9 +65,15 @@ public class GameScreen extends AbstractScreen {
         inputMultiplexer.addProcessor(inputAdapter);
         Gdx.input.setInputProcessor(inputMultiplexer);
 
+        /*
         ControllerInputAdapter controllerInputAdapter = new ControllerInputAdapter();
         Controllers.addListener(controllerInputAdapter);
         controllerInputAdapter.setControlledEntity(player);
+        */
+
+        for (int i = 0; i < 10; i++) {
+            EntityCreator.createHomingEnemy(MathUtils.random(-128, 128), MathUtils.random(-128, 128), 8f, 8f, player);
+        }
 
         EntityCreator.createLevel();
     }

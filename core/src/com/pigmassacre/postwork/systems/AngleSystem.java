@@ -20,7 +20,7 @@ public class AngleSystem extends IteratingSystem {
     protected void processEntity(Entity entity, float deltaTime) {
         final AngleComponent angle = Mappers.angle.get(entity);
 
-        angle.angle = MathUtils.lerpAngle(angle.angle, angle.desiredAngle, deltaTime * 12f);
+        angle.angle = MathUtils.lerpAngle(angle.angle, angle.desiredAngle, MathUtils.clamp(deltaTime * 64f, 0f, 1f));
     }
 
 }

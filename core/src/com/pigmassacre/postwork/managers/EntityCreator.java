@@ -48,27 +48,40 @@ public class EntityCreator {
         makeHoming(entity, homingTarget);
         Mappers.propel.get(entity).speed = 2f;
 
+        entity.add(GameManager.getGame().engine.createComponent(EntityCollisionComponent.class));
+        entity.add(GameManager.getGame().engine.createComponent(LevelCollisionComponent.class));
+        entity.add(GameManager.getGame().engine.createComponent(TargetableComponent.class));
+        HealthComponent healthComponent = GameManager.getGame().engine.createComponent(HealthComponent.class);
+        healthComponent.health = 10f;
+        entity.add(healthComponent);
+
         GameManager.getGame().engine.addEntity(entity);
 
         return entity;
     }
 
-    public static Entity createBullet(float x, float y, float width, float height) {
+    public static Entity createBullet(float x, float y, float width, float height, Entity owner) {
         Entity bullet = createBasicMovingEntity(x, y, width, height);
 
         makeVisual(bullet, width, height, null);
 
         bullet.add(GameManager.getGame().engine.createComponent(LevelCollisionComponent.class));
-        bullet.add(GameManager.getGame().engine.createComponent(DamageOnEntityCollisionComponent.class));
+        DamageOnEntityCollisionComponent damageOnEntityCollisionComponent = GameManager.getGame().engine.createComponent(DamageOnEntityCollisionComponent.class);
+        damageOnEntityCollisionComponent.damage = 2f;
+        bullet.add(damageOnEntityCollisionComponent);
         bullet.add(GameManager.getGame().engine.createComponent(DestroyOnLevelCollisionComponent.class));
+
+        OwnerComponent ownerComponent = GameManager.getGame().engine.createComponent(OwnerComponent.class);
+        ownerComponent.owner = owner;
+        bullet.add(ownerComponent);
 
         GameManager.getGame().engine.addEntity(bullet);
 
         return bullet;
     }
 
-    public static Entity createHomingBullet(float x, float y, float width, float height, Entity homingTarget) {
-        Entity bullet = createBullet(x, y, width, height);
+    public static Entity createHomingBullet(float x, float y, float width, float height, Entity owner, Entity homingTarget) {
+        Entity bullet = createBullet(x, y, width, height, owner);
         makeHoming(bullet, homingTarget);
         return bullet;
     }
