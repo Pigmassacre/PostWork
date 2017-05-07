@@ -53,6 +53,8 @@ public class GameScreen extends AbstractScreen {
         game.engine.addSystem(new DamageOnCollisionSystem());
         game.engine.addSystem(new DestroyOnMapCollisionSystem());
 
+        game.engine.addSystem(new HealthSystem());
+
         game.engine.addSystem(new CameraSystem(camera));
         game.engine.addSystem(new RenderSystem(camera));
         //game.engine.addSystem(new DebugRenderSystem(camera));

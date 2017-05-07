@@ -30,8 +30,6 @@ public class HandleCollisionSystem extends MessageHandlingSystem {
                 handleCollision(message.message, (EntityCollisionSystem.CollisionData) data);
                 break;
             case MessageTypes.LEVEL_COLLISION:
-            case MessageTypes.LEVEL_COLLISION_X:
-            case MessageTypes.LEVEL_COLLISION_Y:
                 handleLevelCollision(message.message, (Entity) data);
                 break;
         }

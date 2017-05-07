@@ -15,8 +15,9 @@ public class DamageOnCollisionSystem extends HandleCollisionSystem {
     @Override
     protected void handleCollision(int message, EntityCollisionSystem.CollisionData data) {
         DamageOnEntityCollisionComponent damage = Mappers.damageCollision.get(data.collidingEntity);
+        DamageOnEntityCollisionComponent damageOther = Mappers.damageCollision.get(data.otherCollidingEntity);
 
-        if (damage != null) {
+        if (damage != null || damageOther != null) {
             PlayerOwnedComponent playerOwned = Mappers.playerOwned.get(data.collidingEntity);
             PlayerOwnedComponent playerOwnedOther = Mappers.playerOwned.get(data.otherCollidingEntity);
             if (playerOwned != null && playerOwnedOther == null) {

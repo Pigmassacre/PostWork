@@ -14,7 +14,6 @@ public class DestroyOnMapCollisionSystem extends HandleCollisionSystem {
     @Override
     protected void handleLevelCollision(int message, Entity entity) {
         if (Mappers.destroyOnLevelCollision.get(entity) != null) {
-            Gdx.app.log(getClass().getSimpleName(), "" + entity);
             GameManager.getGame().engine.removeEntity(entity);
         }
     }

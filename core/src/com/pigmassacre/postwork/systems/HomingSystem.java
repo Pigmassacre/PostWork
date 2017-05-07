@@ -4,10 +4,13 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.pigmassacre.postwork.components.*;
 import com.pigmassacre.postwork.components.collision.CollisionComponent;
+import com.pigmassacre.postwork.input.MessageTypes;
 import com.pigmassacre.postwork.managers.GameManager;
 import com.pigmassacre.postwork.utils.Mappers;
 
@@ -35,7 +38,7 @@ public class HomingSystem extends IteratingSystem {
                 homing.target = newEntities.random();
                 targetCollision = Mappers.collision.get(homing.target);
             } else {
-                GameManager.getGame().engine.removeEntity(entity);
+                MessageManager.getInstance().dispatchMessage(MessageTypes.HOMING_TARGET_LOST, entity);
                 return;
             }
         }

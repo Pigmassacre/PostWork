@@ -65,10 +65,12 @@ public class EntityCreator {
 
         makeVisual(bullet, width, height, null);
 
-        bullet.add(GameManager.getGame().engine.createComponent(LevelCollisionComponent.class));
+        bullet.add(GameManager.getGame().engine.createComponent(EntityCollisionComponent.class));
         DamageOnEntityCollisionComponent damageOnEntityCollisionComponent = GameManager.getGame().engine.createComponent(DamageOnEntityCollisionComponent.class);
         damageOnEntityCollisionComponent.damage = 2f;
         bullet.add(damageOnEntityCollisionComponent);
+
+        bullet.add(GameManager.getGame().engine.createComponent(LevelCollisionComponent.class));
         bullet.add(GameManager.getGame().engine.createComponent(DestroyOnLevelCollisionComponent.class));
 
         OwnerComponent ownerComponent = GameManager.getGame().engine.createComponent(OwnerComponent.class);

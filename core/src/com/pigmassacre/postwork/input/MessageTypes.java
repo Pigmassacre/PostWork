@@ -33,4 +33,6 @@ public class MessageTypes {
     public static final int PAUSE_SHOOTING = 22;
     public static final int UNPAUSE_SHOOTING = 23;
 
+    public static final int HOMING_TARGET_LOST = 24;
+
 }
