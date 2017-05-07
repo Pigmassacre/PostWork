@@ -28,7 +28,7 @@ public class GameScreen extends AbstractScreen {
 
         GameManager.setGame(game);
 
-        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        camera = new OrthographicCamera(640, 320);
         viewport = new ExtendViewport(640, 320, camera);
 
         /* Main systems */
