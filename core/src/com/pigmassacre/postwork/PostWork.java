@@ -13,8 +13,8 @@ public class PostWork extends Game {
 	@Override
 	public void create () {
         engine = new PooledEngine();
-        setScreen(new StartScreen(this));
-		//setScreen(new GameScreen(this));
+        //setScreen(new StartScreen(this));
+		setScreen(new GameScreen(this));
 	}
 
 	@Override
