@@ -50,6 +50,15 @@ func open(args: Dictionary) -> void:
 	_pause = PauseMenu.new()
 	_pause.visible = false
 	_ui.add_child(_pause)
+	if Game.debug_show != "":
+		await get_tree().create_timer(4.0).timeout
+		if Game.debug_show == "perks":
+			world.phase = World.Phase.WAITING
+			_on_hour_cleared()
+		elif Game.debug_show == "over":
+			run.hull = 1
+			world.ship.invulnerable = 0.0
+			world.ship.hurt(world.ship.pos + Vector2.ONE)
 
 
 func _exit_tree() -> void:

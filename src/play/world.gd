@@ -435,6 +435,8 @@ func _process(delta: float) -> void:
 			left -= dt
 	if not demo:
 		_update_audio()
+		if Game.autoplay and Engine.get_process_frames() % 300 == 0:
+			print("fps %d, things %d, missiles %d, shots %d, sparks %d" % [Engine.get_frames_per_second(), enemies.size(), missiles.count, shots.list.size(), fx.particles.size()])
 	_camera.position = _camera_target() + fx.offset
 	_update_post()
 	floor_pop = maxf(floor_pop - delta * 4.0, 0.0)
@@ -497,7 +499,7 @@ func _step(dt: float) -> void:
 func _step_arena(dt: float) -> void:
 	var goal := arena_full
 	if _shrink and phase == Phase.FIGHT:
-		var shrunk := arena.size - Vector2(Balance.SHRINK_SPEED, Balance.SHRINK_SPEED * 0.55) * dt * 2.0
+		var shrunk := arena.size - Vector2(Balance.SHRINK_SPEED, Balance.SHRINK_SPEED * 0.55) * dt
 		goal = Vector2(maxf(shrunk.x, arena_full.x * Balance.SHRINK_LIMIT), maxf(shrunk.y, arena_full.y * Balance.SHRINK_LIMIT))
 		arena.size = goal
 	else:

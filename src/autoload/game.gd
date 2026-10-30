@@ -42,6 +42,8 @@ var start_perks: Array = []
 var fixed_seed := -1
 ## `--mode=graveyard` starts on that shift.
 var start_mode := ""
+## `--show=perks` or `--show=over`: brings that up a moment into the run, to look at.
+var debug_show := ""
 ## `--no-save`: for a test that plays like a person, without touching their save.
 var no_save := false
 

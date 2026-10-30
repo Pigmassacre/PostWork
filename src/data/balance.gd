@@ -85,8 +85,8 @@ const NO_HIT_BONUS := 2000
 # --- bumpers and shrinking walls ---------------------------------------------
 const BUMPER_RADIUS := 8.0
 const BUMPER_KICK := 430.0
-const SHRINK_SPEED := 5.0
-const SHRINK_LIMIT := 0.55
+const SHRINK_SPEED := 3.0
+const SHRINK_LIMIT := 0.6
 
 # --- the graveyard shift, per hour past midnight --------------------------------
 const GRAVEYARD_HP := 0.2
