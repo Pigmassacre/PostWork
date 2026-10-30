@@ -19,7 +19,12 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch:
 		var at := _to_local(event.position)
 		if event.pressed:
-			if at.x < size.x * 0.5 and _stick_finger < 0:
+			if at.x > size.x - 24.0 and at.y < 24.0:
+				var press := InputEventAction.new()
+				press.action = "pause"
+				press.pressed = true
+				Input.parse_input_event(press)
+			elif at.x < size.x * 0.5 and _stick_finger < 0:
 				_stick_finger = event.index
 				_stick_from = at
 			elif _smask_finger < 0:

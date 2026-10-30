@@ -8,7 +8,7 @@ const CARS := 10
 const SPACING := 13.0
 const TRAIL_STEP := 2.0
 const CRUISE := 120.0
-const EXPRESS := 330.0
+const EXPRESS := 280.0
 
 var cars: Array[Enemy] = []
 var _trail := PackedVector2Array()
@@ -53,7 +53,7 @@ func enter() -> void:
 	kind = "commute"
 	sprite = "train_head"
 	var toughness := world.run.toughness()
-	max_hp = 170.0 * toughness
+	max_hp = 300.0 * toughness
 	hp = max_hp
 	radius = 7.0
 	score = 3000
@@ -72,7 +72,7 @@ func enter() -> void:
 		car.sprite = "train_car"
 		car.train = self
 		car.index = i
-		car.max_hp = 30.0 * toughness
+		car.max_hp = 45.0 * toughness
 		car.hp = car.max_hp
 		car.radius = 6.0
 		car.score = 300
@@ -137,10 +137,10 @@ func _steer(dt: float) -> void:
 			world.fx.shake(3.0)
 		return
 	else:
-		_speed = move_toward(_speed, CRUISE * (1.5 if cars.is_empty() else 1.0), 200.0 * dt)
+		_speed = move_toward(_speed, CRUISE * (1.2 if cars.is_empty() else 1.0), 200.0 * dt)
 		_plan -= dt
 		if _plan <= 0.0:
-			_plan = world.rng.randf_range(4.5, 6.5) * (0.65 if cars.is_empty() else 1.0)
+			_plan = world.rng.randf_range(4.5, 6.5) * (0.85 if cars.is_empty() else 1.0)
 			_aim_left = 1.0
 			world.sfx("warning", -6.0)
 	# Back into the floor if it's about to leave it.
@@ -153,8 +153,7 @@ func _steer(dt: float) -> void:
 
 func car_lost(car: Enemy) -> void:
 	cars.erase(car)
-	for i in 2:
-		world.add_kind("tadpole", car.pos)
+	world.add_kind("tadpole", car.pos)
 	if cars.is_empty():
 		targetable = true
 		world.say_word("THE LAST CARRIAGE", Color("fbf236"))

@@ -13,6 +13,8 @@ var _over := false
 
 
 func open(args: Dictionary) -> void:
+	# The root keeps running under a pause; this mustn't.
+	process_mode = Node.PROCESS_MODE_PAUSABLE
 	run = Game.new_run(args.get("mode", Run.EVENING))
 	world = World.new()
 	world.setup(run)
@@ -30,8 +32,6 @@ func open(args: Dictionary) -> void:
 	_post.shader = POST_SHADER
 	rect.material = _post
 	post_layer.add_child(rect)
-	_apply_settings()
-	Game.settings_changed.connect(_apply_settings)
 	var layer := CanvasLayer.new()
 	layer.layer = 10
 	add_child(layer)
@@ -52,11 +52,6 @@ func open(args: Dictionary) -> void:
 	_ui.add_child(_pause)
 
 
-func _apply_settings() -> void:
-	_post.set_shader_parameter("scanlines", 1.0 if Game.settings.scanlines else 0.0)
-	_post.set_shader_parameter("pixel_height", get_viewport().get_visible_rect().size.y)
-
-
 func _exit_tree() -> void:
 	Audio.set_engine(0.0, 1.0)
 	Inputs.touch_move = Vector2.ZERO
@@ -64,14 +59,18 @@ func _exit_tree() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("pause") and not _over and not get_tree().paused:
+	if event.is_action_pressed("pause") and _can_pause():
 		get_viewport().set_input_as_handled()
 		_pause.open()
 
 
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and _pause and not get_tree().paused and not _over and not Game.autoplay:
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and _pause and _can_pause() and not Game.autoplay:
 		_pause.open()
+
+
+func _can_pause() -> bool:
+	return not _over and not get_tree().paused and world.phase != World.Phase.WAITING
 
 
 func _on_hint(id: String) -> void:

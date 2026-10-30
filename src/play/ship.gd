@@ -141,7 +141,7 @@ func _let_go() -> void:
 	world.fx.shake(2.5 + smask_power * 3.0)
 	world.fx.ring(pos, 18.0 + 16.0 * smask_power, 0.22, Color("fbf236"))
 	world.fx.ripple(pos, 0.5 * smask_power + 0.25)
-	Inputs.rumble(0.3 + smask_power * 0.3)
+	world.rumble(0.3 + smask_power * 0.3)
 	if run.has("echo"):
 		world.missiles.salvo_all(self)
 
@@ -185,7 +185,7 @@ func _fire(dt: float) -> void:
 	if targets.is_empty():
 		return
 	salvo_clock = Balance.SALVO_TIME
-	var width := Balance.SALVO_WIDTH + 2 * run.level("twin")
+	var width := Balance.SALVO_WIDTH + run.level("twin")
 	for i in mini(width, targets.size()):
 		robin = (robin + 1) % targets.size()
 		world.missiles.launch(self, targets[robin])
@@ -243,7 +243,7 @@ func _wall_smask(normal: Vector2) -> void:
 	world.fx.hitstop(0.05 + smask_power * 0.05)
 	world.fx.wall_hit = 1.0
 	world.sfx("wall_smask", -2.0)
-	Inputs.rumble(0.6 + smask_power * 0.4)
+	world.rumble(0.6 + smask_power * 0.4)
 	_end_smask()
 
 
@@ -265,7 +265,7 @@ func hurt(from: Vector2) -> bool:
 	world.fx.ring(pos, Balance.HIT_SHOVE_REACH, 0.3, Color("d95763"))
 	world.fx.burst(pos, Color("639bff"), 18, 170.0, world.rng)
 	world.sfx("hurt")
-	Inputs.rumble(1.0)
+	world.rumble(1.0)
 	world.shove_from(pos, Balance.HIT_SHOVE_REACH, Balance.HIT_SHOVE)
 	if run.hull <= 0:
 		if run.has("second") and not run.second_wind_used:

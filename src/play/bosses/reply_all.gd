@@ -4,9 +4,9 @@ extends Enemy
 ## ones, and the count on the floor goes UP. Rings of little mails all the while.
 
 const SIZES := {
-	3: {"sprite": "mail_big", "hp": 150.0, "radius": 13.0, "thrust": 40.0, "score": 1500, "coins": 10},
-	2: {"sprite": "mail_mid", "hp": 60.0, "radius": 7.0, "thrust": 90.0, "score": 500, "coins": 4},
-	1: {"sprite": "mail_small", "hp": 12.0, "radius": 4.0, "thrust": 170.0, "score": 150, "coins": 1},
+	3: {"sprite": "mail_big", "hp": 420.0, "radius": 13.0, "thrust": 40.0, "score": 1500, "coins": 10},
+	2: {"sprite": "mail_mid", "hp": 160.0, "radius": 7.0, "thrust": 90.0, "score": 500, "coins": 4},
+	1: {"sprite": "mail_small", "hp": 24.0, "radius": 4.0, "thrust": 170.0, "score": 150, "coins": 1},
 }
 
 var size := 3

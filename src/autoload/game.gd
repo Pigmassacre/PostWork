@@ -12,7 +12,6 @@ const DEFAULTS := {
 	"sounds": 0.8,
 	"shake": 1.0,
 	"flashes": true,
-	"scanlines": true,
 	"spare_hull": false,
 	"fullscreen": false,
 	"rumble": true,

@@ -23,32 +23,34 @@ func think(dt: float) -> void:
 	var closest := INF
 	var nearest: Enemy = null
 	var shell: Enemy = null
+	# It has a lot of momentum: what matters is where it and they'll be in a moment.
+	var soon := ship.pos + ship.vel * 0.25
 	for e in world.enemies:
 		if not e.alive:
 			continue
-		var d := ship.pos - e.pos
+		var d := soon - (e.pos + e.vel * 0.25)
 		var dist := d.length()
 		var clear := dist - e.radius
-		if e.harmful and clear < 58.0 and dist > 0.01:
-			push += d / dist * (58.0 - clear) * 0.09
+		if e.harmful and clear < 70.0 and dist > 0.01:
+			push += d / dist * (70.0 - clear) * 0.12
 		if clear < closest:
 			closest = clear
 			nearest = e
 		if e.shelled and (shell == null or dist < ship.pos.distance_to(shell.pos)):
 			shell = e
 	for s in world.shots.list:
-		var d: Vector2 = ship.pos - s.pos
+		var d: Vector2 = soon - s.pos
 		var dist := d.length()
 		if dist < 40.0 and dist > 0.01:
 			# Across its way, not back along it.
 			var across: Vector2 = s.vel.orthogonal().normalized()
 			push += across * signf(across.dot(d) + 0.01) * (40.0 - dist) * 0.14
-	_avoid_hands(ship, push)
+	push += _avoid_hands(soon)
 	# The walls push back.
-	var inner: Rect2 = world.arena.grow(-34.0)
+	var inner: Rect2 = world.arena.grow(-30.0)
 	var wall := Vector2.ZERO
-	wall.x = minf(ship.pos.x - inner.position.x, 0.0) + maxf(ship.pos.x - inner.end.x, 0.0)
-	wall.y = minf(ship.pos.y - inner.position.y, 0.0) + maxf(ship.pos.y - inner.end.y, 0.0)
+	wall.x = minf(soon.x - inner.position.x, 0.0) + maxf(soon.x - inner.end.x, 0.0)
+	wall.y = minf(soon.y - inner.position.y, 0.0) + maxf(soon.y - inner.end.y, 0.0)
 	push -= wall * 0.09
 	for b in world.bumpers:
 		var d: Vector2 = ship.pos - b.pos
@@ -71,8 +73,18 @@ func think(dt: float) -> void:
 	_think_smask(dt, ship, shell, nearest, closest)
 
 
-func _avoid_hands(ship: Ship, _push: Vector2) -> void:
-	pass
+## Keeps clear of what's lethal and not a thing: the clock's hands.
+func _avoid_hands(soon: Vector2) -> Vector2:
+	var away := Vector2.ZERO
+	var hazards: Array = world.boss.call("hazards") if world.boss != null and world.boss.has_method("hazards") else []
+	for line: Array in hazards:
+		var a: Vector2 = line[0]
+		var ab: Vector2 = line[1] - a
+		var at: Vector2 = a + ab * clampf((soon - a).dot(ab) / ab.length_squared(), 0.0, 1.0)
+		var d := soon - at
+		if d.length() < 34.0:
+			away += d.normalized() * (34.0 - d.length()) * 0.2
+	return away
 
 
 func _think_smask(dt: float, ship: Ship, shell: Enemy, nearest: Enemy, closest: float) -> void:

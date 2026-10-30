@@ -127,7 +127,7 @@ func _froglet(dt: float) -> void:
 	desired_angle = to_ship().angle()
 	if clock <= 0.0:
 		clock = world.rng.randf_range(0.7, 1.1)
-		vel += Vector2.from_angle(desired_angle) * world.rng.randf_range(170.0, 220.0)
+		vel += Vector2.from_angle(desired_angle) * world.rng.randf_range(100.0, 130.0)
 		if world.rng.randf() < 0.3:
 			world.sfx("hop", -16.0, world.rng.randf_range(0.9, 1.2))
 
@@ -223,6 +223,11 @@ func damage(amount: float, how: String) -> bool:
 			world.sfx("clank", -14.0, world.rng.randf_range(0.9, 1.2))
 			return false
 		_crack()
+		return false
+	# A boss's part that isn't up yet: it takes nothing, and sounds like it.
+	if not targetable:
+		flash = 0.5
+		world.sfx("clank", -8.0)
 		return false
 	hp -= amount
 	flash = 1.0

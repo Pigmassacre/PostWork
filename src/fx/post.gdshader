@@ -1,14 +1,12 @@
 shader_type canvas_item;
 // Over the whole picture: rings of shock pushing the pixels about, colours coming
-// apart when something big happens, a flash, the scanlines of an old set.
+// apart when something big happens, a flash, a little vignette.
 
 uniform sampler2D screen: hint_screen_texture, filter_nearest, repeat_disable;
 uniform vec4 ripples[4];
 uniform float aspect = 1.777;
 uniform float aberration = 0.0;
 uniform vec4 flash_color = vec4(0.0);
-uniform float scanlines = 0.0;
-uniform float pixel_height = 270.0;
 
 void fragment() {
 	vec2 uv = SCREEN_UV;
@@ -31,12 +29,8 @@ void fragment() {
 		color = texture(screen, uv).rgb;
 	}
 	color = mix(color, flash_color.rgb, flash_color.a * 0.5);
-	// A little vignette, and the scanlines.
+	// A little vignette.
 	vec2 v = SCREEN_UV - 0.5;
 	color *= 1.0 - dot(v, v) * 0.55;
-	if (scanlines > 0.0) {
-		float line = fract(SCREEN_UV.y * pixel_height);
-		color *= 1.0 - scanlines * 0.14 * smoothstep(0.55, 1.0, line);
-	}
 	COLOR = vec4(color, 1.0);
 }

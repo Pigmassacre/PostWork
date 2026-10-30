@@ -20,7 +20,6 @@ func _ready() -> void:
 	_slider(column, "Sounds", "sounds", 0.1)
 	_slider(column, "Screen shake", "shake", 0.25)
 	_toggle(column, "Bright flashes", "flashes")
-	_toggle(column, "Scanlines", "scanlines")
 	_toggle(column, "Spare hull (+2, next run, no high scores)", "spare_hull")
 	_toggle(column, "Rumble", "rumble")
 	if not OS.has_feature("web"):

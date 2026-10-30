@@ -61,7 +61,7 @@ class Numeral extends Enemy:
 func enter() -> void:
 	kind = "overtime"
 	var toughness := world.run.toughness()
-	max_hp = 520.0 * toughness
+	max_hp = 1100.0 * toughness
 	hp = max_hp
 	radius = FACE_RADIUS
 	score = 20000
@@ -79,7 +79,7 @@ func enter() -> void:
 		n.kind = "numeral"
 		n.boss = self
 		n.number = 12 if i == 0 else i
-		n.max_hp = 44.0 * toughness
+		n.max_hp = 70.0 * toughness
 		n.hp = n.max_hp
 		n.radius = 8.0
 		n.score = 800
@@ -140,6 +140,14 @@ func _hands_hurt() -> void:
 			if ship.is_smasking():
 				continue
 			ship.hurt(a + ab * t)
+
+
+## For the autopilot: the hands, as lines.
+func hazards() -> Array:
+	var lines := []
+	for h: Array in _hands():
+		lines.append([pos, _hand_end(h[0], h[1])])
+	return lines
 
 
 ## Each hand: its angle, its length, its colour.
@@ -204,7 +212,7 @@ func on_death() -> void:
 
 
 func tex() -> Texture2D:
-	return Sprites.get_tex("glow")
+	return null
 
 
 func draw_shadow(c: CanvasItem) -> void:

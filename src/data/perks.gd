@@ -3,7 +3,7 @@ class_name Perks
 ## `most` is how many you can have of it.
 
 const ALL := {
-	"twin": {"name": "TWIN TUBES", "text": "Salvos reach two more targets.", "most": 3, "color": "5fcde4"},
+	"twin": {"name": "TWIN TUBES", "text": "Salvos reach one more target each.", "most": 3, "color": "5fcde4"},
 	"warhead": {"name": "BIG WARHEADS", "text": "Missiles hit a third harder.", "most": 3, "color": "df7126"},
 	"frag": {"name": "FRAGMENTS", "text": "Missiles burst, and hurt what's close.", "most": 2, "color": "fbf236"},
 	"track": {"name": "GOOD MANNERS", "text": "Missiles fly through walls and turn tighter.", "most": 1, "color": "5fcde4"},

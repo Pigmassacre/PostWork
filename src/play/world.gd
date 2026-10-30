@@ -104,6 +104,8 @@ func set_post_material(material: ShaderMaterial) -> void:
 
 func start_hour() -> void:
 	var hour := run.hour()
+	if Game.autoplay and not demo:
+		print("%s %s: run time %.1f, score %d, hull %d, kills %d, perks %s" % [Hours.clock_text(int(hour.clock)), hour.name, run.time, run.score, run.hull, run.kills, run.perks])
 	run.hits_this_hour = 0
 	run.hour_time = 0.0
 	run.minutes = 0
@@ -247,7 +249,8 @@ func kill(e: Enemy, how: String) -> void:
 	e.on_death()
 	var earned := run.add_kill(e.score)
 	var big := e.radius >= 6.0 or e.is_boss_part()
-	fx.shards(e.tex(), e.pos, e.vel, rng)
+	if e.tex() != null:
+		fx.shards(e.tex(), e.pos, e.vel, rng)
 	fx.burst(e.pos, Color("fbf236"), 8 if not big else 22, 150.0 if not big else 240.0, rng)
 	fx.ring(e.pos, 16.0 if not big else 40.0, 0.22, Color("df7126"))
 	fx.shake(0.7 if not big else 4.0)
@@ -268,7 +271,7 @@ func kill(e: Enemy, how: String) -> void:
 		fx.hitstop(0.06)
 		ship.on_smask_kill()
 		sfx("smask_hit", -2.0)
-		Inputs.rumble(0.5)
+		rumble(0.5)
 	if e.counted:
 		remaining -= 1
 		floor_pop = 1.0
@@ -311,7 +314,7 @@ func _on_zero(at: Vector2) -> void:
 	fx.ring(at, 240.0, 0.8, Color("fbf236"))
 	sfx("boom_big", 0.0, 0.8)
 	sfx("zero", 0.0)
-	Inputs.rumble(1.0)
+	rumble(1.0)
 	banner_wanted.emit("ZERO", lines, Color("fbf236"))
 
 
@@ -373,11 +376,13 @@ func finishing() -> bool:
 
 ## The player's chosen and the next hour's to begin.
 func next_hour() -> void:
-	run.hour_index += 1
-	if run.hour_index >= Hours.EVENING.size() and run.mode == Run.EVENING:
+	if run.hour_index + 1 >= Hours.EVENING.size() and run.mode == Run.EVENING:
 		evening_over.emit()
 		phase = Phase.OVER
 		return
+	run.hour_index += 1
+	# A coffee break, on the house.
+	run.hull = mini(run.hull + 1, run.max_hull)
 	start_hour()
 
 
@@ -389,6 +394,11 @@ func say_word(text: String, color: Color) -> void:
 func sfx(sound: String, volume_db := 0.0, pitch := 1.0) -> void:
 	if not demo:
 		Audio.play(sound, volume_db, pitch)
+
+
+func rumble(amount: float) -> void:
+	if not demo:
+		Inputs.rumble(amount)
 
 
 func is_invincible() -> bool:
@@ -603,7 +613,7 @@ func _contacts() -> void:
 				fx.shake(2.0)
 				fx.burst(e.pos, Color.WHITE, 6, 200.0, rng)
 				sfx("clank" if not e.damage(ship.smask_damage(), "smask") else "hit", -8.0)
-		elif ramming and e.max_hp <= 10.0 and not e.shelled and e.targetable:
+		elif ramming and e.max_hp <= 14.0 and not e.shelled and e.targetable:
 			e.damage(e.hp + 1.0, "smask")
 		else:
 			ship.hurt(e.pos)
@@ -628,7 +638,7 @@ func _step_bumpers(dt: float) -> void:
 			fx.ring(b.pos, 20.0, 0.2, Color("fbf236"))
 			fx.shake(2.0)
 			sfx("bumper", -3.0, rng.randf_range(0.95, 1.1))
-			Inputs.rumble(0.4)
+			rumble(0.4)
 		for e in enemies:
 			if not e.alive or not e.pushy:
 				continue
@@ -751,6 +761,8 @@ func _paint_add(c: CanvasItem) -> void:
 		Sprites.draw(c, Sprites.get_tex("ship3"), ship.pos, ship.angle + PI * 0.5, Color(1, 1, 1, 0.8))
 	elif ship.state == Ship.State.CHARGING:
 		Sprites.draw(c, Sprites.get_tex("ship3"), ship.pos, ship.angle + PI * 0.5, Color(1, 0.9, 0.3, ship.charge * 0.6))
+	elif ship.state == Ship.State.FLYING:
+		Sprites.draw(c, Sprites.get_tex("glow"), ship.pos, 0.0, Color(0.6, 0.75, 1.0, 0.16), 1.2)
 	fx.draw_add(c)
 
 

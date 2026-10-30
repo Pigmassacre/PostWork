@@ -9,7 +9,8 @@ extends Node
 ## (`--invincible` so it can't lose), `--speed=4` runs it faster, `--shots=1.5,4,9`
 ## saves a screenshot to shots/ at each of those seconds (of game time) and quits
 ## after the last, `--shot-name=x` names them, `--size=1280x720` sizes the window,
-## `--quit-after=60` quits after so many seconds, `--deck` pretends to be a Steam
+## `--quit-after=60` quits after so many seconds, `--input-test` plays the controls
+## by sending real input events (src/debug/input_test.gd), `--deck` pretends to be a Steam
 ## Deck, and `--no-save` leaves the save alone.
 
 const SCREENS := {
@@ -79,6 +80,9 @@ func _ready() -> void:
 			_shot_name = arg.trim_prefix("--shot-name=")
 		elif arg.begins_with("--shots="):
 			shots = Array(arg.trim_prefix("--shots=").split(",")).map(func(t: String) -> float: return float(t))
+		elif arg == "--input-test":
+			Game.no_save = true
+			add_child(preload("res://src/debug/input_test.gd").new())
 		elif arg.begins_with("--quit-after="):
 			quit_after = float(arg.trim_prefix("--quit-after="))
 	show_screen(first)

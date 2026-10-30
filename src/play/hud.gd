@@ -79,7 +79,7 @@ func _draw() -> void:
 	var clock_width := heading.get_string_size(clock, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.HEADING_SIZE).x
 	_text(Vector2(floorf((width - clock_width) * 0.5), 14), clock, heading, UI.HEADING_SIZE, clock_color)
 	# The multiplier, top right, with its fuse beneath it.
-	var mult := "x%d" % run.multiplier()
+	var mult := "X%d" % run.multiplier()
 	var mult_width := heading.get_string_size(mult, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.HEADING_SIZE).x
 	var mult_color := UI.INK.lerp(UI.ACCENT, minf(_mult_pop + float(run.multiplier() - 1) / 8.0, 1.0))
 	_text(Vector2(width - mult_width - 5, 14 - _mult_pop * 2.0), mult, heading, UI.HEADING_SIZE, mult_color)

@@ -4,14 +4,15 @@ class_name Balance
 ## pixels per second.
 
 # --- flying ------------------------------------------------------------------
-## The original's propel of 6, and its drag of 0.985 a frame, make a top speed of about 397.
-const THRUST := 360.0
-const DRAG := 0.907
+## The original's propel of 6 (360) and drag of 0.985 a frame (0.907) gave a top speed of
+## about 397, and this keeps it, but with more grip: its floors are a lot busier.
+const THRUST := 480.0
+const DRAG := 1.2
 ## The original's: how fast the ship (and everything else) turns to where it wants to go.
 const TURN := 16.0
 ## The original's stick had to be pushed this far before the ship turned.
 const STICK_DEADZONE := 0.33
-const SHIP_RADIUS := 4.0
+const SHIP_RADIUS := 3.5
 const START_HULL := 3
 const MAX_HULL := 6
 const INVULNERABLE_AFTER_HIT := 1.4
@@ -24,7 +25,7 @@ const WALL_KNOCK := 40.0
 ## The original's: a salvo every eighth of a second.
 const SALVO_TIME := 0.125
 ## How many targets a salvo can go to; they take turns when there are more.
-const SALVO_WIDTH := 4
+const SALVO_WIDTH := 2
 const MISSILE_LIMIT := 360
 ## The original's propel of 14.
 const MISSILE_THRUST := 840.0
@@ -77,7 +78,7 @@ const COFFEE_CHANCE := 0.012
 const COFFEE_LOW_HULL := 1
 const COFFEE_LOW_CHANCE := 0.04
 const CLEAR_BONUS := 1000
-const QUICK_BONUS_TIME := 90.0
+const QUICK_BONUS_TIME := 75.0
 const QUICK_BONUS := 3000
 const NO_HIT_BONUS := 2000
 
@@ -96,6 +97,6 @@ const SHOT_RADIUS := 2.0
 const SHOT_LIFE := 7.0
 const SPAWN_WARNING := 0.75
 const SPAWN_MARGIN := 12.0
-const SPAWN_AWAY_FROM_SHIP := 70.0
+const SPAWN_AWAY_FROM_SHIP := 90.0
 ## Up to this many things are shoved apart per step, so they don't stack.
 const SEPARATION := 90.0
