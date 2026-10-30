@@ -53,7 +53,7 @@ func enter() -> void:
 	kind = "commute"
 	sprite = "train_head"
 	var toughness := world.run.toughness()
-	max_hp = 300.0 * toughness
+	max_hp = 220.0 * toughness
 	hp = max_hp
 	radius = 7.0
 	score = 3000

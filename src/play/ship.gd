@@ -186,7 +186,8 @@ func _fire(dt: float) -> void:
 		return
 	salvo_clock = Balance.SALVO_TIME
 	var width := Balance.SALVO_WIDTH + run.level("twin")
-	for i in mini(width, targets.size()):
+	# The whole salvo goes out, however few there are to share it.
+	for i in width:
 		robin = (robin + 1) % targets.size()
 		world.missiles.launch(self, targets[robin])
 	world.sfx("fire", -14.0, world.rng.randf_range(0.9, 1.15))

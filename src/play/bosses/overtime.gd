@@ -61,7 +61,7 @@ class Numeral extends Enemy:
 func enter() -> void:
 	kind = "overtime"
 	var toughness := world.run.toughness()
-	max_hp = 1100.0 * toughness
+	max_hp = 1300.0 * toughness
 	hp = max_hp
 	radius = FACE_RADIUS
 	score = 20000

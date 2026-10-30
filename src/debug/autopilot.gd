@@ -101,9 +101,9 @@ func _think_smask(dt: float, ship: Ship, shell: Enemy, nearest: Enemy, closest: 
 	smask = false
 	_boredom += dt
 	var wants := false
-	if shell != null and ship.pos.distance_to(shell.pos) < 120.0 and ship.cooldown <= 0.0:
+	if shell != null and closest > 42.0 and ship.pos.distance_to(shell.pos) < 120.0 and ship.cooldown <= 0.0:
 		wants = true
-	elif nearest != null and closest > 30.0 and closest < 90.0 and _boredom > 4.0 and ship.cooldown <= 0.0:
+	elif nearest != null and closest > 42.0 and closest < 90.0 and _boredom > 4.0 and ship.cooldown <= 0.0:
 		wants = true
 	if wants:
 		smask = true

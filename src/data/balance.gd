@@ -13,7 +13,7 @@ const TURN := 16.0
 ## The original's stick had to be pushed this far before the ship turned.
 const STICK_DEADZONE := 0.33
 const SHIP_RADIUS := 3.5
-const START_HULL := 3
+const START_HULL := 4
 const MAX_HULL := 6
 const INVULNERABLE_AFTER_HIT := 1.4
 const HIT_SHOVE_REACH := 60.0
