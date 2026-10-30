@@ -1,0 +1,17 @@
+SUPER SMASK ZERO
+
+A game by Pigmassacre.
+
+It began in 2016 as a libGDX game called PostWork, built after work and never
+finished. The ship, the froglet, the starball, the yellowcrab, the floor, the
+drift of it all and the logo's font are the original ones.
+
+Made with Godot Engine (godotengine.org). Its notices are in GODOT_COPYRIGHT.txt.
+
+Lettering: Vermin Vibes 1989, by Andrew McCluskey, under Creative Commons
+Attribution Share Alike 3.0 (see VerminVibes-CC-BY-SA.txt).
+
+Music: Ovani Sound. 80s Music Pack and Electronic Music Pack Vol. 5.
+
+Sounds: Ovani Sound. Retro Gaming Sound FX Pack and Casual & Mobile Sound FX
+Pack Vol. 1.
