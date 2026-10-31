@@ -71,6 +71,11 @@ func _draw() -> void:
 	draw_rect(Rect2(Vector2.ZERO, size), Color(UI.INK, 0.72 * k))
 	var mid := Vector2(size.x * 0.5, 130.0)
 	UI.burst(self, mid, 90.0, 1200.0 * k, 24, _t * 0.2, Color(UI.hue(0.5), 0.13))
+	# Drawn here so that they stay behind every card.
+	for c in _cards:
+		if c._lit > 0.0 and c._gone <= 0.0:
+			var centre := c.position + c.size * 0.5 + Vector2(0, c._lit * PerkCard.LIFT)
+			UI.burst(self, centre, 240.0, 460.0 + 70.0 * c._lit, 16, _t * 0.8, Color(UI.glow(UI.YELLOW, 1.2), 0.35 * c._lit))
 	UI.tilt(self, mid + Vector2((1.0 - k) * -2000.0, 0), -0.02, 1.0 + (1.0 - UI.back_out(_t / 0.3)) * 1.2, 0.0)
 	UI.plate(self, Rect2(-500, -68, 1000, 136), UI.INK, UI.glow(UI.YELLOW, 1.5), 0.35)
 	UI.tilt(self, mid + Vector2((1.0 - k) * -2000.0, 0), -0.02, 1.0 + (1.0 - UI.back_out(_t / 0.3)) * 1.2, -0.14)
@@ -85,7 +90,7 @@ func _choose(id: String) -> void:
 	_done = true
 	Audio.play("perk", -2.0)
 	UI.fx.flash(UI.WHITE, 0.5)
-	UI.fx.shake(30.0)
+	UI.fx.shake(14.0)
 	for c in _cards:
 		if c.id == id:
 			c.chosen()
@@ -99,6 +104,7 @@ func _choose(id: String) -> void:
 
 class PerkCard extends Button:
 	const SIZE := Vector2(480, 620)
+	const LIFT := -34.0
 
 	var id := ""
 	var taken := 0
@@ -150,7 +156,7 @@ class PerkCard extends Button:
 		if delay <= 0.0 and _in < 1.0:
 			_in = minf(_in + delta / 0.28, 1.0)
 			if _in >= 1.0:
-				UI.fx.shake(10.0)
+				UI.fx.shake(4.0)
 				Audio.play("hit", -7.0, 0.8)
 		_lit = move_toward(_lit, 1.0 if has_focus() else 0.0, delta * 9.0)
 		_pop_vel += (-_pop * 240.0 - _pop_vel * 15.0) * delta
@@ -163,15 +169,13 @@ class PerkCard extends Button:
 		if _in <= 0.0:
 			return
 		var mid := size * 0.5
-		var lift := _lit * -34.0
+		var lift := _lit * LIFT
 		var at := mid + Vector2(0, (1.0 - UI.back_out(_in, 1.4)) * 1300.0 + lift) + _throw * _gone * _gone * 4.0
 		var rot := tilt * (1.0 - _lit) + (1.0 - _in) * tilt * 8.0 + _gone * 5.0 * signf(_throw.x + 0.01)
 		var k := 1.0 + _lit * 0.07 + _pop * 0.4
 		draw_set_transform_matrix(Transform2D(rot, Vector2(k, k), 0.0, at))
 		var r := Rect2(-mid, size)
 		var color := _color()
-		if _lit > 0.0:
-			UI.burst(self, Vector2.ZERO, 240.0, 460.0 + 70.0 * _lit, 16, _time * 0.8, Color(UI.glow(UI.YELLOW, 1.8), 0.55 * _lit))
 		UI.plate(self, r, UI.INK.lerp(UI.YELLOW, _lit), UI.glow(color.lerp(UI.WHITE, _lit), 1.0 + _lit * 1.2), 0.06)
 		var ink := UI.WHITE.lerp(UI.INK, _lit)
 		# The icon, huge, in its own big pixels.

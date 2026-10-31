@@ -92,12 +92,13 @@ class TitleSlab extends Control:
 	func _draw() -> void:
 		var k := UI.cubic_out(_t)
 		var h := size.y
+		var bleed := UiFx.MOST_SHAKE + 10.0
 		var top := 930.0 * k
 		var bottom := 660.0 * k
 		for band: Array in [[56.0, UI.glow(UI.PINK, 1.25)], [34.0, UI.hue()], [14.0, UI.YELLOW]]:
 			var w: float = band[0]
-			UI.fill(self, PackedVector2Array([Vector2(-10, -10), Vector2(top + w, -10), Vector2(bottom + w, h + 10), Vector2(-10, h + 10)]), band[1])
-		UI.fill(self, PackedVector2Array([Vector2(-10, -10), Vector2(top, -10), Vector2(bottom, h + 10), Vector2(-10, h + 10)]), UI.INK)
+			UI.fill(self, PackedVector2Array([Vector2(-bleed, -bleed), Vector2(top + w, -bleed), Vector2(bottom + w, h + bleed), Vector2(-bleed, h + bleed)]), band[1])
+		UI.fill(self, PackedVector2Array([Vector2(-bleed, -bleed), Vector2(top, -bleed), Vector2(bottom, h + bleed), Vector2(-bleed, h + bleed)]), UI.INK)
 		UI.outlined(self, UI.body_font(), Vector2(30, h - 12.0), _version, 20, UI.DIM)
 
 

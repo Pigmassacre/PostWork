@@ -33,7 +33,7 @@ func show_for(run: Run, place: int) -> void:
 		_buttons[i].alignment = HORIZONTAL_ALIGNMENT_CENTER
 		_buttons[i].disabled = true
 		_buttons[i].pop_in(0.9 + i * 0.08)
-	UI.fx.shake(40.0)
+	UI.fx.shake(18.0)
 	Audio.play("boom_big", -2.0, 0.7)
 	await get_tree().create_timer(0.8).timeout
 	if not is_inside_tree():
@@ -50,7 +50,7 @@ func _process(delta: float) -> void:
 	if _t >= 1.0 and not _rolled:
 		_rolled = true
 		UI.fx.sparks(Vector2(size.x * 0.5, 540.0), UI.YELLOW, 30, 1200.0)
-		UI.fx.shake(20.0)
+		UI.fx.shake(8.0)
 		if _place == 0:
 			UI.fx.flash(UI.YELLOW, 0.5)
 			Audio.play("zero", -2.0)

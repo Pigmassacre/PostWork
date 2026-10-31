@@ -35,7 +35,7 @@ func reveal() -> void:
 	_t = 0.0
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if UI.fx:
-		UI.fx.shake(14.0)
+		UI.fx.shake(4.0)
 
 
 func _process(delta: float) -> void:

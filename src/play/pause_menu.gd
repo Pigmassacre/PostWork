@@ -48,7 +48,7 @@ func open() -> void:
 	Audio.muffle(0.75)
 	Audio.set_engine(0.0, 1.0)
 	Audio.play("tick", -4.0, 0.7)
-	UI.fx.shake(14.0)
+	UI.fx.shake(5.0)
 
 
 func close() -> void:

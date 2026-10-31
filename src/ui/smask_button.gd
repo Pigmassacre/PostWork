@@ -1,7 +1,7 @@
 class_name SmaskButton
 extends Button
 ## The menus' button: a slab that's dark until it's chosen, when yellow wipes across
-## it, it jumps out with a bounce, sparks fly and a sunburst turns behind it.
+## it, it jumps out with a bounce and sparks fly.
 ## Pressing it slams it. It draws everything itself. A row of the options is one of
 ## these too: `value` is what's shown on the right, `fill` a bar of segments.
 
@@ -69,7 +69,7 @@ func _on_press() -> void:
 	if UI.fx:
 		UI.fx.sparks(global_position + Vector2(indent, 0) + size * 0.5, accent, 22, 900.0)
 		UI.fx.ring(global_position + Vector2(indent, 0) + size * 0.5, 260.0, accent)
-		UI.fx.shake(16.0)
+		UI.fx.shake(6.0)
 
 
 func _process(delta: float) -> void:
@@ -99,11 +99,6 @@ func _draw() -> void:
 	draw_set_transform_matrix(Transform2D(0.0, Vector2(scale_now, scale_now), 0.0, at + mid))
 	var r := Rect2(-mid, size)
 	var focused := _lit > 0.0
-	if focused:
-		var turning := Time.get_ticks_msec() * 0.0015
-		# Small enough to keep off the rows either side.
-		var reach := size.y * 0.72
-		UI.burst(self, r.position + Vector2(-reach * 0.4, size.y * 0.5), reach * 0.45, reach * (0.75 + 0.25 * _lit), 10, turning, Color(UI.glow(UI.hue(0.45), 1.8), _lit))
 	UI.slab(self, Rect2(r.position + Vector2(8, 8), r.size), Color(0, 0, 0, 0.55))
 	UI.slab(self, r, UI.INK if not disabled else Color(UI.INK_SOFT, 0.6))
 	if focused:

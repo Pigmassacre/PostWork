@@ -103,13 +103,13 @@ func _land_letters() -> void:
 			_spins[i] = (1.0 if i % 2 == 0 else -1.0) * 3.0
 			_pop = 1.0
 			if UI.fx:
-				UI.fx.shake(10.0 + i * 3.0)
+				UI.fx.shake(5.0 + i)
 				UI.fx.sparks(_on_screen(_letter_centre(i)), UI.YELLOW, 12, 800.0)
 			Audio.play("hit", -7.0, 0.65 + i * 0.1)
 	if not _zero_landed and _time >= ZERO_AT + LAND_TIME:
 		_zero_landed = true
 		if UI.fx:
-			UI.fx.shake(22.0)
+			UI.fx.shake(10.0)
 			UI.fx.sparks(global_position + Vector2(620, 400), UI.hue(0.1), 26, 1100.0)
 		Audio.play("boom", -8.0, 0.8)
 
@@ -133,7 +133,6 @@ func _fly_ship(delta: float) -> void:
 			_hit[i] = 1.0
 			if UI.fx:
 				UI.fx.sparks(_on_screen(_letter_centre(i)), UI.YELLOW, 16, 1200.0)
-				UI.fx.shake(9.0)
 			Audio.play("hit", -9.0, 0.7 + i * 0.12)
 	if _pass >= 1.0:
 		_pass = -1.0

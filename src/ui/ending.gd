@@ -30,7 +30,7 @@ func open(args: Dictionary) -> void:
 	Audio.heat = 0.0
 	Audio.play_music("ending", 2.0)
 	UI.fx.flash(UI.WHITE, 1.0)
-	UI.fx.shake(40.0)
+	UI.fx.shake(18.0)
 	UI.fx.sparks(ui.size * 0.5, UI.YELLOW, 80, 1800.0)
 
 

@@ -24,7 +24,7 @@ func _process(delta: float) -> void:
 	if _t < 1.0:
 		_t = minf(_t + delta / 0.32, 1.0)
 		if _t >= 1.0 and UI.fx:
-			UI.fx.shake(18.0)
+			UI.fx.shake(8.0)
 	queue_redraw()
 
 

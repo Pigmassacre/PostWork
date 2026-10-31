@@ -49,7 +49,7 @@ func banner(big: String, small: String, color: Color) -> void:
 	_banner_color = color
 	_banner_time = BANNER_TIME
 	_banner_snapped = false
-	UI.fx.shake(26.0)
+	UI.fx.shake(14.0)
 
 
 func clear_banner() -> void:
@@ -302,7 +302,7 @@ func _draw_banner() -> void:
 		_banner_snapped = true
 		UI.fx.sparks(mid, UI.WHITE, 34, 1700.0)
 		UI.fx.ring(mid, 520.0, UI.glow(_banner_color, 1.0), 0.32)
-		UI.fx.shake(22.0)
+		UI.fx.shake(12.0)
 		UI.fx.flash(UI.WHITE, 0.35)
 		Audio.play("smask", -8.0, 1.5)
 	var slide := (1.0 - enter) * -2600.0

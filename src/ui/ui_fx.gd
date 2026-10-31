@@ -19,6 +19,9 @@ class Ring:
 	var total: float
 	var color: Color
 
+## The furthest it ever throws things, so what reaches a screen edge can reach past it.
+const MOST_SHAKE := 20.0
+
 var offset := Vector2.ZERO
 var _trauma := 0.0
 var _flash := 0.0
@@ -64,7 +67,7 @@ func flash(color: Color, amount: float) -> void:
 
 
 func shake(amount: float) -> void:
-	_trauma = minf(_trauma + amount * float(Game.settings.shake), 60.0)
+	_trauma = minf(_trauma + amount * float(Game.settings.shake), MOST_SHAKE)
 
 
 func _process(delta: float) -> void:
