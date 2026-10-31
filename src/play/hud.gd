@@ -119,12 +119,13 @@ func _draw_count() -> void:
 	var font_size := 300
 	var mid := view.world_to_ui(Vector2.ZERO)
 	var k := 1.0 + _count_pop * 0.1
-	var color := Color(UI.hue(0.5, 0.5), 0.13 + _count_pop * 0.3)
+	var color := Color(UI.hue(0.5, 0.25), 0.3 + _count_pop * 0.4)
 	if world.phase == World.Phase.CLEARED:
 		color = Color(UI.YELLOW, 0.55)
 	UI.tilt(self, mid, 0.0, k, -0.1)
 	var w := UI.text_width(font, text, font_size)
-	draw_string_outline(font, Vector2(-w * 0.5, font_size * 0.36), text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, 7, color)
+	draw_string(font, Vector2(-w * 0.5, font_size * 0.36), text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, Color(color, color.a * 0.3))
+	draw_string_outline(font, Vector2(-w * 0.5, font_size * 0.36), text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, 6, color)
 	UI.straight(self)
 
 
