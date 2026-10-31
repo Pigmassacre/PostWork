@@ -33,7 +33,7 @@ func _ready() -> void:
 	_ticker = Ticker.new()
 	_shaker.add_child(_ticker)
 	var logo := Logo.new()
-	logo.position = Vector2(44, 20)
+	logo.position = Vector2(44, 34)
 	logo.size = Vector2(800, 460)
 	_shaker.add_child(logo)
 	var column := VBoxContainer.new()

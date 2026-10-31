@@ -2,20 +2,23 @@ class_name Logo
 extends Control
 ## SUPER SMASK ZERO. The letters of SMASK slam down one by one on a comic star. Then the
 ## ship itself, in its big fat pixels, smashes through the word in one go, knocking every
-## letter flying, overshoots and settles back on the end of it, its trail left burning
-## through the letters: that's the logo. ZERO's a neon sign with a clock in its O. The whole lot
-## rocks two degrees either way over four seconds, as the original's start screen did.
+## letter flying, bursts out of the K and overshoots, and settles back on the end of the
+## word, its trail left burning through the letters: that's the logo. The hit shorts ZERO
+## on, a neon sign with a clock in its O. The whole lot rocks two degrees either way over
+## four seconds, as the original's start screen did, but for the star it's all on.
 
 const SMASK := "SMASK"
 const SIZE := 148
 const ZERO_SIZE := 92
 const CENTRE := Vector2(400, 244)
+const ZERO_MIDDLE := Vector2(620, 346)
 const TILT := -0.05
 const LEAN := -0.16
 const LAND_START := 0.12
 const LAND_GAP := 0.05
 const LAND_TIME := 0.16
-const ZERO_AT := 0.62
+const ZERO_GLITCH := 0.34
+const BURST_TIME := 0.42
 const SHIP_AT := 0.42
 const STRIKE_TIME := 0.62
 ## A long frame mustn't blow the letters' springs up.
@@ -46,7 +49,13 @@ var ship_speed := 0.0
 ## How far along the word the trail it leaves goes.
 var trail_end := TRAIL_FROM
 var _pop := 0.0
+## When the hit started ZERO going; below 0, it hasn't.
+var _zero_from := -1.0
 var _zero_landed := false
+## How far through its ring the hit is, 0 to 1; 1 and it's over.
+var burst := 1.0
+## Where along the word it went off.
+var burst_x := 0.0
 var _smask_layer: LogoSmask
 var _zero_layer: LogoZero
 var _top_layer: LogoTop
@@ -93,6 +102,7 @@ func _process(frame_time: float) -> void:
 	var delta := minf(frame_time, MOST_STEP)
 	_time += delta
 	_pop = maxf(_pop - delta * 3.5, 0.0)
+	burst = minf(burst + delta / BURST_TIME, 1.0)
 	_land_letters()
 	_fly_ship(delta)
 	for i in SMASK.length():
@@ -123,12 +133,12 @@ func _land_letters() -> void:
 				UI.fx.shake(5.0 + i)
 				UI.fx.sparks(_on_screen(_letter_centre(i)), UI.YELLOW, 12, 800.0)
 			Audio.play("hit", -7.0, 0.65 + i * 0.1)
-	if not _zero_landed and _time >= ZERO_AT + LAND_TIME:
+	if not _zero_landed and _zero_from >= 0.0 and _time >= _zero_from + ZERO_GLITCH:
 		_zero_landed = true
 		if UI.fx:
-			UI.fx.shake(10.0)
-			UI.fx.sparks(global_position + Vector2(620, 400), UI.hue(0.1), 26, 1100.0)
-		Audio.play("boom", -8.0, 0.8)
+			UI.fx.shake(3.0)
+			UI.fx.sparks(get_global_transform() * ZERO_MIDDLE, UI.hue(0.1), 14, 700.0)
+		Audio.play("tick", -5.0, 1.5)
 
 
 func _fly_ship(delta: float) -> void:
@@ -145,12 +155,17 @@ func _fly_ship(delta: float) -> void:
 			ship_speed = (ship_at.x - was) / maxf(delta, 0.001)
 			trail_end = ship_at.x - 44.0
 			_knock_as_it_goes()
-			if not _struck and ship_at.x >= PARK_AT:
+			# Out of the end of the word: the ring goes off right there, and the ship flies on out of it.
+			var word_end := _lefts[SMASK.length() - 1] + _widths[SMASK.length() - 1]
+			if not _struck and ship_at.x >= word_end:
 				_struck = true
+				burst = 0.0
+				burst_x = word_end
+				_zero_from = _time
 				if UI.fx:
-					var at := _on_screen(ship_at)
-					UI.fx.sparks(at, UI.YELLOW, 24, 1000.0)
-					UI.fx.ring(at, 200.0, UI.YELLOW)
+					UI.fx.sparks(_on_screen(Vector2(word_end, 0)), UI.YELLOW, 24, 1000.0)
+					UI.fx.shake(10.0)
+				Audio.play("boom", -8.0, 0.8)
 			if _flight_t >= 1.0:
 				_flight = Flight.PARKED
 				ship_at.x = PARK_AT
@@ -180,7 +195,7 @@ func _letter_centre(i: int) -> Vector2:
 
 
 func _on_screen(on_word: Vector2) -> Vector2:
-	return global_position + CENTRE + on_word.rotated(TILT)
+	return get_global_transform() * (Transform2D(TILT, CENTRE) * on_word)
 
 
 func flight() -> Flight:
@@ -224,15 +239,18 @@ func _draw_star() -> void:
 	if _time < LAND_START:
 		return
 	var grow := _pop * 0.12 + sin(_time * 5.0) * 0.012
-	var radius := Vector2(405, 150) * k
-	UI.burst(self, CENTRE, 150.0, 480.0, 18, _time * 0.25, Color(UI.glow(UI.hue(0.5), 1.1), 0.3))
+	var radius := Vector2(405, 138) * k
+	# It stays put while the rest of the logo rocks.
+	var middle := size * 0.5
+	draw_set_transform_matrix(Transform2D(0.0, middle) * Transform2D(-rotation, Vector2.ZERO) * Transform2D(0.0, -middle))
+	UI.burst(self, CENTRE, 150.0, 480.0, 18, 0.0, Color(UI.glow(UI.hue(0.5), 1.1), 0.3))
 	UI.star(self, CENTRE, radius, 15, 3, grow + 0.05, UI.glow(UI.PINK, 1.5))
 	UI.star(self, CENTRE, radius, 15, 3, grow, UI.INK)
 
 
 func _draw_super() -> void:
 	var k := UI.back_out(_time / 0.24, 1.6)
-	var at := Vector2(34 + (1.0 - k) * -700.0, 64)
+	var at := Vector2(34 + (1.0 - k) * -700.0, 106)
 	# It's been going some speed.
 	UI.tilt(self, at, -0.07, 1.0, -0.22)
 	for line: Array in [[-10.0, 130.0], [14.0, 210.0], [38.0, 90.0]]:
@@ -256,17 +274,36 @@ func _draw_extrusion() -> void:
 		draw_string_outline(font, at, SMASK[i], HORIZONTAL_ALIGNMENT_LEFT, -1, SIZE, 7, UI.glow(UI.YELLOW.lerp(UI.ORANGE, 0.4), 1.6))
 
 
-## A neon sign: hollow, flickering a little, with a clock going round in its O.
+## A neon sign: hollow, flickering a little, with a clock going round in its O. The hit
+## shorts it on where it stands: stuttering, jumping about and splitting into colours,
+## steadier and steadier until it locks.
 func draw_zero(c: CanvasItem) -> void:
-	if _time < ZERO_AT:
+	if _zero_from < 0.0:
 		return
 	var font := UI.title_font()
-	var k := clampf((_time - ZERO_AT) / LAND_TIME, 0.0, 1.0)
-	var at := Vector2(size.x - 34.0, 424.0)
-	var scale_now := 1.0 + (1.0 - k * k) * 0.45
-	c.draw_set_transform_matrix(Transform2D(-0.05 + (1.0 - k) * 0.15, Vector2(scale_now, scale_now), -0.2, at))
+	var t := clampf((_time - _zero_from) / ZERO_GLITCH, 0.0, 1.0)
+	var settle := 1.0 - t
+	var jump := Vector2.ZERO
+	var stretch := Vector2.ONE
+	var split := 0.0
+	if t < 1.0:
+		# The same few wrong frames every time, thirty a second.
+		var beat_of := float(int((_time - _zero_from) * 30.0))
+		if _noise(beat_of) > 0.35 + t * 0.9:
+			return
+		jump = Vector2((_noise(beat_of + 0.3) - 0.5) * 46.0, (_noise(beat_of + 0.6) - 0.5) * 14.0) * settle
+		stretch = Vector2(1.0 + _noise(beat_of + 0.8) * 0.3 * settle, 1.0 - _noise(beat_of + 0.9) * 0.3 * settle)
+		split = 12.0 * settle
+	else:
+		# And a little pop as it locks.
+		var after := clampf((_time - _zero_from - ZERO_GLITCH) / 0.14, 0.0, 1.0)
+		stretch = Vector2.ONE * (1.0 + (1.0 - after) * (1.0 - after) * 0.07)
+	c.draw_set_transform_matrix(Transform2D(-0.05, stretch, -0.2, ZERO_MIDDLE + jump))
 	var w := UI.text_width(font, "ZERO", ZERO_SIZE)
-	var left := Vector2(-w, 0)
+	var left := Vector2(-w * 0.5, ZERO_SIZE * 0.36)
+	if split > 0.0:
+		c.draw_string_outline(font, left + Vector2(-split, 0), "ZERO", HORIZONTAL_ALIGNMENT_LEFT, -1, ZERO_SIZE, 10, UI.glow(UI.PINK, 1.6))
+		c.draw_string_outline(font, left + Vector2(split, 0), "ZERO", HORIZONTAL_ALIGNMENT_LEFT, -1, ZERO_SIZE, 10, UI.glow(UI.CYAN, 1.6))
 	# Now and then a tube stutters.
 	var flicker := 1.0
 	var beat := fmod(_time, 5.3)
@@ -287,6 +324,10 @@ func draw_zero(c: CanvasItem) -> void:
 	var hand := UI.glow(UI.YELLOW, 2.0 * flicker)
 	c.draw_line(face, face + Vector2.from_angle(minute) * 13.0, hand, 3.5, true)
 	c.draw_line(face, face + Vector2.from_angle(hour) * 8.0, hand, 3.5, true)
+
+
+static func _noise(at: float) -> float:
+	return fposmod(sin(at * 12.9898) * 43758.5453, 1.0)
 
 
 ## These layers all fill the logo: with no size of their own, they went missing for any
@@ -354,6 +395,12 @@ class LogoTop extends Control:
 			UI.streak(self, a, b, 34.0, Color(UI.INK, 0.9))
 			UI.streak(self, a, b, 24.0, UI.glow(UI.PINK, 1.5))
 			UI.streak(self, a, b, 11.0, UI.glow(UI.WHITE, 1.8))
+		if logo.burst < 1.0:
+			draw_set_transform_matrix(word * Transform2D(0.0, Vector2(logo.burst_x, 0)))
+			var grown := UI.cubic_out(logo.burst)
+			var left := 1.0 - logo.burst
+			draw_circle(Vector2.ZERO, 40.0 + 90.0 * grown, Color(UI.glow(UI.YELLOW, 2.0), left * left * left * left * 0.8))
+			draw_arc(Vector2.ZERO, 200.0 * grown, 0.0, TAU, 64, Color(UI.glow(UI.YELLOW, 2.4), left), 14.0 * left + 1.0, true)
 		draw_set_transform_matrix(word * Transform2D(0.0, logo.ship_at))
 		# Its engine: longer the faster it's going, ticking over when it's stopped.
 		var flame := 26.0 + sin(logo.flame_time() * 37.0) * 7.0 + sin(logo.flame_time() * 61.0) * 5.0
