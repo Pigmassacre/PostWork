@@ -11,6 +11,7 @@ Started in 2016 as PostWork, an unfinished libGDX game. The Java is in this repo
 history, up to commit `a340553`. Tune the numbers in `src/data/balance.gd`.
 
 ![The title](screenshots/title.png)
+![Clocking Out](screenshots/dusk.png)
 ![The Commute](screenshots/commute.png)
 ![One More Episode](screenshots/episode.png)
 ![Overtime](screenshots/overtime.png)
@@ -23,6 +24,8 @@ history, up to commit `a340553`. Tune the numbers in `src/data/balance.gd`.
 - Hold to stop firing and brake (now it charges the SMASK)
 - The ship, froglet, starball, yellowcrab and floor tile (`art/original`)
 - The floor's endlessly cycling colour
+
+The floor hangs over a pixel-art city that goes from sunset to midnight as you play.
 
 ## Running
 
@@ -86,4 +89,4 @@ saves screenshots to `shots/`; `--show=perks`, `pause`, `over` or `smask` brings
 menu with real input events and says what it saw. All of them are in `src/main.gd`.
 
 The assets are made from the sources by `tools/make_sprites.py`,
-`tools/make_font.py` and `tools/import_audio.py` (from `../Assets`).
+`tools/make_font.py`, `tools/merge_font.py` and `tools/import_audio.py` (from `../Assets`).

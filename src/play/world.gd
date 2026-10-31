@@ -60,6 +60,7 @@ var _clear_clock := 0.0
 var _shrink := false
 var _post_material: ShaderMaterial
 var _floor_tile: Texture2D
+var _skyline := Skyline.new()
 var _shown_remaining := 0
 var _time_outside := 0.0
 
@@ -427,6 +428,7 @@ func pointer() -> Vector2:
 
 func _process(delta: float) -> void:
 	fx.step(delta)
+	_skyline.step(delta)
 	_time_outside += delta
 	hue += delta * HUE_SPEED * (1.0 + 0.25 * float(run.multiplier() - 1))
 	if fx.freeze > 0.0:
@@ -706,9 +708,11 @@ func _floor_color() -> Color:
 func _paint_floor(c: CanvasItem) -> void:
 	var view := get_viewport_rect().size
 	var seen := Rect2(_camera.position - view * 0.5 - Vector2(16, 16), view + Vector2(32, 32))
-	# The original's: the hue goes round for ever, and it's its colour that fills what's outside.
+	# The evening itself. The original's hue going round for ever is the floor's, below.
 	var night := _night()
-	c.draw_rect(seen, Sprites.hsl(hue, 0.25, lerpf(0.2, 0.08, night)))
+	_skyline.draw(c, seen, _camera.position, arena, night)
+	# The floor hangs over the city, and throws a shadow on it.
+	c.draw_rect(Rect2(arena.position + Vector2(4, 7), arena.size), Color(0, 0, 0, 0.45))
 	var tile_rect := arena
 	var tint := _floor_color()
 	c.draw_rect(tile_rect, Sprites.hsl(hue, 0.3, lerpf(0.13, 0.06, night)))
