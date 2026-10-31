@@ -97,8 +97,8 @@ class TitleSlab extends Control:
 		var bottom := 660.0 * k
 		for band: Array in [[56.0, UI.PINK], [34.0, UI.hue()], [14.0, UI.YELLOW]]:
 			var w: float = band[0]
-			draw_colored_polygon(PackedVector2Array([Vector2(-10, -10), Vector2(top + w, -10), Vector2(bottom + w, h + 10), Vector2(-10, h + 10)]), band[1])
-		draw_colored_polygon(PackedVector2Array([Vector2(-10, -10), Vector2(top, -10), Vector2(bottom, h + 10), Vector2(-10, h + 10)]), UI.INK)
+			UI.fill(self, PackedVector2Array([Vector2(-10, -10), Vector2(top + w, -10), Vector2(bottom + w, h + 10), Vector2(-10, h + 10)]), band[1])
+		UI.fill(self, PackedVector2Array([Vector2(-10, -10), Vector2(top, -10), Vector2(bottom, h + 10), Vector2(-10, h + 10)]), UI.INK)
 		UI.outlined(self, UI.body_font(), Vector2(30, h - 12.0), _version, 20, UI.DIM)
 
 
@@ -118,8 +118,8 @@ class Ticker extends Control:
 		var font_size := 34
 		var at := Vector2(680, size.y - 58.0)
 		UI.tilt(self, at, -0.025, 1.0, 0.0)
-		draw_rect(Rect2(-60, -44, size.x + 200.0, 66), UI.YELLOW)
-		draw_rect(Rect2(-60, 22, size.x + 200.0, 8), UI.INK)
+		UI.rect(self, Rect2(-60, -44, size.x + 200.0, 66), UI.YELLOW)
+		UI.rect(self, Rect2(-60, 22, size.x + 200.0, 8), UI.INK)
 		var w := UI.text_width(font, TEXT, font_size)
 		var x := -fposmod(Time.get_ticks_msec() * 0.15, w)
 		for i in 4:

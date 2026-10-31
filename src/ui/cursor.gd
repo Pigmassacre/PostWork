@@ -31,11 +31,10 @@ func _draw() -> void:
 		var turning := Time.get_ticks_msec() * 0.003
 		draw_arc(at, 24.0 - _kick * 8.0, turning, turning + TAU * 0.8, 24, UI.INK, 8.0, true)
 		draw_arc(at, 24.0 - _kick * 8.0, turning, turning + TAU * 0.8, 24, UI.YELLOW, 4.0, true)
-		draw_rect(Rect2(at - Vector2(3, 3), Vector2(6, 6)), UI.YELLOW)
+		draw_circle(at, 3.5, UI.YELLOW, true, -1.0, true)
 		return
 	var k := 1.0 - _kick * 0.25
 	draw_set_transform(at, 0.0, Vector2(k, k))
-	var arrow := PackedVector2Array([Vector2(0, 0), Vector2(44, 18), Vector2(20, 24), Vector2(10, 46)])
-	draw_colored_polygon(PackedVector2Array([Vector2(-6, -8), Vector2(58, 18), Vector2(26, 30), Vector2(10, 62)]), UI.INK)
-	draw_colored_polygon(arrow, UI.YELLOW)
+	UI.fill(self, UI.round_corners(PackedVector2Array([Vector2(-7, -9), Vector2(56, 17), Vector2(9, 60)]), 5.0), UI.INK)
+	UI.fill(self, UI.round_corners(PackedVector2Array([Vector2(0, 0), Vector2(42, 17), Vector2(10, 46)]), 3.0), UI.YELLOW)
 	draw_set_transform_matrix(Transform2D.IDENTITY)

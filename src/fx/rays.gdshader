@@ -16,7 +16,10 @@ void fragment() {
 	vec2 p = (UV - centre) * vec2(aspect, 1.0);
 	float angle = atan(p.y, p.x);
 	float dist = length(p);
-	float ray = step(0.5, fract(angle * 16.0 / 6.28318 + TIME * 0.05));
+	float turn = angle * 16.0 / 6.28318 + TIME * 0.05;
+	// Soft-edged, and it stays soft where the angle wraps.
+	float soft = min(fwidth(turn), 0.06);
+	float ray = smoothstep(0.25 - soft, 0.25 + soft, abs(fract(turn) - 0.5));
 	vec3 color = mix(hsv(hue, 0.85, 0.2), hsv(hue + 0.05, 0.95, 0.33), ray) * brightness;
 	// The dots: in a slanted grid, bigger the further out.
 	vec2 cell = vec2(p.x + p.y * 0.3, p.y) * 46.0;

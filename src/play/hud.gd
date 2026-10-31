@@ -296,9 +296,9 @@ func _draw_banner() -> void:
 	var a := 1.0 - maxf(leave, 0.0)
 	UI.burst(self, mid, 160.0, 1500.0 * enter, 22, t * 0.7, Color(UI.hue(0.5) if not zero else UI.YELLOW, 0.22 * a))
 	UI.tilt(self, mid + Vector2(slide, 0), -0.05, 1.0, 0.0)
-	draw_rect(Rect2(-1800, -170, 3600, 12), UI.PINK)
-	draw_rect(Rect2(-1800, 126, 3600, 12), UI.hue())
-	draw_rect(Rect2(-1800, -158, 3600, 284), band_color)
+	UI.rect(self, Rect2(-1800, -170, 3600, 12), UI.PINK)
+	UI.rect(self, Rect2(-1800, 126, 3600, 12), UI.hue())
+	UI.rect(self, Rect2(-1800, -158, 3600, 284), band_color)
 	var slam := 1.0 + (1.0 - UI.back_out(t / 0.24, 1.4)) * 1.7
 	UI.tilt(self, mid + Vector2(slide * 1.3, -50.0), -0.05, slam, -0.16)
 	var font_size := 150

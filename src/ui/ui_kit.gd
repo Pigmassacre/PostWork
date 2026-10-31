@@ -17,6 +17,9 @@ const BLUE := Color("639bff")
 const RED := Color("ff3b4e")
 ## How far over a slab's top leans, for its height.
 const SLANT := 0.28
+## How wide the soft edge of a flat shape is, each way.
+const FEATHER := 0.8
+const CORNER_STEPS := 4
 
 ## The sparks, flash and shake over everything, for whoever wants them (ui_fx.gd).
 static var fx: UiFx
@@ -57,8 +60,9 @@ static func hue(offset := 0.0, saturation := 0.95, value := 1.0) -> Color:
 	return Color.from_hsv(fposmod(Time.get_ticks_msec() * 0.00004 + offset, 1.0), saturation, value)
 
 
-## A parallelogram: `rect`'s top pushed right, its bottom left, by `slant` of its height.
-static func slab(ci: CanvasItem, rect: Rect2, color: Color, slant := SLANT) -> void:
+## A parallelogram: `rect`'s top pushed right, its bottom left, by `slant` of its
+## height, with its corners rounded off.
+static func slab(ci: CanvasItem, rect: Rect2, color: Color, slant := SLANT, corner := 9.0) -> void:
 	if rect.size.x <= 0.0 or rect.size.y <= 0.0:
 		return
 	var lean := rect.size.y * slant * 0.5
@@ -68,7 +72,64 @@ static func slab(ci: CanvasItem, rect: Rect2, color: Color, slant := SLANT) -> v
 		rect.position + Vector2(rect.size.x - lean, rect.size.y),
 		rect.position + Vector2(-lean, rect.size.y),
 	])
-	ci.draw_colored_polygon(points, color)
+	fill(ci, round_corners(points, minf(corner, minf(rect.size.x, rect.size.y) * 0.3)), color)
+
+
+## A rectangle that can be turned, unlike what draw_rect gives under a turned transform.
+static func rect(ci: CanvasItem, area: Rect2, color: Color) -> void:
+	fill(ci, PackedVector2Array([area.position, Vector2(area.end.x, area.position.y), area.end, Vector2(area.position.x, area.end.y)]), color)
+
+
+## `points` (a convex shape, going round) with each corner cut into a curve.
+static func round_corners(points: PackedVector2Array, radius: float) -> PackedVector2Array:
+	var out := PackedVector2Array()
+	var n := points.size()
+	for i in n:
+		var corner := points[i]
+		var before := points[(i + n - 1) % n]
+		var after := points[(i + 1) % n]
+		var from := corner + (before - corner).normalized() * minf(radius, corner.distance_to(before) * 0.5)
+		var to := corner + (after - corner).normalized() * minf(radius, corner.distance_to(after) * 0.5)
+		for step in CORNER_STEPS + 1:
+			var t := float(step) / CORNER_STEPS
+			out.append(from.lerp(corner, t).lerp(corner.lerp(to, t), t))
+	return out
+
+
+## A convex shape with a soft edge. This renderer has no 2D anti-aliasing, so every
+## edge gets a thin strip fading out, in one triangle list.
+static func fill(ci: CanvasItem, points: PackedVector2Array, color: Color) -> void:
+	var n := points.size()
+	if n < 3:
+		return
+	var middle := Vector2.ZERO
+	for p in points:
+		middle += p
+	middle /= n
+	var vertices := PackedVector2Array()
+	var colors := PackedColorArray()
+	vertices.resize(n * 2)
+	colors.resize(n * 2)
+	var clear := Color(color, 0.0)
+	for i in n:
+		var p := points[i]
+		var a := (p - points[(i + n - 1) % n]).orthogonal().normalized()
+		var b := (points[(i + 1) % n] - p).orthogonal().normalized()
+		var out := (a + b).normalized()
+		if out.dot(p - middle) < 0.0:
+			out = -out
+		var mitre := minf(1.0 / maxf(absf(out.dot(a)), 0.5), 2.0) * FEATHER
+		vertices[i] = p - out * mitre
+		vertices[i + n] = p + out * mitre
+		colors[i] = color
+		colors[i + n] = clear
+	var indices := PackedInt32Array()
+	for i in range(1, n - 1):
+		indices.append_array([0, i, i + 1])
+	for i in n:
+		var j := (i + 1) % n
+		indices.append_array([i, j, j + n, i, j + n, i + n])
+	RenderingServer.canvas_item_add_triangle_array(ci.get_canvas_item(), indices, vertices, colors)
 
 
 ## A slab with a hard offset shadow and a bright edge, the thing most things sit on.
@@ -104,17 +165,34 @@ static func straight(ci: CanvasItem) -> void:
 	ci.draw_set_transform_matrix(Transform2D.IDENTITY)
 
 
-## A sunburst of `count` rays round `at`.
+## A sunburst of `count` rays round `at`, each fading away to nothing as it goes out.
 static func burst(ci: CanvasItem, at: Vector2, inner: float, outer: float, count: int, turned: float, color: Color) -> void:
 	var step := TAU / count
+	var vertices := PackedVector2Array()
+	var colors := PackedColorArray()
+	var indices := PackedInt32Array()
+	var clear := Color(color, 0.0)
+	var part := PackedFloat32Array([0.0, 0.45, 1.0])
+	var strength := PackedFloat32Array([1.0, 0.45, 0.0])
 	for i in count:
 		var a := turned + i * step
-		ci.draw_colored_polygon(PackedVector2Array([
-			at + Vector2.from_angle(a - step * 0.12) * inner,
-			at + Vector2.from_angle(a - step * 0.28) * outer,
-			at + Vector2.from_angle(a + step * 0.28) * outer,
-			at + Vector2.from_angle(a + step * 0.12) * inner,
-		]), color)
+		var first := vertices.size()
+		for k in part.size():
+			var radius := lerpf(inner, outer, part[k])
+			var half := step * lerpf(0.12, 0.28, part[k])
+			var dir := Vector2.from_angle(a)
+			var side := dir.orthogonal()
+			var width := radius * tan(half)
+			var mid := at + dir * radius
+			var shade := Color(color, color.a * strength[k])
+			# Across the ray: clear, solid, solid, clear, so its long edges are soft too.
+			vertices.append_array([mid - side * (width + FEATHER * 1.5), mid - side * width, mid + side * width, mid + side * (width + FEATHER * 1.5)])
+			colors.append_array([clear, shade, shade, clear])
+		for k in part.size() - 1:
+			for across in 3:
+				var o := first + k * 4 + across
+				indices.append_array([o, o + 1, o + 5, o, o + 5, o + 4])
+	RenderingServer.canvas_item_add_triangle_array(ci.get_canvas_item(), indices, vertices, colors)
 
 
 ## A paragraph, word-wrapped to `width`.

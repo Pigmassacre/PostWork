@@ -72,7 +72,7 @@ func smask_scale() -> float:
 func _draw() -> void:
 	var font := UI.title_font()
 	# Rays behind the word, turning.
-	UI.burst(self, Vector2(size.x * 0.5, 220.0), 90.0, 390.0 + _slam * 30.0, 18, _time * 0.25, Color(UI.hue(0.5), 0.2))
+	UI.burst(self, Vector2(size.x * 0.5, 220.0), 90.0, 470.0 + _slam * 40.0, 18, _time * 0.25, Color(UI.hue(0.5), 0.2))
 	# SUPER: white on a slab, leaning.
 	UI.tilt(self, Vector2(28, 60), -0.05, 1.0, -0.2)
 	UI.slab(self, Rect2(-20, -18, 420, 96), UI.PINK, 0.3)

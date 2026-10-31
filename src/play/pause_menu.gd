@@ -77,8 +77,8 @@ func _draw() -> void:
 	var bottom := 730.0 * k
 	for band: Array in [[44.0, UI.PINK], [22.0, UI.YELLOW]]:
 		var w: float = band[0]
-		draw_colored_polygon(PackedVector2Array([Vector2(-10, -10), Vector2(top + w, -10), Vector2(bottom + w, h + 10), Vector2(-10, h + 10)]), band[1])
-	draw_colored_polygon(PackedVector2Array([Vector2(-10, -10), Vector2(top, -10), Vector2(bottom, h + 10), Vector2(-10, h + 10)]), UI.INK)
+		UI.fill(self, PackedVector2Array([Vector2(-10, -10), Vector2(top + w, -10), Vector2(bottom + w, h + 10), Vector2(-10, h + 10)]), band[1])
+	UI.fill(self, PackedVector2Array([Vector2(-10, -10), Vector2(top, -10), Vector2(bottom, h + 10), Vector2(-10, h + 10)]), UI.INK)
 	var slam := 1.0 + (1.0 - UI.back_out(_t / 0.26, 1.4)) * 1.4
 	UI.tilt(self, Vector2(80, 310), -0.05, slam, -0.16)
 	draw_string(UI.title_font(), Vector2(7, 7), "PAUSED", HORIZONTAL_ALIGNMENT_LEFT, -1, 130, UI.PINK)
