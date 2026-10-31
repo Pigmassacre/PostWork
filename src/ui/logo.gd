@@ -1,8 +1,8 @@
 class_name Logo
 extends Control
-## SUPER SMASK ZERO, as the original's start screen had it (rocking two degrees
-## either way over four seconds, breathing with it), only now it's enormous and
-## vector-sharp, with a chrome SMASK whose letters jump, and which slams every so often.
+## SUPER SMASK ZERO, rocking two degrees either way over four seconds and breathing
+## with it, as the original's start screen did, with a chrome SMASK whose letters
+## jump, and which slams every so often.
 
 const SLAM_EVERY := 4.0
 const SMASK := "SMASK"
@@ -24,8 +24,8 @@ func _ready() -> void:
 	_smask_material.set_shader_parameter("top", Color("fffbe0"))
 	_smask_material.set_shader_parameter("middle", UI.YELLOW)
 	_smask_material.set_shader_parameter("bottom", UI.ORANGE)
-	_smask_material.set_shader_parameter("from_y", -110.0)
-	_smask_material.set_shader_parameter("to_y", 20.0)
+	_smask_material.set_shader_parameter("from_y", -115.0)
+	_smask_material.set_shader_parameter("to_y", 5.0)
 	_smask_layer = LogoSmask.new()
 	_smask_layer.logo = self
 	_smask_layer.material = _smask_material
@@ -70,13 +70,13 @@ func smask_scale() -> float:
 
 
 func _draw() -> void:
-	var font := UI.logo_font()
+	var font := UI.title_font()
 	# Rays behind the word, turning.
-	UI.burst(self, Vector2(size.x * 0.5, 220.0), 90.0, 520.0 + _slam * 80.0, 18, _time * 0.25, Color(UI.hue(0.5), 0.2))
+	UI.burst(self, Vector2(size.x * 0.5, 220.0), 90.0, 390.0 + _slam * 30.0, 18, _time * 0.25, Color(UI.hue(0.5), 0.2))
 	# SUPER: white on a slab, leaning.
 	UI.tilt(self, Vector2(28, 60), -0.05, 1.0, -0.2)
 	UI.slab(self, Rect2(-20, -18, 420, 96), UI.PINK, 0.3)
-	draw_string(font, Vector2(14, 56), "SUPER", HORIZONTAL_ALIGNMENT_LEFT, -1, 86, UI.WHITE)
+	draw_string(font, Vector2(14, 52), "SUPER", HORIZONTAL_ALIGNMENT_LEFT, -1, 66, UI.WHITE)
 	# The extrusion under SMASK, in its own letters' positions.
 	UI.tilt(self, Vector2(size.x * 0.5, 280.0), -0.05, smask_scale(), -0.16)
 	var widths := _letter_lefts(font)
@@ -86,8 +86,8 @@ func _draw() -> void:
 			draw_string(font, at + Vector2(depth, depth), SMASK[i], HORIZONTAL_ALIGNMENT_LEFT, -1, LogoSmask.SIZE, UI.INK if depth > 6 else Color("b5125a"))
 	# ZERO: the colour that goes round, as the original's floor.
 	UI.tilt(self, Vector2(size.x - 40.0, 408.0), -0.05, 1.0, -0.2)
-	var zero_w := UI.text_width(font, "ZERO", 112)
-	UI.outlined(self, font, Vector2(-zero_w, 0), "ZERO", 112, UI.hue(0.1), 22)
+	var zero_w := UI.text_width(font, "ZERO", 92)
+	UI.outlined(self, font, Vector2(-zero_w, 0), "ZERO", 92, UI.hue(0.1), 22)
 	UI.straight(self)
 
 
@@ -102,14 +102,14 @@ func _letter_lefts(font: Font) -> Array:
 
 
 class LogoSmask extends Control:
-	const SIZE := 214
+	const SIZE := 148
 	var logo: Logo
 
 	func _ready() -> void:
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	func _draw() -> void:
-		var font := UI.logo_font()
+		var font := UI.title_font()
 		UI.tilt(self, Vector2(logo.size.x * 0.5, 280.0), -0.05, logo.smask_scale(), -0.16)
 		var lefts := logo._letter_lefts(font)
 		for i in Logo.SMASK.length():

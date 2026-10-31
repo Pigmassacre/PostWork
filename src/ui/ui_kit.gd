@@ -21,17 +21,9 @@ const SLANT := 0.28
 ## The sparks, flash and shake over everything, for whoever wants them (ui_fx.gd).
 static var fx: UiFx
 
-static var _title: Font
 static var _display: Font
 static var _body: Font
 static var _pixel: Font
-
-
-## Vermin Vibes 1989, the original's logo font, for the logo and nothing else.
-static func logo_font() -> Font:
-	if _title == null:
-		_title = load("res://assets/fonts/vermin_vibes_1989.ttf")
-	return _title
 
 
 ## Anything shouted: as smooth as the game's pixels aren't.

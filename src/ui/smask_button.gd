@@ -40,8 +40,9 @@ func _ready() -> void:
 	var empty := StyleBoxEmpty.new()
 	for state in ["normal", "hover", "pressed", "focus", "disabled", "hover_pressed"]:
 		add_theme_stylebox_override(state, empty)
-	mouse_entered.connect(func() -> void:
-		if not disabled:
+	# Only a pointer that's really moving: a window can open with one already over a button.
+	gui_input.connect(func(event: InputEvent) -> void:
+		if event is InputEventMouseMotion and event.relative.length() > 0.5 and not disabled and not has_focus():
 			grab_focus()
 	)
 	focus_entered.connect(_on_focus)

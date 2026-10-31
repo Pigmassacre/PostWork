@@ -119,8 +119,8 @@ class PerkCard extends Button:
 		for state in ["normal", "hover", "pressed", "focus", "disabled", "hover_pressed"]:
 			add_theme_stylebox_override(state, empty)
 		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		mouse_entered.connect(func() -> void:
-			if not disabled:
+		gui_input.connect(func(event: InputEvent) -> void:
+			if event is InputEventMouseMotion and event.relative.length() > 0.5 and not disabled and not has_focus():
 				grab_focus()
 		)
 		focus_entered.connect(func() -> void:

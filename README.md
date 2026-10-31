@@ -16,7 +16,7 @@ history, up to commit `a340553`. Tune the numbers in `src/data/balance.gd`.
 
 ## From the original
 
-- The name and the logo, in Vermin Vibes 1989
+- The name, and the logo's rock and breathing
 - The flight: same top speed, more grip
 - Auto-firing homing missiles, eight salvos a second
 - Hold to stop firing and brake (now it charges the SMASK)
