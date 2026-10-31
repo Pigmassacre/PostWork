@@ -1,22 +1,27 @@
 extends Node
 ## The title's Options.
 
+var _shaker: Control
+
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	var layer := CanvasLayer.new()
 	layer.layer = 10
 	add_child(layer)
 	var ui := Control.new()
 	ui.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	layer.add_child(ui)
-	var bg := ColorRect.new()
-	bg.color = UI.PANEL
-	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	ui.add_child(bg)
+	ui.add_child(Backdrop.new())
 	var panel := OptionsPanel.new()
 	panel.closed.connect(func() -> void: Game.main.show_screen("title", {}, 0.2))
 	ui.add_child(panel)
+	_shaker = panel
+
+
+func _process(_delta: float) -> void:
+	if UI.fx:
+		_shaker.position = UI.fx.offset
 
 
 func _unhandled_input(event: InputEvent) -> void:

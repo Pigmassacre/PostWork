@@ -156,7 +156,7 @@ func car_lost(car: Enemy) -> void:
 	world.add_kind("tadpole", car.pos)
 	if cars.is_empty():
 		targetable = true
-		world.say_word("THE LAST CARRIAGE", Color("fbf236"))
+		world.say_word("ENGINE EXPOSED", Color("fbf236"))
 		world.sfx("horn")
 
 

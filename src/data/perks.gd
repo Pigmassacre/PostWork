@@ -3,22 +3,22 @@ class_name Perks
 ## `most` is how many you can have of it.
 
 const ALL := {
-	"twin": {"name": "TWIN TUBES", "text": "Salvos reach one more target each.", "most": 3, "color": "5fcde4"},
-	"warhead": {"name": "BIG WARHEADS", "text": "Missiles hit a third harder.", "most": 3, "color": "df7126"},
-	"frag": {"name": "FRAGMENTS", "text": "Missiles burst, and hurt what's close.", "most": 2, "color": "fbf236"},
-	"track": {"name": "GOOD MANNERS", "text": "Missiles fly through walls and turn tighter.", "most": 1, "color": "5fcde4"},
-	"burn": {"name": "AFTERBURNER", "text": "A quarter more thrust.", "most": 2, "color": "df7126"},
-	"slick": {"name": "SLICK HULL", "text": "A third less drag. A higher top speed.", "most": 2, "color": "639bff"},
-	"bumper": {"name": "BUMPER KIT", "text": "Bounce off the walls instead of stopping.", "most": 1, "color": "99e550"},
-	"ram": {"name": "SPEED KILLS", "text": "Flat out, you ram weak things to death.", "most": 1, "color": "cbdbfc"},
-	"fuse": {"name": "SHORT FUSE", "text": "The SMASK charges 40% faster.", "most": 2, "color": "fbf236"},
-	"long": {"name": "LONG SMASK", "text": "The SMASK goes further and hits harder.", "most": 2, "color": "fbf236"},
-	"shock": {"name": "AFTERSHOCK", "text": "Every SMASK ends in a shock wave.", "most": 2, "color": "d95763"},
-	"echo": {"name": "ECHO", "text": "Every SMASK fires a salvo at everything.", "most": 1, "color": "5fcde4"},
-	"hull": {"name": "SPARE PLATING", "text": "One more hull, and all of it repaired.", "most": 3, "color": "639bff"},
-	"second": {"name": "SECOND WIND", "text": "The hit that would end you doesn't, once.", "most": 1, "color": "d95763"},
-	"magnet": {"name": "MAGNET", "text": "Coins come from twice as far.", "most": 1, "color": "ac3232"},
-	"pay": {"name": "OVERTIME PAY", "text": "The multiplier holds on a second longer.", "most": 2, "color": "99e550"},
+	"twin": {"name": "TWIN TUBES", "text": "+1 target per salvo", "most": 3, "color": "5fcde4"},
+	"warhead": {"name": "BIG WARHEADS", "text": "+33% missile damage", "most": 3, "color": "df7126"},
+	"frag": {"name": "FRAG ROUNDS", "text": "Missiles explode", "most": 2, "color": "fbf236"},
+	"track": {"name": "GHOST MISSILES", "text": "Missiles ignore walls", "most": 1, "color": "5fcde4"},
+	"burn": {"name": "AFTERBURNER", "text": "+25% thrust", "most": 2, "color": "df7126"},
+	"slick": {"name": "SLICK HULL", "text": "-33% drag", "most": 2, "color": "639bff"},
+	"bumper": {"name": "BUMPER KIT", "text": "Bounce off walls", "most": 1, "color": "99e550"},
+	"ram": {"name": "SPEED KILLS", "text": "Ram weak enemies at top speed", "most": 1, "color": "cbdbfc"},
+	"fuse": {"name": "SHORT FUSE", "text": "Charge 40% faster", "most": 2, "color": "fbf236"},
+	"long": {"name": "LONG SMASK", "text": "+30% SMASK range and damage", "most": 2, "color": "fbf236"},
+	"shock": {"name": "AFTERSHOCK", "text": "SMASK ends in a shockwave", "most": 2, "color": "d95763"},
+	"echo": {"name": "ECHO", "text": "SMASK fires a salvo", "most": 1, "color": "5fcde4"},
+	"hull": {"name": "SPARE PLATING", "text": "+1 hull. Full repair", "most": 3, "color": "639bff"},
+	"second": {"name": "SECOND WIND", "text": "Survive one fatal hit", "most": 1, "color": "d95763"},
+	"magnet": {"name": "MAGNET", "text": "Double coin range", "most": 1, "color": "ac3232"},
+	"pay": {"name": "OVERTIME PAY", "text": "Multiplier lasts +1s", "most": 2, "color": "99e550"},
 }
 
 

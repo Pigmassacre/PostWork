@@ -3,7 +3,7 @@ extends Control
 ## When played by finger: the left half of the screen's a stick wherever the thumb
 ## lands, and anything on the right half is the SMASK, held.
 
-const REACH := 26.0
+const REACH := 100.0
 
 var _stick_finger := -1
 var _stick_from := Vector2.ZERO
@@ -17,9 +17,9 @@ func _ready() -> void:
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch:
-		var at := _to_local(event.position)
+		var at: Vector2 = event.position
 		if event.pressed:
-			if at.x > size.x - 24.0 and at.y < 24.0:
+			if at.x > size.x - 110.0 and at.y < 110.0:
 				var press := InputEventAction.new()
 				press.action = "pause"
 				press.pressed = true
@@ -39,12 +39,8 @@ func _input(event: InputEvent) -> void:
 				Inputs.touch_smask = false
 		queue_redraw()
 	elif event is InputEventScreenDrag and event.index == _stick_finger:
-		Inputs.touch_move = ((_to_local(event.position) - _stick_from) / REACH).limit_length(1.0)
+		Inputs.touch_move = ((event.position - _stick_from) / REACH).limit_length(1.0)
 		queue_redraw()
-
-
-func _to_local(screen: Vector2) -> Vector2:
-	return get_viewport().get_screen_transform().affine_inverse() * screen
 
 
 func _exit_tree() -> void:
@@ -54,5 +50,5 @@ func _exit_tree() -> void:
 
 func _draw() -> void:
 	if _stick_finger >= 0:
-		draw_arc(_stick_from, REACH, 0.0, TAU, 24, Color(1, 1, 1, 0.3))
-		draw_circle(_stick_from + Inputs.touch_move * REACH, 6.0, Color(1, 1, 1, 0.35))
+		draw_arc(_stick_from, REACH, 0.0, TAU, 48, Color(1, 1, 1, 0.35), 5.0, true)
+		draw_circle(_stick_from + Inputs.touch_move * REACH, 30.0, Color(UI.YELLOW, 0.5))

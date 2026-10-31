@@ -2,5 +2,4 @@ Vermin Vibes 1989, copyright Andrew McCluskey 2012.
 Built with FontStruct: http://fontstruct.com/fontstructions/show/750494
 Licensed under Creative Commons Attribution Share Alike 3.0:
 http://creativecommons.org/licenses/by-sa/3.0/
-This game's bitmap versions of it (assets/fonts/heading, big and huge) are
-under the same licence.
+This game's bitmap version of it (assets/fonts/heading) is under the same licence.

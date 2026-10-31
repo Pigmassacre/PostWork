@@ -212,7 +212,7 @@ func step(dt: float) -> void:
 	while i < words.size():
 		var w := words[i]
 		w.life -= dt
-		w.pos.y -= dt * 16.0
+		w.pos.y -= dt * 22.0
 		if w.life <= 0.0:
 			words.remove_at(i)
 		else:
@@ -264,14 +264,3 @@ func draw_add(canvas: CanvasItem) -> void:
 		var c := r.color
 		c.a = 1.0 - t
 		canvas.draw_arc(r.pos.round(), maxf(r.radius * eased, 1.0), 0.0, TAU, 32 + int(r.radius * 0.5), c, 1.0 + (1.0 - t) * 2.0)
-
-
-func draw_words(canvas: CanvasItem) -> void:
-	var font := UI.body_font()
-	for w in words:
-		var c := w.color
-		c.a = clampf(w.life / w.total * 2.5, 0.0, 1.0)
-		var width := font.get_string_size(w.text, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.BODY_SIZE).x
-		var at := (w.pos - Vector2(width * 0.5, 0)).round()
-		canvas.draw_string(font, at + Vector2(1, 1), w.text, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.BODY_SIZE, Color(0, 0, 0, c.a))
-		canvas.draw_string(font, at, w.text, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.BODY_SIZE, c)

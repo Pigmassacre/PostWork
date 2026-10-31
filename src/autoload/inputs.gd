@@ -200,11 +200,11 @@ func rumble(amount: float) -> void:
 func prompt(action: String) -> String:
 	match device:
 		Device.TOUCH:
-			return {"smask": "your right thumb", "pause": "the corner", "move": "your left thumb", "accept": "tap"}.get(action, "tap")
+			return {"smask": "right thumb", "pause": "corner", "move": "left thumb", "accept": "tap"}.get(action, "tap")
 		Device.PAD:
 			if playstation:
-				return {"smask": "Cross", "pause": "Options", "move": "the left stick", "accept": "Cross"}.get(action, "Cross")
-			return {"smask": "A", "pause": "Menu" if deck else "Start", "move": "the left stick", "accept": "A"}.get(action, "A")
+				return {"smask": "Cross", "pause": "Options", "move": "left stick", "accept": "Cross"}.get(action, "Cross")
+			return {"smask": "A", "pause": "Menu" if deck else "Start", "move": "left stick", "accept": "A"}.get(action, "A")
 		Device.MOUSE:
 			return {"smask": "left click", "pause": "Esc", "move": "right click", "accept": "click"}.get(action, "click")
 	return {"smask": "Space", "pause": "Esc", "move": "WASD", "accept": "Space"}.get(action, "Space")

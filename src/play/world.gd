@@ -36,10 +36,16 @@ var phase_clock := 0.0
 var remaining := 0
 var total := 1
 var floor_pop := 0.0
+## Counts down from 1 from the moment the hour's hit zero, for the UI.
+var zero_time := 0.0
 var boss: Enemy
 var bumpers: Array[Dictionary] = []
 var hour_day := 0.0
 var hue := 0.0
+## The screen this is shown on (src/ui/game_view.gd).
+var view: GameView
+## How far the camera's off the floor's middle, in pixels, for the title's slab.
+var camera_shift := Vector2.ZERO
 
 var _waves: Array = []
 var _wave_clock := 0.0
@@ -49,7 +55,6 @@ var _camera: Camera2D
 var _floor_layer: Layer
 var _main_layer: Layer
 var _add_layer: Layer
-var _top_layer: Layer
 var _slowmo := 1.0
 var _clear_clock := 0.0
 var _shrink := false
@@ -84,7 +89,6 @@ func _ready() -> void:
 	var add := CanvasItemMaterial.new()
 	add.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 	_add_layer.material = add
-	_top_layer = _layer(_paint_top)
 	start_hour()
 
 
@@ -299,10 +303,10 @@ func _on_zero(at: Vector2) -> void:
 	var lines := "+%d" % bonus
 	if run.hits_this_hour == 0:
 		bonus += Balance.NO_HIT_BONUS
-		lines += "  UNTOUCHED +%d" % Balance.NO_HIT_BONUS
+		lines += "  NO HIT +%d" % Balance.NO_HIT_BONUS
 	if run.hour_time < Balance.QUICK_BONUS_TIME and not hour.has("boss"):
 		bonus += Balance.QUICK_BONUS
-		lines += "  QUICK +%d" % Balance.QUICK_BONUS
+		lines += "  SPEED +%d" % Balance.QUICK_BONUS
 	run.score += bonus
 	run.minutes = 59
 	shots.all_to_coins()
@@ -312,6 +316,7 @@ func _on_zero(at: Vector2) -> void:
 	fx.shake(9.0)
 	fx.ripple(at, 1.0)
 	fx.ring(at, 240.0, 0.8, Color("fbf236"))
+	zero_time = 1.0
 	sfx("boom_big", 0.0, 0.8)
 	sfx("zero", 0.0)
 	rumble(1.0)
@@ -414,7 +419,7 @@ func to_screen(pos: Vector2) -> Vector2:
 
 
 func pointer() -> Vector2:
-	return get_viewport().get_mouse_position()
+	return view.pointer()
 
 
 # --- the loop ----------------------------------------------------------------------
@@ -440,10 +445,10 @@ func _process(delta: float) -> void:
 	_camera.position = _camera_target() + fx.offset
 	_update_post()
 	floor_pop = maxf(floor_pop - delta * 4.0, 0.0)
+	zero_time = maxf(zero_time - delta, 0.0)
 	_floor_layer.queue_redraw()
 	_main_layer.queue_redraw()
 	_add_layer.queue_redraw()
-	_top_layer.queue_redraw()
 
 
 func _time_scale() -> float:
@@ -456,7 +461,7 @@ func _time_scale() -> float:
 func _camera_target() -> Vector2:
 	# The floor's kept below the HUD; it leans a touch the way the ship is.
 	var lean := ship.pos * 0.035 + ship.vel * 0.006
-	return Vector2(0, -8) + lean.round()
+	return Vector2(0, -8) + lean.round() + camera_shift
 
 
 func _step(dt: float) -> void:
@@ -704,24 +709,10 @@ func _paint_floor(c: CanvasItem) -> void:
 	var tint := _floor_color()
 	c.draw_rect(tile_rect, Sprites.hsl(hue, 0.3, lerpf(0.13, 0.06, night)))
 	c.draw_texture_rect(_floor_tile, tile_rect, true, tint)
-	_paint_count(c)
 	# The walls.
 	var edge := Sprites.hsl(hue + 0.08, 0.8, 0.62 + fx.wall_hit * 0.35)
 	c.draw_rect(arena.grow(1.0), edge, false, 2.0)
 	c.draw_rect(arena.grow(3.0), Color(edge, 0.3), false, 1.0)
-
-
-func _paint_count(c: CanvasItem) -> void:
-	var text := str(maxi(remaining, 0))
-	var font := UI.huge_font()
-	var size := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, 96)
-	var scale := 1.0 + floor_pop * 0.12
-	var color := Sprites.hsl(hue + 0.5, 0.6, 0.8, 0.22 + floor_pop * 0.25)
-	if phase == Phase.CLEARED:
-		color = Color(1, 0.95, 0.3, 0.5)
-	c.draw_set_transform(Vector2.ZERO, 0.0, Vector2(scale, scale))
-	c.draw_string(font, (-size * 0.5 + Vector2(0, font.get_ascent(96))).round(), text, HORIZONTAL_ALIGNMENT_LEFT, -1, 96, color)
-	c.draw_set_transform_matrix(Transform2D.IDENTITY)
 
 
 func _paint_main(c: CanvasItem) -> void:
@@ -772,5 +763,3 @@ func _paint_add(c: CanvasItem) -> void:
 	fx.draw_add(c)
 
 
-func _paint_top(c: CanvasItem) -> void:
-	fx.draw_words(c)

@@ -8,6 +8,7 @@ var run: Run
 var _hud: Hud
 var _pause: PauseMenu
 var _ui: Control
+var _view: GameView
 var _post: ShaderMaterial
 var _over := false
 
@@ -16,6 +17,8 @@ func open(args: Dictionary) -> void:
 	# The root keeps running under a pause; this mustn't.
 	process_mode = Node.PROCESS_MODE_PAUSABLE
 	run = Game.new_run(args.get("mode", Run.EVENING))
+	_view = GameView.new()
+	add_child(_view)
 	world = World.new()
 	world.setup(run)
 	world.hour_cleared.connect(_on_hour_cleared)
@@ -24,7 +27,7 @@ func open(args: Dictionary) -> void:
 	world.hint_wanted.connect(_on_hint)
 	var post_layer := CanvasLayer.new()
 	post_layer.layer = 5
-	add_child(post_layer)
+	_view.viewport.add_child(post_layer)
 	var rect := ColorRect.new()
 	rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -41,9 +44,10 @@ func open(args: Dictionary) -> void:
 	layer.add_child(_ui)
 	_hud = Hud.new()
 	_hud.world = world
+	_hud.view = _view
 	_ui.add_child(_hud)
 	world.banner_wanted.connect(_hud.banner)
-	add_child(world)
+	_view.show_world(world)
 	world.set_post_material(_post)
 	if Inputs.device == Inputs.Device.TOUCH or DisplayServer.is_touchscreen_available():
 		_ui.add_child(TouchControls.new())
@@ -52,13 +56,19 @@ func open(args: Dictionary) -> void:
 	_ui.add_child(_pause)
 	if Game.debug_show != "":
 		await get_tree().create_timer(4.0).timeout
-		if Game.debug_show == "perks":
+		if Game.debug_show == "pause":
+			_pause.open()
+		elif Game.debug_show == "perks":
 			world.phase = World.Phase.WAITING
 			_on_hour_cleared()
 		elif Game.debug_show == "over":
 			run.hull = 1
 			world.ship.invulnerable = 0.0
 			world.ship.hurt(world.ship.pos + Vector2.ONE)
+		elif Game.debug_show == "smask":
+			world.ship.state = Ship.State.CHARGING
+			world.ship.charge = 1.0
+			world.ship._let_go()
 
 
 func _exit_tree() -> void:
@@ -74,7 +84,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and _pause and _can_pause() and not Game.autoplay:
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and _pause and _can_pause() and not Game.autoplay and not Game.testing:
 		_pause.open()
 
 
@@ -88,14 +98,13 @@ func _on_hint(id: String) -> void:
 	var text := ""
 	match id:
 		"fly":
-			var move := Inputs.prompt("move")
-			text = "%s flies. The guns aim themselves. Flat out, they hit harder." % (move[0].to_upper() + move.substr(1))
+			text = "%s TO FLY. GUNS FIRE THEMSELVES." % Inputs.prompt("move").to_upper()
 		"hermit":
-			text = "Missiles can't touch a shell. Hold %s, aim, let go: SMASK." % Inputs.prompt("smask")
+			text = "SHELLS BLOCK MISSILES. HOLD %s, RELEASE TO SMASK." % Inputs.prompt("smask").to_upper()
 		"bumpers":
-			text = "Bumpers throw you, faster. Steal the speed."
+			text = "BUMPERS BOOST YOU."
 		"shrink":
-			text = "The walls are coming in. They stop when it's zero."
+			text = "WALLS CLOSING IN."
 	_hud.hint(text, 7.0)
 
 

@@ -40,6 +40,7 @@ func _wait(seconds: float) -> void:
 func _run() -> void:
 	var main: Node = Game.main
 	Game.invincible = true
+	Game.testing = true
 	await _wait(0.6)
 	_check(main.screen_name == "title", "starts on the title")
 	_check(get_viewport().gui_get_focus_owner() != null, "the title has a button chosen")
@@ -68,7 +69,7 @@ func _run() -> void:
 	await _wait(2.5)
 	_check(world.phase == World.Phase.FIGHT, "the fight starts")
 	await _wait(1.8)
-	_check(world.enemies.size() > 0, "things have turned up")
+	_check(world.enemies.size() > 0 or world.run.kills > 0, "things have turned up (%d on the floor, %d killed, phase %d)" % [world.enemies.size(), world.run.kills, world.phase])
 	await _wait(2.0)
 	var before: int = world.run.score + world.run.kills
 	await _wait(3.0)

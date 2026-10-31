@@ -1,125 +1,144 @@
 class_name UI
-## The look of every menu and of the HUD: pixel fonts on the game's own pixel
-## grid, in the original sprites' palette.
+## The look of every menu and of the HUD, which is everything the game's pixels
+## aren't: full resolution, slanted, loud. Slabs at an angle, letters that slam
+## in, sunbursts, a colour that never stops going round.
 
-const INK := Color("ffffff")
+const INK := Color("0b0a14")
+const INK_SOFT := Color("1b1830")
+const WHITE := Color("ffffff")
 const SOFT := Color("cbdbfc")
-const DIM := Color("9badb7")
-const FAINT := Color("696a6a")
-const ACCENT := Color("fbf236")
-const FIRE := Color("df7126")
-const RED := Color("d95763")
+const DIM := Color("8f94b8")
+const YELLOW := Color("fbf236")
+const ORANGE := Color("ff8a1f")
+const PINK := Color("ff2e7e")
+const CYAN := Color("29e7ff")
 const GREEN := Color("99e550")
 const BLUE := Color("639bff")
-const PANEL := Color("222034")
-const PANEL_EDGE := Color("5b6ee1")
-const SHADOW := Color("000000")
-const BODY_SIZE := 8
-const HEADING_SIZE := 16
-const BIG_SIZE := 32
+const RED := Color("ff3b4e")
+## How far over a slab's top leans, for its height.
+const SLANT := 0.28
 
+## The sparks, flash and shake over everything, for whoever wants them (ui_fx.gd).
+static var fx: UiFx
+
+static var _title: Font
+static var _display: Font
 static var _body: Font
-static var _heading: Font
-static var _big: Font
-static var _huge: Font
+static var _pixel: Font
 
 
+## Vermin Vibes 1989, the original's logo font, for the logo and nothing else.
+static func logo_font() -> Font:
+	if _title == null:
+		_title = load("res://assets/fonts/vermin_vibes_1989.ttf")
+	return _title
+
+
+## Anything shouted: as smooth as the game's pixels aren't.
+static func title_font() -> Font:
+	return display_font()
+
+
+## Unbounded Black: buttons and names.
+static func display_font() -> Font:
+	if _display == null:
+		_display = load("res://assets/fonts/Unbounded-Black.ttf")
+	return _display
+
+
+## Lexend: anything to actually read.
 static func body_font() -> Font:
 	if _body == null:
-		_body = load("res://assets/fonts/body.fnt")
+		_body = load("res://assets/fonts/Lexend-SemiBold.ttf")
 	return _body
 
 
-static func heading_font() -> Font:
-	if _heading == null:
-		_heading = load("res://assets/fonts/heading.fnt")
-	return _heading
+## The one thing in the world that's lettered: the numbers on the clock.
+static func pixel_font() -> Font:
+	if _pixel == null:
+		_pixel = load("res://assets/fonts/heading.fnt")
+	return _pixel
 
 
-static func big_font() -> Font:
-	if _big == null:
-		_big = load("res://assets/fonts/big.fnt")
-	return _big
+## The colour that goes round, as the floor's does.
+static func hue(offset := 0.0, saturation := 0.95, value := 1.0) -> Color:
+	return Color.from_hsv(fposmod(Time.get_ticks_msec() * 0.00004 + offset, 1.0), saturation, value)
 
 
-static func huge_font() -> Font:
-	if _huge == null:
-		_huge = load("res://assets/fonts/huge.fnt")
-	return _huge
+## A parallelogram: `rect`'s top pushed right, its bottom left, by `slant` of its height.
+static func slab(ci: CanvasItem, rect: Rect2, color: Color, slant := SLANT) -> void:
+	if rect.size.x <= 0.0 or rect.size.y <= 0.0:
+		return
+	var lean := rect.size.y * slant * 0.5
+	var points := PackedVector2Array([
+		rect.position + Vector2(lean, 0),
+		rect.position + Vector2(rect.size.x + lean, 0),
+		rect.position + Vector2(rect.size.x - lean, rect.size.y),
+		rect.position + Vector2(-lean, rect.size.y),
+	])
+	ci.draw_colored_polygon(points, color)
 
 
-static func label(text: String, color := INK, heading := false) -> Label:
-	var l := Label.new()
-	l.text = text
-	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	style(l, color, heading)
-	return l
+## A slab with a hard offset shadow and a bright edge, the thing most things sit on.
+static func plate(ci: CanvasItem, rect: Rect2, color: Color, edge := YELLOW, slant := SLANT) -> void:
+	slab(ci, Rect2(rect.position + Vector2(10, 10), rect.size), Color(0, 0, 0, 0.55), slant)
+	slab(ci, rect.grow(4.0), edge, slant)
+	slab(ci, rect, color, slant)
 
 
-static func style(l: Label, color := INK, heading := false) -> void:
-	l.add_theme_font_override("font", heading_font() if heading else body_font())
-	l.add_theme_font_size_override("font_size", HEADING_SIZE if heading else BODY_SIZE)
-	l.add_theme_color_override("font_color", color)
-	l.add_theme_color_override("font_shadow_color", SHADOW)
-	l.add_theme_constant_override("shadow_offset_x", 1)
-	l.add_theme_constant_override("shadow_offset_y", 1)
-	l.add_theme_constant_override("line_spacing", 1)
+static func text_width(font: Font, text: String, size: int) -> float:
+	return font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
 
 
-static func box(color := PANEL, edge := PANEL_EDGE, margin := 4) -> StyleBoxFlat:
-	var s := StyleBoxFlat.new()
-	s.bg_color = color
-	s.border_color = edge
-	s.set_border_width_all(1)
-	s.set_content_margin_all(margin)
-	s.anti_aliasing = false
-	return s
+## Text with a thick outline, with `at` on its baseline, left end.
+static func outlined(ci: CanvasItem, font: Font, at: Vector2, text: String, size: int, color: Color, outline := 0, outline_color := INK) -> void:
+	if outline > 0:
+		ci.draw_string_outline(font, at, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, outline, outline_color)
+	ci.draw_string(font, at, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, color)
 
 
-static func panel(margin := 6) -> PanelContainer:
-	var p := PanelContainer.new()
-	p.add_theme_stylebox_override("panel", box(PANEL, PANEL_EDGE, margin))
-	p.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	return p
+## The same, centred on `at`, up and down too.
+static func centred(ci: CanvasItem, font: Font, at: Vector2, text: String, size: int, color: Color, outline := 0, outline_color := INK) -> void:
+	var w := text_width(font, text, size)
+	outlined(ci, font, at + Vector2(-w * 0.5, size * 0.36), text, size, color, outline, outline_color)
 
 
-## A button: bright, and edged, when it's the one chosen.
-static func button(text: String) -> Button:
-	var b := Button.new()
-	b.text = text
-	b.focus_mode = Control.FOCUS_ALL
-	b.add_theme_font_override("font", body_font())
-	b.add_theme_font_size_override("font_size", BODY_SIZE)
-	b.add_theme_color_override("font_color", SOFT)
-	b.add_theme_color_override("font_hover_color", INK)
-	b.add_theme_color_override("font_focus_color", ACCENT)
-	b.add_theme_color_override("font_pressed_color", ACCENT)
-	b.add_theme_color_override("font_hover_pressed_color", ACCENT)
-	b.add_theme_color_override("font_disabled_color", FAINT)
-	var flat := StyleBoxFlat.new()
-	flat.bg_color = Color(0, 0, 0, 0.45)
-	flat.set_content_margin_all(2)
-	flat.content_margin_left = 8
-	flat.content_margin_right = 8
-	b.add_theme_stylebox_override("normal", flat)
-	b.add_theme_stylebox_override("disabled", flat)
-	var lit := StyleBoxFlat.new()
-	lit.bg_color = Color("3f3f74")
-	lit.border_color = ACCENT
-	lit.border_width_left = 2
-	lit.set_content_margin_all(2)
-	lit.content_margin_left = 8
-	lit.content_margin_right = 8
-	b.add_theme_stylebox_override("focus", lit)
-	b.add_theme_stylebox_override("hover", lit)
-	b.add_theme_stylebox_override("pressed", lit)
-	b.mouse_entered.connect(func() -> void:
-		if not b.disabled:
-			b.grab_focus()
-	)
-	b.focus_entered.connect(func() -> void: Audio.play("tick", -10.0))
-	b.pressed.connect(func() -> void: Audio.play("accept", -5.0))
-	return b
+## Everything drawn after this is at `at`, turned, scaled and leaning, till `straight`.
+static func tilt(ci: CanvasItem, at: Vector2, rot := 0.0, scale := 1.0, skew := -0.18) -> void:
+	ci.draw_set_transform_matrix(Transform2D(rot, Vector2(scale, scale), skew, at))
+
+
+static func straight(ci: CanvasItem) -> void:
+	ci.draw_set_transform_matrix(Transform2D.IDENTITY)
+
+
+## A sunburst of `count` rays round `at`.
+static func burst(ci: CanvasItem, at: Vector2, inner: float, outer: float, count: int, turned: float, color: Color) -> void:
+	var step := TAU / count
+	for i in count:
+		var a := turned + i * step
+		ci.draw_colored_polygon(PackedVector2Array([
+			at + Vector2.from_angle(a - step * 0.12) * inner,
+			at + Vector2.from_angle(a - step * 0.28) * outer,
+			at + Vector2.from_angle(a + step * 0.28) * outer,
+			at + Vector2.from_angle(a + step * 0.12) * inner,
+		]), color)
+
+
+## A paragraph, word-wrapped to `width`.
+static func paragraph(ci: CanvasItem, at: Vector2, text: String, width: float, size: int, color: Color, font: Font = null) -> void:
+	ci.draw_multiline_string(font if font else body_font(), at, text, HORIZONTAL_ALIGNMENT_LEFT, width, size, -1, color)
+
+
+## An ease with a bounce past the end: 0 to 1, 1 and a bit in the middle.
+static func back_out(t: float, overshoot := 1.9) -> float:
+	var k := clampf(t, 0.0, 1.0) - 1.0
+	return 1.0 + k * k * ((overshoot + 1.0) * k + overshoot)
+
+
+static func cubic_out(t: float) -> float:
+	var k := 1.0 - clampf(t, 0.0, 1.0)
+	return 1.0 - k * k * k
 
 
 ## A column of buttons in order, wired so the sticks and the arrows go through them.
@@ -128,15 +147,8 @@ static func link_focus(buttons: Array) -> void:
 		var b: Control = buttons[i]
 		b.focus_neighbor_top = b.get_path_to(buttons[wrapi(i - 1, 0, buttons.size())])
 		b.focus_neighbor_bottom = b.get_path_to(buttons[wrapi(i + 1, 0, buttons.size())])
-
-
-static func center_in(parent: Control, child: Control) -> CenterContainer:
-	var c := CenterContainer.new()
-	c.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	c.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	parent.add_child(c)
-	c.add_child(child)
-	return c
+		b.focus_neighbor_left = b.get_path()
+		b.focus_neighbor_right = b.get_path()
 
 
 static func format_time(seconds: float) -> String:

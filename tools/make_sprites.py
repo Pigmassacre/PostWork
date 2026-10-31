@@ -203,13 +203,6 @@ y"""],
 .LLcLL.
 LLLLLLL
 LL.o.LL"""],
-    "pointer": ["""
-w.....
-ww....
-wCw...
-wCCw..
-wCCCw.
-wwCw.."""],
     "shot_round": ["""
 .yy.
 yywy

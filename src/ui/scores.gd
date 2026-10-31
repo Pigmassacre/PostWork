@@ -3,31 +3,41 @@ extends MenuScreen
 
 
 func _ready() -> void:
-	build("BEST EVENINGS")
-	if Game.high_scores.is_empty():
-		var none := UI.label("Nothing yet. Go on, it's after work.", UI.DIM)
-		none.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		body.add_child(none)
-	for i in Game.high_scores.size():
-		var entry: Dictionary = Game.high_scores[i]
-		var row := HBoxContainer.new()
-		row.add_theme_constant_override("separation", 10)
-		body.add_child(row)
-		var color := UI.ACCENT if entry.get("won", false) else UI.SOFT
-		var place := UI.label("%2d" % (i + 1), UI.DIM)
-		place.custom_minimum_size.x = 16
-		row.add_child(place)
-		var score := UI.label(UI.format_score(int(entry.score)), color)
-		score.custom_minimum_size.x = 70
-		row.add_child(score)
-		var hour := UI.label(str(entry.get("hour", "")), UI.SOFT)
-		hour.custom_minimum_size.x = 36
-		row.add_child(hour)
-		var time := UI.label(UI.format_time(float(entry.get("time", 0.0))), UI.DIM)
-		time.custom_minimum_size.x = 36
-		row.add_child(time)
-		var note := "MIDNIGHT" if entry.get("won", false) else ""
-		if entry.get("mode", "") == Run.GRAVEYARD:
-			note = "GRAVEYARD"
-		row.add_child(UI.label(note, UI.ACCENT))
-		row.add_child(UI.label(str(entry.get("date", "")), UI.FAINT))
+	build("HIGH SCORES", false)
+	var rows := ScoreRows.new()
+	rows.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	body.add_child(rows)
+
+
+class ScoreRows extends Control:
+	var _time := 0.0
+
+	func _process(delta: float) -> void:
+		_time += delta
+		queue_redraw()
+
+	func _draw() -> void:
+		if Game.high_scores.is_empty():
+			UI.centred(self, UI.display_font(), size * 0.5 - Vector2(0, 40), "NO SCORES YET", 40, UI.WHITE, 16)
+			return
+		var height := 66.0
+		for i in Game.high_scores.size():
+			var entry: Dictionary = Game.high_scores[i]
+			var k := UI.back_out((_time - i * 0.05) / 0.3)
+			if _time < i * 0.05:
+				continue
+			var won: bool = entry.get("won", false)
+			var graveyard: bool = entry.get("mode", "") == Run.GRAVEYARD
+			var at := Vector2(i * -7.0 + (1.0 - k) * -1800.0, i * (height + 4.0))
+			var r := Rect2(at, Vector2(size.x, height))
+			var first := i == 0
+			UI.slab(self, r, UI.YELLOW if first else UI.INK, 0.2)
+			var ink := UI.INK if first else UI.WHITE
+			var mid_y := at.y + height * 0.5 + 14.0
+			UI.outlined(self, UI.title_font(), Vector2(at.x + 22.0, mid_y + 4.0), str(i + 1), 44, UI.PINK if not first else UI.INK)
+			UI.outlined(self, UI.title_font(), Vector2(at.x + 110.0, mid_y + 4.0), UI.format_score(int(entry.score)), 48, ink)
+			UI.outlined(self, UI.title_font(), Vector2(at.x + 660.0, mid_y + 4.0), str(entry.get("hour", "")), 44, ink if first else UI.CYAN)
+			UI.outlined(self, UI.body_font(), Vector2(at.x + 900.0, mid_y), UI.format_time(float(entry.get("time", 0.0))), 30, ink)
+			var note := "GRAVEYARD" if graveyard else ("WON" if won else "")
+			UI.outlined(self, UI.display_font(), Vector2(at.x + 1030.0, mid_y), note, 26, UI.INK if first else UI.YELLOW)
+			UI.outlined(self, UI.body_font(), Vector2(at.x + size.x - 240.0, mid_y), str(entry.get("date", "")), 26, ink if first else UI.DIM)

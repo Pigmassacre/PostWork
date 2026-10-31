@@ -44,15 +44,15 @@ class Numeral extends Enemy:
 		pass
 
 	func draw(c: CanvasItem) -> void:
-		var font := UI.heading_font()
+		var font := UI.pixel_font()
 		var text := str(number)
-		var size := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.HEADING_SIZE)
-		var at := (pos + Vector2(-size.x * 0.5, UI.HEADING_SIZE * 0.4)).round()
-		c.draw_string(font, at + Vector2(1, 2), text, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.HEADING_SIZE, Color(0, 0, 0, 0.5))
+		var size := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16)
+		var at := (pos + Vector2(-size.x * 0.5, 16 * 0.4)).round()
+		c.draw_string(font, at + Vector2(1, 2), text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color(0, 0, 0, 0.5))
 		var color := Color.WHITE if flash > 0.3 else Color("fbf236").lerp(Color("d95763"), 1.0 - hp / max_hp)
 		for offset: Vector2 in [Vector2(-1, 0), Vector2(1, 0), Vector2(0, -1), Vector2(0, 1)]:
-			c.draw_string(font, at + offset, text, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.HEADING_SIZE, Color.BLACK)
-		c.draw_string(font, at, text, HORIZONTAL_ALIGNMENT_LEFT, -1, UI.HEADING_SIZE, color)
+			c.draw_string(font, at + offset, text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color.BLACK)
+		c.draw_string(font, at, text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, color)
 
 	func draw_flash(_c: CanvasItem) -> void:
 		pass
@@ -200,7 +200,7 @@ func _expose() -> void:
 	world.fx.ring(pos, 200.0, 0.6, Color("d95763"))
 	world.shots.ring(pos, 24, 80.0, "shot_round")
 	world.sfx("bell", 2.0, 0.7)
-	world.say_word("NO MORE NUMBERS", Color("d95763"))
+	world.say_word("FACE EXPOSED", Color("d95763"))
 
 
 func on_death() -> void:

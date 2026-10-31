@@ -10,8 +10,8 @@ extends Node
 ## saves a screenshot to shots/ at each of those seconds (of game time) and quits
 ## after the last, `--shot-name=x` names them, `--size=1280x720` sizes the window,
 ## `--quit-after=60` quits after so many seconds, `--input-test` plays the controls
-## by sending real input events (src/debug/input_test.gd), `--show=perks` or
-## `--show=over` brings that up a moment into a run, `--deck` pretends to be a Steam
+## by sending real input events (src/debug/input_test.gd), `--show=perks`,
+## `--show=pause` or `--show=over` brings that up a moment into a run, `--deck` pretends to be a Steam
 ## Deck, and `--no-save` leaves the save alone.
 
 const SCREENS := {
@@ -24,15 +24,12 @@ const SCREENS := {
 	"credits": "res://src/ui/credits.gd",
 }
 
-const BASE_SIZE := Vector2(480, 270)
-
 var screen: Node
 var screen_name := ""
-var _fade: ColorRect
+var _wipe: Wipe
 var _busy := false
 var _shot_name := ""
-var _fitted_to := Vector2.ZERO
-var _cursor: TextureRect
+var _cursor: Cursor
 
 
 func _ready() -> void:
@@ -40,19 +37,17 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	get_tree().root.min_size = Vector2i(480, 270)
 	_size_first_window()
-	_fit_window()
+	var fx_layer := CanvasLayer.new()
+	fx_layer.layer = 90
+	add_child(fx_layer)
+	UI.fx = UiFx.new()
+	fx_layer.add_child(UI.fx)
 	var layer := CanvasLayer.new()
 	layer.layer = 100
 	add_child(layer)
-	_fade = ColorRect.new()
-	_fade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_fade.color = Color(0, 0, 0, 0)
-	_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	layer.add_child(_fade)
-	# The pointer is drawn in the game's own pixels, like everything else.
-	_cursor = TextureRect.new()
-	_cursor.texture = load("res://assets/sprites/pointer.png")
-	_cursor.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_wipe = Wipe.new()
+	layer.add_child(_wipe)
+	_cursor = Cursor.new()
 	layer.add_child(_cursor)
 	var first := "title"
 	var quit_after := -1.0
@@ -81,6 +76,7 @@ func _ready() -> void:
 			_shot_name = arg.trim_prefix("--shot-name=")
 		elif arg.begins_with("--shots="):
 			shots = Array(arg.trim_prefix("--shots=").split(",")).map(func(t: String) -> float: return float(t))
+			Game.testing = true
 		elif arg.begins_with("--show="):
 			Game.debug_show = arg.trim_prefix("--show=")
 		elif arg == "--input-test":
@@ -96,32 +92,17 @@ func _ready() -> void:
 			get_tree().quit())
 
 
-## The game's pixels are always a whole number of the window's, however big the
-## window is: at least 480 by 270 of them, and however many more fit.
-func _fit_window() -> void:
-	var root := get_tree().root
-	var window := Vector2(root.size)
-	if window == _fitted_to or window.x <= 0.0 or window.y <= 0.0:
-		return
-	_fitted_to = window
-	var by := maxf(1.0, floorf(minf(window.x / BASE_SIZE.x, window.y / BASE_SIZE.y)))
-	root.content_scale_mode = Window.CONTENT_SCALE_MODE_VIEWPORT
-	root.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_IGNORE
-	root.content_scale_size = Vector2i(floori(window.x / by), floori(window.y / by))
-
-
-## A first window of the biggest whole multiple of the game that fits the screen, up to the project's.
+## A first window that fits the screen, if the project's own doesn't.
 func _size_first_window() -> void:
 	if DisplayServer.get_name() == "headless" or OS.has_feature("web") or Game.settings.fullscreen:
 		return
 	var window := get_window()
-	var room := Vector2(DisplayServer.screen_get_usable_rect(window.current_screen).size)
-	if room.x <= 0.0 or room.y <= 0.0:
+	var room := DisplayServer.screen_get_usable_rect(window.current_screen).size
+	if room.x <= 0 or room.y <= 0:
 		return
-	var by := maxf(1.0, floorf(minf(room.x / BASE_SIZE.x, room.y / BASE_SIZE.y)))
-	var fits := Vector2i(BASE_SIZE * by)
-	if fits.x < window.size.x or fits.y < window.size.y:
-		window.size = fits
+	if window.size.x > room.x or window.size.y > room.y:
+		var by := minf(float(room.x) / window.size.x, float(room.y) / window.size.y) * 0.95
+		window.size = Vector2i(Vector2(window.size) * by)
 		window.move_to_center()
 
 
@@ -149,11 +130,9 @@ func show_screen(which: String, args := {}, fade := 0.0) -> void:
 	if _busy:
 		return
 	_busy = true
-	if fade > 0.0 and screen != null:
-		var t := create_tween()
-		t.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-		t.tween_property(_fade, "color:a", 1.0, fade)
-		await t.finished
+	var wiping := fade > 0.0 and screen != null
+	if wiping:
+		await _wipe.cover()
 	if screen:
 		screen.queue_free()
 		screen = null
@@ -166,25 +145,15 @@ func show_screen(which: String, args := {}, fade := 0.0) -> void:
 	if screen.has_method("open"):
 		screen.open(args)
 	_busy = false
-	if fade > 0.0:
-		var t := create_tween()
-		t.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-		t.tween_property(_fade, "color:a", 0.0, fade)
-	else:
-		_fade.color.a = 0.0
+	if wiping:
+		_wipe.reveal()
 
 
 func _process(_delta: float) -> void:
-	_fit_window()
-	var flying: bool = screen_name == "play" and not get_tree().paused and not screen.get("_over")
 	_cursor.visible = Inputs.device == Inputs.Device.MOUSE
-	if flying and _cursor.visible:
-		_cursor.modulate = Color(1, 1, 1, 0.8)
-	else:
-		_cursor.modulate = Color.WHITE
+	_cursor.flying = screen_name == "play" and not get_tree().paused and not screen.get("_over")
 	if Input.mouse_mode != Input.MOUSE_MODE_HIDDEN and DisplayServer.get_name() != "headless":
 		Input.mouse_mode = Input.MOUSE_MODE_HIDDEN
-	_cursor.position = get_viewport().get_mouse_position().round()
 
 
 func _input(event: InputEvent) -> void:
