@@ -4,8 +4,10 @@ extends Control
 ## ship itself, in its big fat pixels, smashes through the word in one go, knocking every
 ## letter flying, bursts out of the K and overshoots, and settles back on the end of the
 ## word, its trail left burning through the letters: that's the logo. The hit shorts ZERO
-## on, a neon sign with a clock in its O. SMASK and the ship rock two degrees either way
-## over four seconds, as the original's start screen did.
+## on, a neon sign with a clock in its O. SMASK rocks two degrees either way over four
+## seconds, as the original's start screen did, with the ship and its line swinging a bit
+## further and a bit later, like something heavy on the end of it. SUPER leans and
+## slides, as if it's still going some speed; ZERO hums, swelling and brightening.
 
 const SMASK := "SMASK"
 const SIZE := 148
@@ -50,6 +52,7 @@ var ship_speed := 0.0
 var trail_end := TRAIL_FROM
 var _pop := 0.0
 var _rock := 0.0
+var _ship_rock := 0.0
 ## When the hit started ZERO going; below 0, it hasn't.
 var _zero_from := -1.0
 var _zero_landed := false
@@ -114,6 +117,7 @@ func _process(frame_time: float) -> void:
 		_spins[i] += (-_turns[i] * 170.0 - _spins[i] * 10.0) * delta
 		_turns[i] += _spins[i] * delta
 	_rock = deg_to_rad(sin(_time * PI * 0.5) * 2.0)
+	_ship_rock = deg_to_rad(sin(_time * PI * 0.5 - 0.45) * 2.7)
 	queue_redraw()
 	_smask_layer.queue_redraw()
 	_zero_layer.queue_redraw()
@@ -193,7 +197,7 @@ func _letter_centre(i: int) -> Vector2:
 
 
 func _on_screen(on_word: Vector2) -> Vector2:
-	return get_global_transform() * (word_transform() * on_word)
+	return get_global_transform() * (ship_transform() * on_word)
 
 
 func flight() -> Flight:
@@ -204,9 +208,9 @@ func flame_time() -> float:
 	return _time
 
 
-## The line of the word, rocking about its middle.
-func word_transform() -> Transform2D:
-	return Transform2D(TILT + _rock, CENTRE)
+## The line the ship and its trail are on.
+func ship_transform() -> Transform2D:
+	return Transform2D(TILT + _ship_rock, CENTRE)
 
 
 ## How a letter's drawn: down from too close as it lands, then on its spring.
@@ -250,11 +254,12 @@ func _draw_star() -> void:
 
 func _draw_super() -> void:
 	var k := UI.back_out(_time / 0.24, 1.6)
-	var at := Vector2(34 + (1.0 - k) * -700.0, 106)
-	# It's been going some speed.
-	UI.tilt(self, at, -0.07, 1.0, -0.22)
+	var drift := sin(_time * 2.3)
+	var at := Vector2(34 + (1.0 - k) * -700.0 + drift * 8.0, 106)
+	# It's been going some speed, and it's still leaning into it.
+	UI.tilt(self, at, -0.07, 1.0, -0.22 - drift * 0.05)
 	for line: Array in [[-10.0, 130.0], [14.0, 210.0], [38.0, 90.0]]:
-		UI.streak(self, Vector2(-30.0 - line[1], line[0]), Vector2(-16.0, line[0]), 6.0, Color(UI.glow(UI.WHITE, 1.2), 0.8))
+		UI.streak(self, Vector2(-30.0 - line[1] * (1.0 + drift * 0.25), line[0]), Vector2(-16.0, line[0]), 6.0, Color(UI.glow(UI.WHITE, 1.2), 0.8))
 	UI.slab(self, Rect2(-14, -36, 376, 96), UI.glow(UI.PINK, 1.25), 0.3)
 	draw_string(UI.title_font(), Vector2(22, 41), "SUPER", HORIZONTAL_ALIGNMENT_LEFT, -1, 66, Color(0, 0, 0, 0.4))
 	draw_string(UI.title_font(), Vector2(18, 37), "SUPER", HORIZONTAL_ALIGNMENT_LEFT, -1, 66, UI.WHITE)
@@ -283,6 +288,7 @@ func draw_zero(c: CanvasItem) -> void:
 	var font := UI.title_font()
 	var t := clampf((_time - _zero_from) / ZERO_GLITCH, 0.0, 1.0)
 	var settle := 1.0 - t
+	var hum := sin(_time * 3.7)
 	var jump := Vector2.ZERO
 	var stretch := Vector2.ONE
 	var split := 0.0
@@ -297,7 +303,7 @@ func draw_zero(c: CanvasItem) -> void:
 	else:
 		# And a little pop as it locks.
 		var after := clampf((_time - _zero_from - ZERO_GLITCH) / 0.14, 0.0, 1.0)
-		stretch = Vector2.ONE * (1.0 + (1.0 - after) * (1.0 - after) * 0.07)
+		stretch = Vector2.ONE * (1.0 + (1.0 - after) * (1.0 - after) * 0.07 + hum * 0.025 * after)
 	c.draw_set_transform_matrix(Transform2D(-0.05, stretch, -0.2, ZERO_MIDDLE + jump))
 	var w := UI.text_width(font, "ZERO", ZERO_SIZE)
 	var left := Vector2(-w * 0.5, ZERO_SIZE * 0.36)
@@ -305,7 +311,7 @@ func draw_zero(c: CanvasItem) -> void:
 		c.draw_string_outline(font, left + Vector2(-split, 0), "ZERO", HORIZONTAL_ALIGNMENT_LEFT, -1, ZERO_SIZE, 10, UI.glow(UI.PINK, 1.6))
 		c.draw_string_outline(font, left + Vector2(split, 0), "ZERO", HORIZONTAL_ALIGNMENT_LEFT, -1, ZERO_SIZE, 10, UI.glow(UI.CYAN, 1.6))
 	# Now and then a tube stutters.
-	var flicker := 1.0
+	var flicker := 1.0 + hum * 0.22
 	var beat := fmod(_time, 5.3)
 	if beat < 0.22 and int(beat * 40.0) % 2 == 0:
 		flicker = 0.35
@@ -386,7 +392,7 @@ class LogoTop extends Control:
 		var flying := logo.flight()
 		if flying == Logo.Flight.WAITING:
 			return
-		var word := logo.word_transform()
+		var word := logo.ship_transform()
 		# What it's left burning through the letters.
 		var a := Vector2(Logo.TRAIL_FROM, 0)
 		var b := Vector2(logo.trail_end, 0)
