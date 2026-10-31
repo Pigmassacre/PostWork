@@ -5,15 +5,15 @@ extends Control
 ## letter flying, bursts out of the K and overshoots, and settles back on the end of the
 ## word, its trail left burning through the letters: that's the logo. The hit shorts ZERO
 ## on, a neon sign with a clock in its O. SMASK rocks two degrees either way over four
-## seconds, as the original's start screen did, with the ship and its line swinging a bit
-## further and a bit later, like something heavy on the end of it. SUPER leans and
-## slides, as if it's still going some speed; ZERO hums, swelling and brightening.
+## seconds, as the original's start screen did. The ship and its line hold steady through
+## it: every so often a pulse of light runs up the line, and the ship surges on it. SUPER
+## leans and slides, as if it's still going some speed; ZERO hums, swelling and brightening.
 
 const SMASK := "SMASK"
 const SIZE := 148
 const ZERO_SIZE := 92
 const CENTRE := Vector2(400, 244)
-const ZERO_MIDDLE := Vector2(620, 346)
+const ZERO_MIDDLE := Vector2(620, 352)
 const TILT := -0.05
 const LEAN := -0.16
 const LAND_START := 0.12
@@ -28,6 +28,10 @@ const MOST_STEP := 1.0 / 30.0
 const PASS_FROM := -640.0
 const PARK_AT := 432.0
 const TRAIL_FROM := -440.0
+const PULSE_EVERY := 1.7
+## How much of that the pulse takes to run up the line; the rest's the ship's surge.
+const PULSE_RUN := 0.45
+const SURGE := 9.0
 
 enum Flight { WAITING, STRIKING, PARKED }
 
@@ -52,7 +56,7 @@ var ship_speed := 0.0
 var trail_end := TRAIL_FROM
 var _pop := 0.0
 var _rock := 0.0
-var _ship_rock := 0.0
+var _parked_time := 0.0
 ## When the hit started ZERO going; below 0, it hasn't.
 var _zero_from := -1.0
 var _zero_landed := false
@@ -109,6 +113,8 @@ func _process(frame_time: float) -> void:
 	burst = minf(burst + delta / BURST_TIME, 1.0)
 	_land_letters()
 	_fly_ship(delta)
+	if _flight == Flight.PARKED:
+		_parked_time += delta
 	for i in SMASK.length():
 		_hit[i] = maxf(_hit[i] - delta * 7.0, 0.0)
 		# Each letter's on a spring back to where it belongs.
@@ -117,7 +123,6 @@ func _process(frame_time: float) -> void:
 		_spins[i] += (-_turns[i] * 170.0 - _spins[i] * 10.0) * delta
 		_turns[i] += _spins[i] * delta
 	_rock = deg_to_rad(sin(_time * PI * 0.5) * 2.0)
-	_ship_rock = deg_to_rad(sin(_time * PI * 0.5 - 0.45) * 2.7)
 	queue_redraw()
 	_smask_layer.queue_redraw()
 	_zero_layer.queue_redraw()
@@ -210,7 +215,26 @@ func flame_time() -> float:
 
 ## The line the ship and its trail are on.
 func ship_transform() -> Transform2D:
-	return Transform2D(TILT + _ship_rock, CENTRE)
+	return Transform2D(TILT, CENTRE)
+
+
+## How far through its beat the idling ship is, 0 to 1.
+func _beat() -> float:
+	return fposmod(_parked_time / PULSE_EVERY, 1.0)
+
+
+## How far along the line the pulse has got, 0 to 1; below 0, there's none just now.
+func pulse() -> float:
+	if _parked_time <= 0.0 or _beat() >= PULSE_RUN:
+		return -1.0
+	return _beat() / PULSE_RUN
+
+
+## How far ahead of where it's parked the ship's surged, 0 to 1.
+func surge() -> float:
+	if _parked_time <= 0.0 or _beat() < PULSE_RUN:
+		return 0.0
+	return pow(sin(sqrt((_beat() - PULSE_RUN) / (1.0 - PULSE_RUN)) * PI), 2.0)
 
 
 ## How a letter's drawn: down from too close as it lands, then on its spring.
@@ -255,7 +279,7 @@ func _draw_star() -> void:
 func _draw_super() -> void:
 	var k := UI.back_out(_time / 0.24, 1.6)
 	var drift := sin(_time * 2.3)
-	var at := Vector2(34 + (1.0 - k) * -700.0 + drift * 8.0, 106)
+	var at := Vector2(34 + (1.0 - k) * -700.0 + drift * 8.0, 137)
 	# It's been going some speed, and it's still leaning into it.
 	UI.tilt(self, at, -0.07, 1.0, -0.22 - drift * 0.05)
 	for line: Array in [[-10.0, 130.0], [14.0, 210.0], [38.0, 90.0]]:
@@ -393,26 +417,32 @@ class LogoTop extends Control:
 		if flying == Logo.Flight.WAITING:
 			return
 		var word := logo.ship_transform()
-		# What it's left burning through the letters.
+		# What it's left burning through the letters, breathing a little.
+		var ahead := Vector2(logo.surge() * Logo.SURGE, 0)
 		var a := Vector2(Logo.TRAIL_FROM, 0)
-		var b := Vector2(logo.trail_end, 0)
+		var b := Vector2(logo.trail_end, 0) + ahead
 		if b.x > a.x:
+			var breath := 1.0 + sin(logo.flame_time() * 5.0) * 0.1 + logo.surge() * 0.2
 			draw_set_transform_matrix(word)
-			UI.streak(self, a, b, 34.0, Color(UI.INK, 0.9))
-			UI.streak(self, a, b, 24.0, UI.glow(UI.PINK, 1.5))
-			UI.streak(self, a, b, 11.0, UI.glow(UI.WHITE, 1.8))
+			UI.streak(self, a, b, 34.0 * breath, Color(UI.INK, 0.9))
+			UI.streak(self, a, b, 24.0 * breath, UI.glow(UI.PINK, 1.5))
+			UI.streak(self, a, b, 11.0 * breath, UI.glow(UI.WHITE, 1.8))
+			# The pulse, running up it to the ship.
+			if logo.pulse() >= 0.0:
+				var head := lerpf(a.x, b.x, logo.pulse() * logo.pulse())
+				UI.streak(self, Vector2(head - 150.0, 0), Vector2(head, 0), 15.0, UI.glow(UI.WHITE, 1.7))
 		if logo.burst < 1.0:
 			draw_set_transform_matrix(word * Transform2D(0.0, Vector2(logo.burst_x, 0)))
 			var grown := UI.cubic_out(logo.burst)
 			var left := 1.0 - logo.burst
 			draw_circle(Vector2.ZERO, 40.0 + 90.0 * grown, Color(UI.glow(UI.YELLOW, 2.0), left * left * left * left * 0.8))
 			draw_arc(Vector2.ZERO, 200.0 * grown, 0.0, TAU, 64, Color(UI.glow(UI.YELLOW, 2.4), left), 14.0 * left + 1.0, true)
-		draw_set_transform_matrix(word * Transform2D(0.0, logo.ship_at))
+		draw_set_transform_matrix(word * Transform2D(0.0, logo.ship_at + ahead))
 		# Its engine: longer the faster it's going, ticking over when it's stopped.
 		var flame := 26.0 + sin(logo.flame_time() * 37.0) * 7.0 + sin(logo.flame_time() * 61.0) * 5.0
-		flame += minf(maxf(logo.ship_speed, 0.0) * 0.07, 400.0)
+		flame += minf(maxf(logo.ship_speed, 0.0) * 0.07, 400.0) + logo.surge() * 34.0
 		UI.streak(self, Vector2(-44.0 - flame, 0), Vector2(-40, 0), 20.0, UI.glow(UI.WHITE, 2.0))
 		var tex := Sprites.get_tex("ship3")
-		draw_set_transform_matrix(word * Transform2D(PI * 0.5, Vector2(SHIP_SCALE, SHIP_SCALE), 0.0, logo.ship_at))
+		draw_set_transform_matrix(word * Transform2D(PI * 0.5, Vector2(SHIP_SCALE, SHIP_SCALE), 0.0, logo.ship_at + ahead))
 		draw_texture(tex, -tex.get_size() * 0.5)
 		draw_set_transform_matrix(Transform2D.IDENTITY)
