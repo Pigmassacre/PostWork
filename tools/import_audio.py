@@ -37,7 +37,6 @@ OUT = os.path.join(REPO, "assets", "audio")
 CASUAL = "Sounds/Casual & Mobile Sound FX Pack Vol. 1/**"
 RETRO = "Sounds/Retro Gaming Sound FX Pack/Retro/8 bit/**"
 ELECTRONIC = "Sounds/Electronic Music Pack Vol. 5/Electronic Vol 5 Music Pack"
-EIGHTIES = "Sounds/80s Music Pack/80s Music Pack"
 GOTHIC = "Sounds/Gothic Fantasy Sound FX Pack Vol. 1/**"
 FILMCOW = "Sounds/FilmCow Designed SFX"
 
@@ -54,6 +53,7 @@ SOUNDS = {
     "wall": [{"src": f"{RETRO}/Big Footsteps 00{n}.wav", "length": 0.25} for n in (1, 2, 3)],
     "bump": {"src": f"{CASUAL}/Plonk.wav", "length": 0.25},
     "hurt": [{"src": f"{RETRO}/Melee Attack Punch 00{n}.wav", "length": 0.5} for n in (1, 2, 3)],
+    "safe_over": {"src": f"{RETRO}/Force Field End.wav", "length": 0.3, "fade": 0.1, "gain": -4.0},
     "death": {"src": f"{RETRO}/Massive Boom.wav", "length": 2.5, "fade": 0.8},
     # --- what's out there -------------------------------------------------------
     "boom": [{"src": f"{RETRO}/Boom Short 00{n}.wav", "length": 0.5} for n in (1, 2, 3, 4, 5)],
@@ -80,13 +80,13 @@ SOUNDS = {
 }
 
 MUSIC = {
-    "title": f"{EIGHTIES}/Circuit City*",
-    "dusk": f"{EIGHTIES}/Laser Loves*",
+    "title": f"{ELECTRONIC}/Apollo*",
+    "dusk": f"{ELECTRONIC}/Festival*",
     "night": f"{ELECTRONIC}/Solar Complex*",
     "late": f"{ELECTRONIC}/Quanta*",
     "boss": f"{ELECTRONIC}/Double-dip*",
-    "final": f"{EIGHTIES}/Odyssey*",
-    "ending": f"{EIGHTIES}/Starlit Embrace*",
+    "final": f"{ELECTRONIC}/Golden Gates*",
+    "ending": f"{ELECTRONIC}/Stardust*",
 }
 
 

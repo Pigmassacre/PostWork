@@ -20,6 +20,11 @@ var charge_time := 0.0
 var cooldown := 0.0
 var invulnerable := 0.0
 var smask_left := 0.0
+## How long the current spell of safety was when it began, for the gauge round the ship.
+var safe_total := 0.0
+var smask_total := 0.0
+## That safety's from a SMASK (gold, solid), not from a hit (blinking).
+var safe_from_smask := false
 var smask_power := 0.0
 var smask_dir := Vector2.UP
 ## Which SMASK this is, so a thing is only hit once by each.
@@ -80,7 +85,10 @@ func step(dt: float) -> void:
 		desired_angle = steering.angle()
 	angle = lerp_angle(angle, desired_angle, clampf(dt * Balance.TURN, 0.0, 1.0))
 	thrusting = thrust
-	invulnerable = maxf(invulnerable - dt, 0.0)
+	if invulnerable > 0.0:
+		invulnerable -= dt
+		if invulnerable <= 0.0 and state != State.SMASKING:
+			_safety_over()
 	cooldown = maxf(cooldown - dt, 0.0)
 	wall_sound_clock = maxf(wall_sound_clock - dt, 0.0)
 	match state:
@@ -134,6 +142,9 @@ func _let_go() -> void:
 	charge = 0.0
 	var long := 1.0 + 0.3 * run.level("long")
 	smask_left = lerpf(Balance.SMASK_TIME_MIN, Balance.SMASK_TIME_MAX, smask_power) * long
+	smask_total = smask_left
+	safe_from_smask = true
+	safe_total = smask_left + Balance.SMASK_GRACE
 	smask_dir = Vector2.from_angle(desired_angle)
 	angle = desired_angle
 	vel = smask_dir * lerpf(Balance.SMASK_SPEED_MIN, Balance.SMASK_SPEED_MAX, smask_power)
@@ -158,6 +169,8 @@ func _end_smask() -> void:
 	state = State.FLYING
 	cooldown = Balance.SMASK_COOLDOWN
 	invulnerable = maxf(invulnerable, Balance.SMASK_GRACE)
+	safe_from_smask = true
+	safe_total = smask_total + Balance.SMASK_GRACE
 	# It carries on at what it would fly at, flat out. The drift's the prize.
 	vel = vel.normalized() * minf(vel.length(), top_speed())
 	if run.has("shock"):
@@ -258,6 +271,8 @@ func hurt(from: Vector2) -> bool:
 	state = State.FLYING if state != State.DEAD else state
 	charge = 0.0
 	invulnerable = Balance.INVULNERABLE_AFTER_HIT
+	safe_total = invulnerable
+	safe_from_smask = false
 	vel += (pos - from).normalized() * 200.0
 	world.fx.shake(8.0)
 	world.fx.hitstop(0.14)
@@ -273,11 +288,26 @@ func hurt(from: Vector2) -> bool:
 			run.second_wind_used = true
 			run.hull = 1
 			invulnerable = Balance.INVULNERABLE_AFTER_HIT * 2.0
+			safe_total = invulnerable
 			world.sfx("coffee", 0.0, 0.7)
 			world.say_word("SECOND WIND", Color("d95763"))
 		else:
 			_die()
 	return true
+
+
+## The moment it can be hurt again: you hear it and you see it.
+func _safety_over() -> void:
+	invulnerable = 0.0
+	world.fx.ring(pos, 20.0, 0.2, Color("cbdbfc"))
+	world.sfx("safe_over", -6.0)
+
+
+## How much of its safety it has left, 0 to 1 (a SMASK's own time counts).
+func safety() -> float:
+	if state == State.SMASKING:
+		return clampf((smask_left + Balance.SMASK_GRACE) / maxf(safe_total, 0.01), 0.0, 1.0)
+	return clampf(invulnerable / maxf(safe_total, 0.01), 0.0, 1.0)
 
 
 func _die() -> void:
@@ -296,7 +326,7 @@ func draw(canvas: CanvasItem) -> void:
 	if state == State.DEAD:
 		return
 	flame_time += canvas.get_process_delta_time()
-	if invulnerable > 0.0 and state == State.FLYING and int(invulnerable * 16.0) % 2 == 0:
+	if invulnerable > 0.0 and not safe_from_smask and state == State.FLYING and int(invulnerable * 16.0) % 2 == 0:
 		return
 	var tex := Sprites.get_tex("ship%d" % frame())
 	var rot := angle + PI * 0.5

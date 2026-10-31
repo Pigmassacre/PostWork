@@ -37,16 +37,11 @@ window/stretch/mode="viewport"
 window/stretch/aspect="expand"
 window/stretch/scale_mode="integer"
 
-[input_devices]
-
-pointing/emulate_touch_from_mouse=false
-
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
-renderer/rendering_method.web="gl_compatibility"
 textures/vram_compression/import_etc2_astc=true
 environment/defaults/default_clear_color=Color(0.133333, 0.12549, 0.203922, 1)
 2d/snap/snap_2d_transforms_to_pixel=true

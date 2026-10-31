@@ -763,6 +763,10 @@ func _paint_add(c: CanvasItem) -> void:
 		Sprites.draw(c, Sprites.get_tex("ship3"), ship.pos, ship.angle + PI * 0.5, Color(1, 1, 1, 0.8))
 	elif ship.state == Ship.State.CHARGING:
 		Sprites.draw(c, Sprites.get_tex("ship3"), ship.pos, ship.angle + PI * 0.5, Color(1, 0.9, 0.3, ship.charge * 0.6))
+	elif ship.invulnerable > 0.0 and ship.safe_from_smask and ship.state != Ship.State.DEAD:
+		# Still safe: all gold, until it isn't.
+		Sprites.draw(c, Sprites.get_tex("glow"), ship.pos, 0.0, Color(1, 0.9, 0.3, 0.5), 1.2)
+		Sprites.draw(c, Sprites.get_tex("ship3"), ship.pos, ship.angle + PI * 0.5, Color(1, 0.85, 0.2, 0.85))
 	elif ship.state == Ship.State.FLYING:
 		Sprites.draw(c, Sprites.get_tex("glow"), ship.pos, 0.0, Color(0.6, 0.75, 1.0, 0.16), 1.2)
 	fx.draw_add(c)

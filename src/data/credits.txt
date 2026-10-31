@@ -11,7 +11,7 @@ Made with Godot Engine (godotengine.org). Its notices are in GODOT_COPYRIGHT.txt
 Lettering: Vermin Vibes 1989, by Andrew McCluskey, under Creative Commons
 Attribution Share Alike 3.0 (see VerminVibes-CC-BY-SA.txt).
 
-Music: Ovani Sound. 80s Music Pack and Electronic Music Pack Vol. 5.
+Music: Ovani Sound. Electronic Music Pack Vol. 5.
 
 Sounds: Ovani Sound. Retro Gaming Sound FX Pack, Casual & Mobile Sound FX Pack
 Vol. 1 and Gothic Fantasy Sound FX Pack Vol. 1. FilmCow's Royalty Free Sound

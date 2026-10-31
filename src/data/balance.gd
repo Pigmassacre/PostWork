@@ -56,8 +56,8 @@ const SMASK_DAMAGE_MIN := 12.0
 const SMASK_DAMAGE_MAX := 44.0
 const SMASK_RADIUS := 11.0
 const SMASK_COOLDOWN := 0.65
-## Invulnerable this much longer than the SMASK.
-const SMASK_GRACE := 0.14
+## Invulnerable this much longer than the SMASK, in gold, with a chime when it's over.
+const SMASK_GRACE := 0.32
 ## Into a wall: a shock wave.
 const WALL_SHOCK_RADIUS_MIN := 28.0
 const WALL_SHOCK_RADIUS_MAX := 84.0
