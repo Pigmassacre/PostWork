@@ -1,9 +1,9 @@
 class_name Logo
 extends Control
 ## SUPER SMASK ZERO. The letters of SMASK slam down one by one on a comic star. Then the
-## ship itself, in its big fat pixels, comes screaming through the word, knocks every
-## letter flying and stops dead on the end of it, its trail left burning through the
-## letters: that's the logo. ZERO's a neon sign with a clock in its O. The whole lot
+## ship itself, in its big fat pixels, smashes through the word in one go, knocking every
+## letter flying, overshoots and settles back on the end of it, its trail left burning
+## through the letters: that's the logo. ZERO's a neon sign with a clock in its O. The whole lot
 ## rocks two degrees either way over four seconds, as the original's start screen did.
 
 const SMASK := "SMASK"
@@ -12,12 +12,14 @@ const ZERO_SIZE := 92
 const CENTRE := Vector2(400, 244)
 const TILT := -0.05
 const LEAN := -0.16
-const LAND_START := 0.22
-const LAND_GAP := 0.1
+const LAND_START := 0.12
+const LAND_GAP := 0.05
 const LAND_TIME := 0.16
-const ZERO_AT := 0.86
-const FIRST_PASS := 1.5
-const STRIKE_TIME := 0.6
+const ZERO_AT := 0.62
+const SHIP_AT := 0.42
+const STRIKE_TIME := 0.62
+## A long frame mustn't blow the letters' springs up.
+const MOST_STEP := 1.0 / 30.0
 const PASS_FROM := -640.0
 const PARK_AT := 432.0
 const TRAIL_FROM := -440.0
@@ -35,15 +37,18 @@ var _passed: Array[bool] = []
 var _lefts: Array[float] = []
 var _widths: Array[float] = []
 var _flight := Flight.WAITING
-var _flight_clock := FIRST_PASS
+var _flight_clock := SHIP_AT
 var _flight_t := 0.0
+var _struck := false
 ## The ship, along the word.
-var ship_at := Vector2.ZERO
+var ship_at := Vector2(PASS_FROM, 0)
+var ship_speed := 0.0
 ## How far along the word the trail it leaves goes.
 var trail_end := TRAIL_FROM
 var _pop := 0.0
 var _zero_landed := false
 var _smask_layer: LogoSmask
+var _zero_layer: LogoZero
 var _top_layer: LogoTop
 
 
@@ -76,18 +81,22 @@ func _ready() -> void:
 	_smask_layer.logo = self
 	_smask_layer.material = shine
 	add_child(_smask_layer)
+	_zero_layer = LogoZero.new()
+	_zero_layer.logo = self
+	add_child(_zero_layer)
 	_top_layer = LogoTop.new()
 	_top_layer.logo = self
 	add_child(_top_layer)
 
 
-func _process(delta: float) -> void:
+func _process(frame_time: float) -> void:
+	var delta := minf(frame_time, MOST_STEP)
 	_time += delta
 	_pop = maxf(_pop - delta * 3.5, 0.0)
 	_land_letters()
 	_fly_ship(delta)
 	for i in SMASK.length():
-		_hit[i] = maxf(_hit[i] - delta * 5.0, 0.0)
+		_hit[i] = maxf(_hit[i] - delta * 7.0, 0.0)
 		# Each letter's on a spring back to where it belongs.
 		_velocities[i] += (-_offsets[i] * 170.0 - _velocities[i] * 11.0) * delta
 		_offsets[i] += _velocities[i] * delta
@@ -99,6 +108,7 @@ func _process(delta: float) -> void:
 	modulate.a = 0.9 + wave * 0.1
 	queue_redraw()
 	_smask_layer.queue_redraw()
+	_zero_layer.queue_redraw()
 	_top_layer.queue_redraw()
 
 
@@ -130,22 +140,21 @@ func _fly_ship(delta: float) -> void:
 				Audio.play("smask", -9.0, 1.0)
 		Flight.STRIKING:
 			_flight_t += delta / STRIKE_TIME
-			ship_at.x = lerpf(PASS_FROM, PARK_AT, UI.cubic_out(minf(_flight_t, 1.0)))
+			var was := ship_at.x
+			ship_at.x = lerpf(PASS_FROM, PARK_AT, UI.back_out(minf(_flight_t, 1.0)))
+			ship_speed = (ship_at.x - was) / maxf(delta, 0.001)
 			trail_end = ship_at.x - 44.0
 			_knock_as_it_goes()
+			if not _struck and ship_at.x >= PARK_AT:
+				_struck = true
+				if UI.fx:
+					var at := _on_screen(ship_at)
+					UI.fx.sparks(at, UI.YELLOW, 24, 1000.0)
+					UI.fx.ring(at, 200.0, UI.YELLOW)
 			if _flight_t >= 1.0:
-				_park()
-
-
-func _park() -> void:
-	_flight = Flight.PARKED
-	_pop = 1.0
-	if UI.fx:
-		var at := _on_screen(ship_at)
-		UI.fx.sparks(at, UI.YELLOW, 24, 1000.0)
-		UI.fx.ring(at, 200.0, UI.YELLOW)
-		UI.fx.shake(6.0)
-	Audio.play("boom", -9.0, 1.1)
+				_flight = Flight.PARKED
+				ship_at.x = PARK_AT
+				ship_speed = 0.0
 
 
 func _knock_as_it_goes() -> void:
@@ -207,7 +216,6 @@ func _draw() -> void:
 	_draw_star()
 	_draw_super()
 	_draw_extrusion()
-	_draw_zero()
 	draw_set_transform_matrix(Transform2D.IDENTITY)
 
 
@@ -249,14 +257,14 @@ func _draw_extrusion() -> void:
 
 
 ## A neon sign: hollow, flickering a little, with a clock going round in its O.
-func _draw_zero() -> void:
+func draw_zero(c: CanvasItem) -> void:
 	if _time < ZERO_AT:
 		return
 	var font := UI.title_font()
 	var k := clampf((_time - ZERO_AT) / LAND_TIME, 0.0, 1.0)
 	var at := Vector2(size.x - 34.0, 424.0)
-	var scale_now := 1.0 + (1.0 - k * k) * 2.5
-	draw_set_transform_matrix(Transform2D(-0.05 + (1.0 - k) * 0.5, Vector2(scale_now, scale_now), -0.2, at))
+	var scale_now := 1.0 + (1.0 - k * k) * 0.45
+	c.draw_set_transform_matrix(Transform2D(-0.05 + (1.0 - k) * 0.15, Vector2(scale_now, scale_now), -0.2, at))
 	var w := UI.text_width(font, "ZERO", ZERO_SIZE)
 	var left := Vector2(-w, 0)
 	# Now and then a tube stutters.
@@ -265,21 +273,24 @@ func _draw_zero() -> void:
 	if beat < 0.22 and int(beat * 40.0) % 2 == 0:
 		flicker = 0.35
 	var neon := UI.glow(UI.hue(0.1), 1.5 * flicker)
-	draw_string_outline(font, left + Vector2(5, 6), "ZERO", HORIZONTAL_ALIGNMENT_LEFT, -1, ZERO_SIZE, 26, UI.INK)
-	draw_string_outline(font, left, "ZERO", HORIZONTAL_ALIGNMENT_LEFT, -1, ZERO_SIZE, 15, neon)
-	draw_string_outline(font, left, "ZERO", HORIZONTAL_ALIGNMENT_LEFT, -1, ZERO_SIZE, 6, UI.glow(UI.WHITE.lerp(UI.hue(0.1), 0.3), 1.6 * flicker))
+	c.draw_string_outline(font, left + Vector2(5, 6), "ZERO", HORIZONTAL_ALIGNMENT_LEFT, -1, ZERO_SIZE, 26, UI.INK)
+	c.draw_string_outline(font, left, "ZERO", HORIZONTAL_ALIGNMENT_LEFT, -1, ZERO_SIZE, 15, neon)
+	c.draw_string_outline(font, left, "ZERO", HORIZONTAL_ALIGNMENT_LEFT, -1, ZERO_SIZE, 6, UI.glow(UI.WHITE.lerp(UI.hue(0.1), 0.3), 1.6 * flicker))
 	# Stroked as well as filled: it closes the seams where the font's shapes overlap.
-	draw_string_outline(font, left, "ZERO", HORIZONTAL_ALIGNMENT_LEFT, -1, ZERO_SIZE, 2, UI.INK)
-	draw_string(font, left, "ZERO", HORIZONTAL_ALIGNMENT_LEFT, -1, ZERO_SIZE, UI.INK)
+	c.draw_string_outline(font, left, "ZERO", HORIZONTAL_ALIGNMENT_LEFT, -1, ZERO_SIZE, 2, UI.INK)
+	c.draw_string(font, left, "ZERO", HORIZONTAL_ALIGNMENT_LEFT, -1, ZERO_SIZE, UI.INK)
 	# The O's the clock: its hands race round to midnight, and start again.
 	var o_w := UI.text_width(font, "O", ZERO_SIZE)
 	var face := left + Vector2(w - o_w * 0.5, -ZERO_SIZE * 0.36)
 	var minute := _time * 2.4 - PI * 0.5
 	var hour := _time * 0.2 - PI * 0.5
 	var hand := UI.glow(UI.YELLOW, 2.0 * flicker)
-	draw_line(face, face + Vector2.from_angle(minute) * 13.0, hand, 3.5, true)
-	draw_line(face, face + Vector2.from_angle(hour) * 8.0, hand, 3.5, true)
+	c.draw_line(face, face + Vector2.from_angle(minute) * 13.0, hand, 3.5, true)
+	c.draw_line(face, face + Vector2.from_angle(hour) * 8.0, hand, 3.5, true)
 
+
+## These layers all fill the logo: with no size of their own, they went missing for any
+## frame the shake put the logo's corner above the screen.
 
 ## The chrome letters themselves, in their own shader.
 class LogoSmask extends Control:
@@ -287,6 +298,7 @@ class LogoSmask extends Control:
 
 	func _ready() -> void:
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
+		set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 	func _draw() -> void:
 		var font := UI.title_font()
@@ -301,6 +313,19 @@ class LogoSmask extends Control:
 		draw_set_transform_matrix(Transform2D.IDENTITY)
 
 
+## ZERO, over any letter knocked its way.
+class LogoZero extends Control:
+	var logo: Logo
+
+	func _ready() -> void:
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+		set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
+	func _draw() -> void:
+		logo.draw_zero(self)
+		draw_set_transform_matrix(Transform2D.IDENTITY)
+
+
 ## Over the letters: their white-hot flash when hit, and the ship, in its fat pixels.
 class LogoTop extends Control:
 	const SHIP_SCALE := 7.0
@@ -308,6 +333,7 @@ class LogoTop extends Control:
 
 	func _ready() -> void:
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
+		set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 
 	func _draw() -> void:
@@ -315,23 +341,23 @@ class LogoTop extends Control:
 		for i in Logo.SMASK.length():
 			if logo.hit_of(i) > 0.0:
 				draw_set_transform_matrix(logo.letter_transform(i))
-				draw_string(font, Vector2(-logo.width_of(i) * 0.5, Logo.SIZE * 0.36), Logo.SMASK[i], HORIZONTAL_ALIGNMENT_LEFT, -1, Logo.SIZE, Color(UI.glow(UI.WHITE, 3.0), logo.hit_of(i)))
+				draw_string(font, Vector2(-logo.width_of(i) * 0.5, Logo.SIZE * 0.36), Logo.SMASK[i], HORIZONTAL_ALIGNMENT_LEFT, -1, Logo.SIZE, Color(UI.glow(UI.WHITE, 1.3), logo.hit_of(i) * 0.8))
 		var flying := logo.flight()
 		if flying == Logo.Flight.WAITING:
 			return
 		var word := Transform2D(Logo.TILT, Logo.CENTRE)
 		# What it's left burning through the letters.
-		draw_set_transform_matrix(word)
 		var a := Vector2(Logo.TRAIL_FROM, 0)
 		var b := Vector2(logo.trail_end, 0)
-		UI.streak(self, a, b, 34.0, Color(UI.INK, 0.9))
-		UI.streak(self, a, b, 24.0, UI.glow(UI.PINK, 1.5))
-		UI.streak(self, a, b, 11.0, UI.glow(UI.WHITE, 1.8))
+		if b.x > a.x:
+			draw_set_transform_matrix(word)
+			UI.streak(self, a, b, 34.0, Color(UI.INK, 0.9))
+			UI.streak(self, a, b, 24.0, UI.glow(UI.PINK, 1.5))
+			UI.streak(self, a, b, 11.0, UI.glow(UI.WHITE, 1.8))
 		draw_set_transform_matrix(word * Transform2D(0.0, logo.ship_at))
-		# Its engine: flat out, then ticking over.
+		# Its engine: longer the faster it's going, ticking over when it's stopped.
 		var flame := 26.0 + sin(logo.flame_time() * 37.0) * 7.0 + sin(logo.flame_time() * 61.0) * 5.0
-		if flying == Logo.Flight.STRIKING:
-			flame = 300.0
+		flame += minf(maxf(logo.ship_speed, 0.0) * 0.07, 400.0)
 		UI.streak(self, Vector2(-44.0 - flame, 0), Vector2(-40, 0), 20.0, UI.glow(UI.WHITE, 2.0))
 		var tex := Sprites.get_tex("ship3")
 		draw_set_transform_matrix(word * Transform2D(PI * 0.5, Vector2(SHIP_SCALE, SHIP_SCALE), 0.0, logo.ship_at))

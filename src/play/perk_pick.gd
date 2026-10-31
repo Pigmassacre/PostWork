@@ -159,8 +159,9 @@ class PerkCard extends Button:
 				UI.fx.shake(4.0)
 				Audio.play("hit", -7.0, 0.8)
 		_lit = move_toward(_lit, 1.0 if has_focus() else 0.0, delta * 9.0)
-		_pop_vel += (-_pop * 240.0 - _pop_vel * 15.0) * delta
-		_pop += _pop_vel * delta
+		var step := minf(delta, 1.0 / 30.0)
+		_pop_vel += (-_pop * 240.0 - _pop_vel * 15.0) * step
+		_pop += _pop_vel * step
 		if _gone > 0.0:
 			_gone += delta
 		queue_redraw()

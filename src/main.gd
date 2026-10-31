@@ -143,7 +143,7 @@ func _take_shots(times: Array) -> void:
 			clock += get_process_delta_time()
 		await RenderingServer.frame_post_draw
 		var name_part := _shot_name if _shot_name != "" else screen_name
-		var path := folder + "/%s_%05.1f.png" % [name_part, t]
+		var path := folder + "/%s_%06.2f.png" % [name_part, t]
 		get_viewport().get_texture().get_image().save_png(path)
 		print("saved ", path)
 	get_tree().quit()

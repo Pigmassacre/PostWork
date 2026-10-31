@@ -82,9 +82,10 @@ func _process(delta: float) -> void:
 		z_index = 0
 	_lit = move_toward(_lit, 1.0 if focused else 0.0, delta / WIPE_TIME)
 	_slide = lerpf(_slide, 1.0 if focused else 0.0, clampf(delta * 18.0, 0.0, 1.0))
-	# A spring, for the bounce.
-	_pop_vel += (-_pop * 260.0 - _pop_vel * 16.0) * delta
-	_pop += _pop_vel * delta
+	# A spring, for the bounce. A long frame mustn't blow it up.
+	var step := minf(delta, 1.0 / 30.0)
+	_pop_vel += (-_pop * 260.0 - _pop_vel * 16.0) * step
+	_pop += _pop_vel * step
 	_press = maxf(_press - delta * 4.0, 0.0)
 	queue_redraw()
 
