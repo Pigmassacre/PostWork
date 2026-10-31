@@ -30,6 +30,7 @@ var _wipe: Wipe
 var _busy := false
 var _shot_name := ""
 var _cursor: Cursor
+var _glow: Environment
 
 
 func _ready() -> void:
@@ -37,6 +38,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	get_tree().root.min_size = Vector2i(480, 270)
 	_size_first_window()
+	_set_up_glow()
 	var fx_layer := CanvasLayer.new()
 	fx_layer.layer = 90
 	add_child(fx_layer)
@@ -92,9 +94,31 @@ func _ready() -> void:
 			get_tree().quit())
 
 
+## The UI's colours go past white where they're meant to shine (UI.glow), and only
+## those bloom. The game's own pixels are in their own view, and don't.
+func _set_up_glow() -> void:
+	_glow = Environment.new()
+	_glow.background_mode = Environment.BG_CANVAS
+	# Only layers up to this one get it, and the UI goes up to the wipe, at 100.
+	_glow.background_canvas_max_layer = 200
+	_glow.glow_enabled = Game.settings.glow
+	_glow.glow_hdr_threshold = 1.0
+	_glow.glow_hdr_scale = 2.0
+	_glow.glow_intensity = 0.25
+	_glow.glow_strength = 1.0
+	_glow.glow_bloom = 0.0
+	_glow.glow_blend_mode = Environment.GLOW_BLEND_MODE_ADDITIVE
+	for level in [1, 2, 3, 4, 5]:
+		_glow.set_glow_level(level, 1.0 if level < 4 else 0.5)
+	var world_environment := WorldEnvironment.new()
+	world_environment.environment = _glow
+	add_child(world_environment)
+	Game.settings_changed.connect(func() -> void: _glow.glow_enabled = Game.settings.glow)
+
+
 ## A first window that fits the screen, if the project's own doesn't.
 func _size_first_window() -> void:
-	if DisplayServer.get_name() == "headless" or OS.has_feature("web") or Game.settings.fullscreen:
+	if DisplayServer.get_name() == "headless" or Game.settings.fullscreen:
 		return
 	var window := get_window()
 	var room := DisplayServer.screen_get_usable_rect(window.current_screen).size

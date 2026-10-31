@@ -75,7 +75,7 @@ func _draw() -> void:
 		return
 	var top := 1060.0 * k
 	var bottom := 730.0 * k
-	for band: Array in [[44.0, UI.PINK], [22.0, UI.YELLOW]]:
+	for band: Array in [[44.0, UI.glow(UI.PINK, 1.25)], [22.0, UI.YELLOW]]:
 		var w: float = band[0]
 		UI.fill(self, PackedVector2Array([Vector2(-10, -10), Vector2(top + w, -10), Vector2(bottom + w, h + 10), Vector2(-10, h + 10)]), band[1])
 	UI.fill(self, PackedVector2Array([Vector2(-10, -10), Vector2(top, -10), Vector2(bottom, h + 10), Vector2(-10, h + 10)]), UI.INK)

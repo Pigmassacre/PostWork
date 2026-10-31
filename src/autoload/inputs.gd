@@ -93,7 +93,7 @@ func _ready() -> void:
 	_add_ui("ui_down", [JOY_BUTTON_DPAD_DOWN], [KEY_S], JOY_AXIS_LEFT_Y, 1.0)
 	_add_ui("ui_left", [JOY_BUTTON_DPAD_LEFT], [KEY_A], JOY_AXIS_LEFT_X, -1.0)
 	_add_ui("ui_right", [JOY_BUTTON_DPAD_RIGHT], [KEY_D], JOY_AXIS_LEFT_X, 1.0)
-	if DisplayServer.is_touchscreen_available() and (OS.has_feature("mobile") or OS.has_feature("web_android") or OS.has_feature("web_ios")):
+	if DisplayServer.is_touchscreen_available() and OS.has_feature("mobile"):
 		device = Device.TOUCH
 	# A Deck's controls are a pad, whatever was last touched.
 	if deck:

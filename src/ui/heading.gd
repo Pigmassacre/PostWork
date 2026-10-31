@@ -35,7 +35,7 @@ func _draw() -> void:
 	var at := Vector2(30.0, size.y * 0.5)
 	var plate := Rect2(Vector2(-60.0, -font_size * 0.62), Vector2(w + 170.0, font_size * 1.24))
 	UI.tilt(self, at + Vector2((1.0 - k) * -1400.0, 0), -0.03, 1.0, 0.0)
-	UI.plate(self, plate, UI.INK, color, 0.35)
+	UI.plate(self, plate, UI.INK, UI.glow(color, 1.6), 0.35)
 	UI.tilt(self, at + Vector2((1.0 - UI.cubic_out(_t)) * -700.0, 0), -0.03, 1.0 + (1.0 - _t) * 1.4, -0.14)
 	draw_string(font, Vector2(4, font_size * 0.36 + 5), text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, UI.PINK)
 	draw_string(font, Vector2(0, font_size * 0.36), text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, color)

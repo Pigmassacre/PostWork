@@ -103,12 +103,13 @@ func _draw() -> void:
 		var turning := Time.get_ticks_msec() * 0.0015
 		# Small enough to keep off the rows either side.
 		var reach := size.y * 0.72
-		UI.burst(self, r.position + Vector2(-reach * 0.4, size.y * 0.5), reach * 0.45, reach * (0.75 + 0.25 * _lit), 10, turning, Color(UI.hue(0.45), _lit))
+		UI.burst(self, r.position + Vector2(-reach * 0.4, size.y * 0.5), reach * 0.45, reach * (0.75 + 0.25 * _lit), 10, turning, Color(UI.glow(UI.hue(0.45), 1.8), _lit))
 	UI.slab(self, Rect2(r.position + Vector2(8, 8), r.size), Color(0, 0, 0, 0.55))
 	UI.slab(self, r, UI.INK if not disabled else Color(UI.INK_SOFT, 0.6))
 	if focused:
 		var wipe := r
 		wipe.size.x *= UI.cubic_out(_lit)
+		UI.slab(self, wipe.grow(2.0), UI.glow(accent, 1.5))
 		UI.slab(self, wipe, accent)
 	if _press > 0.0:
 		UI.slab(self, r, Color(1, 1, 1, _press))

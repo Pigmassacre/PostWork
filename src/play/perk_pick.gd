@@ -72,7 +72,7 @@ func _draw() -> void:
 	var mid := Vector2(size.x * 0.5, 130.0)
 	UI.burst(self, mid, 90.0, 1200.0 * k, 24, _t * 0.2, Color(UI.hue(0.5), 0.13))
 	UI.tilt(self, mid + Vector2((1.0 - k) * -2000.0, 0), -0.02, 1.0 + (1.0 - UI.back_out(_t / 0.3)) * 1.2, 0.0)
-	UI.plate(self, Rect2(-500, -68, 1000, 136), UI.INK, UI.YELLOW, 0.35)
+	UI.plate(self, Rect2(-500, -68, 1000, 136), UI.INK, UI.glow(UI.YELLOW, 1.5), 0.35)
 	UI.tilt(self, mid + Vector2((1.0 - k) * -2000.0, 0), -0.02, 1.0 + (1.0 - UI.back_out(_t / 0.3)) * 1.2, -0.14)
 	UI.centred(self, UI.title_font(), Vector2(5, 5), "%s  PICK ONE" % _next_clock, 72, UI.PINK)
 	UI.centred(self, UI.title_font(), Vector2.ZERO, "%s  PICK ONE" % _next_clock, 72, UI.YELLOW)
@@ -171,8 +171,8 @@ class PerkCard extends Button:
 		var r := Rect2(-mid, size)
 		var color := _color()
 		if _lit > 0.0:
-			UI.burst(self, Vector2.ZERO, 240.0, 460.0 + 70.0 * _lit, 16, _time * 0.8, Color(UI.YELLOW, 0.5 * _lit))
-		UI.plate(self, r, UI.INK.lerp(UI.YELLOW, _lit), color.lerp(UI.WHITE, _lit), 0.06)
+			UI.burst(self, Vector2.ZERO, 240.0, 460.0 + 70.0 * _lit, 16, _time * 0.8, Color(UI.glow(UI.YELLOW, 1.8), 0.55 * _lit))
+		UI.plate(self, r, UI.INK.lerp(UI.YELLOW, _lit), UI.glow(color.lerp(UI.WHITE, _lit), 1.0 + _lit * 1.2), 0.06)
 		var ink := UI.WHITE.lerp(UI.INK, _lit)
 		# The icon, huge, in its own big pixels.
 		var header := Rect2(r.position + Vector2(14, 14), Vector2(size.x - 28.0, 250))

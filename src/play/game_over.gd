@@ -67,7 +67,7 @@ func _draw() -> void:
 	var slam := 1.0 + (1.0 - UI.back_out(_t / 0.28, 1.3)) * 1.8
 	UI.tilt(self, mid, -0.04, slam, -0.15)
 	UI.centred(self, UI.title_font(), Vector2(8, 8), "GAME OVER", 150, UI.INK, 34)
-	UI.centred(self, UI.title_font(), Vector2.ZERO, "GAME OVER", 150, UI.RED)
+	UI.centred(self, UI.title_font(), Vector2.ZERO, "GAME OVER", 150, UI.glow(UI.RED, 1.5))
 	UI.straight(self)
 	if _t < 0.25:
 		return

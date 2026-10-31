@@ -5,6 +5,8 @@ extends Control
 ## ship for how long it's safe, words flying off what dies, and banners that slam.
 
 const BANNER_TIME := 1.9
+## How long it takes to go.
+const OUT_TIME := 0.34
 
 var world: World
 var view: GameView
@@ -12,6 +14,7 @@ var _banner_big := ""
 var _banner_small := ""
 var _banner_color := UI.WHITE
 var _banner_time := 0.0
+var _banner_snapped := false
 var _hint := ""
 var _hint_time := 0.0
 var _shown_score := 0.0
@@ -45,6 +48,7 @@ func banner(big: String, small: String, color: Color) -> void:
 	_banner_small = small
 	_banner_color = color
 	_banner_time = BANNER_TIME
+	_banner_snapped = false
 	UI.fx.shake(26.0)
 
 
@@ -158,20 +162,20 @@ func _draw_ship_gauge() -> void:
 			color = UI.RED if int(_time * 28.0) % 2 == 0 else UI.WHITE
 		draw_arc(at, radius, 0.0, TAU, 64, Color(UI.INK, 0.45), 14.0, true)
 		draw_arc(at, radius, start, start + TAU * safe, 64, UI.INK, 16.0, true)
-		draw_arc(at, radius, start, start + TAU * safe, 64, color, 10.0, true)
+		draw_arc(at, radius, start, start + TAU * safe, 64, UI.glow(color, 2.2), 10.0, true)
 	if ship.state == Ship.State.CHARGING:
 		var full := ship.charge >= 1.0
 		var color := UI.YELLOW if full else UI.WHITE
 		var wide := 12.0 + (6.0 * sin(_time * 40.0) if full else 0.0)
 		draw_arc(at, radius, start, start + TAU * ship.charge, 64, UI.INK, wide + 6.0, true)
-		draw_arc(at, radius, start, start + TAU * ship.charge, 64, color, wide, true)
+		draw_arc(at, radius, start, start + TAU * ship.charge, 64, UI.glow(color, 1.5 + ship.charge), wide, true)
 		if full:
-			UI.burst(self, at, radius + 14.0, radius + 40.0, 12, _time * 3.0, UI.YELLOW)
+			UI.burst(self, at, radius + 14.0, radius + 54.0, 12, _time * 3.0, UI.glow(UI.YELLOW, 2.5))
 	elif ship.cooldown > 0.0 and safe <= 0.0:
 		var back := 1.0 - ship.cooldown / Balance.SMASK_COOLDOWN
 		draw_arc(at, radius - 8.0, start, start + TAU * back, 48, Color(UI.WHITE, 0.55), 4.0, true)
 	if _ready_ping > 0.0:
-		draw_arc(at, radius + (1.0 - _ready_ping) * 40.0, 0.0, TAU, 48, Color(UI.CYAN, _ready_ping), 3.0 + _ready_ping * 6.0, true)
+		draw_arc(at, radius + (1.0 - _ready_ping) * 40.0, 0.0, TAU, 48, Color(UI.glow(UI.CYAN, 2.4), _ready_ping), 3.0 + _ready_ping * 6.0, true)
 
 
 func _draw_score() -> void:
@@ -203,7 +207,7 @@ func _draw_clock() -> void:
 	var w := 300.0
 	var strobe: bool = midnight and int(_time * 4.0) % 2 == 0
 	UI.tilt(self, mid, 0.0, 1.0 + _clock_pop * 0.06, 0.0)
-	UI.plate(self, Rect2(-w * 0.5, -42, w, 76), UI.RED if strobe else UI.INK, UI.PINK if midnight else UI.hue(), 0.5)
+	UI.plate(self, Rect2(-w * 0.5, -42, w, 76), UI.RED if strobe else UI.INK, UI.glow(UI.PINK if midnight else UI.hue(), 1.5), 0.5)
 	var color := UI.WHITE if strobe else (UI.RED if midnight else UI.YELLOW)
 	UI.tilt(self, mid, 0.0, 1.0 + _clock_pop * 0.06, -0.14)
 	UI.centred(self, font, Vector2(0, -6), text, 50, color)
@@ -228,7 +232,7 @@ func _draw_multiplier() -> void:
 		UI.burst(self, at + Vector2(-50, -26), 44.0, 80.0 + heat * 40.0 + _mult_pop * 30.0, 12, _time * 2.0, Color(UI.hue(0.5), 0.6))
 	UI.tilt(self, at + shake, -0.05, 1.0 + _mult_pop * 0.5, -0.16)
 	var w := UI.text_width(UI.title_font(), text, font_size)
-	UI.outlined(self, UI.title_font(), Vector2(-w, 0), text, font_size, color, 18)
+	UI.outlined(self, UI.title_font(), Vector2(-w, 0), text, font_size, UI.glow(color, 1.0 + heat * 1.5), 18)
 	UI.straight(self)
 	if run.combo > 0:
 		var fuse := clampf(run.combo_time / run.combo_limit(), 0.0, 1.0)
@@ -248,7 +252,7 @@ func _draw_boss() -> void:
 	var bar := Rect2(Vector2(size.x * 0.5 - 480.0, size.y - 42.0), Vector2(960, 22))
 	UI.slab(self, bar.grow(5.0), UI.INK, 0.8)
 	UI.slab(self, Rect2(bar.position, Vector2(bar.size.x * _boss_trail, bar.size.y)), UI.WHITE, 0.8)
-	UI.slab(self, Rect2(bar.position, Vector2(bar.size.x * _boss_shown, bar.size.y)), UI.PINK, 0.8)
+	UI.slab(self, Rect2(bar.position, Vector2(bar.size.x * _boss_shown, bar.size.y)), UI.glow(UI.PINK, 1.5), 0.8)
 	var name_text: String = world.run.hour().name
 	UI.tilt(self, Vector2(size.x * 0.5, size.y - 54.0), -0.012, 1.0, -0.16)
 	UI.centred(self, UI.display_font(), Vector2.ZERO, name_text, 30, UI.WHITE, 12)
@@ -282,32 +286,53 @@ func _draw_hint() -> void:
 
 
 ## A band slamming across the screen, with a sunburst, and an hour or a ZERO on it.
+## It goes out by being crushed: the band and its letters squeeze to a white-hot
+## line, and the line snaps shut in the middle with a burst.
 func _draw_banner() -> void:
 	if _banner_time <= 0.0:
 		return
 	var t := BANNER_TIME - _banner_time
 	var mid := size * 0.5 + Vector2(0, -20)
 	var enter := UI.cubic_out(t / 0.16)
-	var leave := UI.cubic_out((0.28 - _banner_time) / 0.28)
-	var slide := (1.0 - enter) * -2600.0 + maxf(leave, 0.0) * 2600.0
+	var out := clampf((OUT_TIME - _banner_time) / OUT_TIME, 0.0, 1.0)
+	# Crushed by 55% of the way out; the rest is the line closing.
+	var crush := 1.0 - pow(clampf(out / 0.55, 0.0, 1.0), 2.0)
+	var hot := clampf(out / 0.4, 0.0, 1.0)
+	if out >= 0.55 and not _banner_snapped:
+		_banner_snapped = true
+		UI.fx.sparks(mid, UI.WHITE, 34, 1700.0)
+		UI.fx.ring(mid, 520.0, UI.glow(_banner_color, 1.0), 0.32)
+		UI.fx.shake(22.0)
+		UI.fx.flash(UI.WHITE, 0.35)
+		Audio.play("smask", -8.0, 1.5)
+	var slide := (1.0 - enter) * -2600.0
 	var zero: bool = _banner_big == "ZERO"
-	var band_color := UI.YELLOW if zero else UI.INK
-	var ink_color := UI.INK if zero else _banner_color
-	var a := 1.0 - maxf(leave, 0.0)
-	UI.burst(self, mid, 160.0, 1500.0 * enter, 22, t * 0.7, Color(UI.hue(0.5) if not zero else UI.YELLOW, 0.22 * a))
-	UI.tilt(self, mid + Vector2(slide, 0), -0.05, 1.0, 0.0)
-	UI.rect(self, Rect2(-1800, -170, 3600, 12), UI.PINK)
-	UI.rect(self, Rect2(-1800, 126, 3600, 12), UI.hue())
-	UI.rect(self, Rect2(-1800, -158, 3600, 284), band_color)
+	var band_color := (UI.YELLOW if zero else UI.INK).lerp(UI.WHITE, hot)
+	var ink_color := (UI.INK if zero else _banner_color).lerp(UI.INK, hot)
+	var rays := Color(UI.glow(UI.hue(0.5) if not zero else UI.YELLOW, 1.4), 0.3 * (1.0 - hot))
+	UI.burst(self, mid, 160.0, 1500.0 * enter + 500.0 * out, 22, t * 0.7, rays)
+	if out >= 0.55:
+		# The line, closing.
+		var close := (out - 0.55) / 0.45
+		var reach := 2000.0 * (1.0 - close * close)
+		UI.tilt(self, mid, -0.05, 1.0, 0.0)
+		UI.rect(self, Rect2(-reach, -5.0 * (1.0 - close), reach * 2.0, 10.0 * (1.0 - close) + 1.0), UI.glow(UI.WHITE, 4.0))
+		UI.straight(self)
+		return
+	draw_set_transform_matrix(Transform2D(-0.05, Vector2(1.0, crush), 0.0, mid + Vector2(slide, 0)))
+	var edge := UI.glow(UI.PINK.lerp(UI.WHITE, hot), 2.0 + hot * 2.0)
+	UI.rect(self, Rect2(-1800, -170, 3600, 12), edge)
+	UI.rect(self, Rect2(-1800, 126, 3600, 12), UI.glow(UI.hue().lerp(UI.WHITE, hot), 2.0 + hot * 2.0))
+	UI.rect(self, Rect2(-1800, -158, 3600, 284), UI.glow(band_color, 1.0 + hot * 3.0))
 	var slam := 1.0 + (1.0 - UI.back_out(t / 0.24, 1.4)) * 1.7
-	UI.tilt(self, mid + Vector2(slide * 1.3, -50.0), -0.05, slam, -0.16)
+	draw_set_transform_matrix(Transform2D(-0.05, Vector2(slam, slam * crush), -0.16, mid + Vector2(slide * 1.3, -50.0 * crush)))
 	var font_size := 150
-	if not zero:
-		UI.centred(self, UI.title_font(), Vector2(7, 7), _banner_big, font_size, UI.PINK)
+	if not zero and hot <= 0.0:
+		UI.centred(self, UI.title_font(), Vector2(7, 7), _banner_big, font_size, UI.glow(UI.PINK, 1.6))
 	UI.centred(self, UI.title_font(), Vector2.ZERO, _banner_big, font_size, ink_color)
-	UI.tilt(self, mid + Vector2(slide * 0.8, 74.0), -0.05, 1.0, -0.1)
+	draw_set_transform_matrix(Transform2D(-0.05, Vector2(1.0, crush), -0.1, mid + Vector2(slide * 0.8, 74.0 * crush)))
 	var long := _banner_small.length() > 24
-	UI.centred(self, UI.display_font(), Vector2.ZERO, _banner_small, 30 if long else 54, UI.INK if zero else UI.WHITE)
+	UI.centred(self, UI.display_font(), Vector2.ZERO, _banner_small, 30 if long else 54, UI.INK if zero or hot > 0.5 else UI.WHITE)
 	UI.straight(self)
 
 

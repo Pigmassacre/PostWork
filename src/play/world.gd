@@ -693,6 +693,10 @@ func _night() -> float:
 	return clampf(float(run.hour_index) / float(Hours.EVENING.size() - 1), 0.0, 1.0)
 
 
+func edge_color() -> Color:
+	return Sprites.hsl(hue + 0.08, 0.8, 0.62 + fx.wall_hit * 0.35)
+
+
 func _floor_color() -> Color:
 	# The tile's a dark grey, so its colour's worked up well past white to show.
 	var c := Sprites.hsl(hue, 0.55, lerpf(0.55, 0.32, _night()))
@@ -710,7 +714,7 @@ func _paint_floor(c: CanvasItem) -> void:
 	c.draw_rect(tile_rect, Sprites.hsl(hue, 0.3, lerpf(0.13, 0.06, night)))
 	c.draw_texture_rect(_floor_tile, tile_rect, true, tint)
 	# The walls.
-	var edge := Sprites.hsl(hue + 0.08, 0.8, 0.62 + fx.wall_hit * 0.35)
+	var edge := edge_color()
 	c.draw_rect(arena.grow(1.0), edge, false, 2.0)
 	c.draw_rect(arena.grow(3.0), Color(edge, 0.3), false, 1.0)
 

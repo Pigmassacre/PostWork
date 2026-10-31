@@ -142,7 +142,12 @@ func _hands_hurt() -> void:
 			ship.hurt(a + ab * t)
 
 
-## For the autopilot: the hands, as lines.
+## Where a line off the face stops, at the walls.
+func clip(to: Vector2) -> Vector2:
+	return _clip_to_arena(pos, to)
+
+
+## For the autopilot and the glow: the hands, as lines.
 func hazards() -> Array:
 	var lines := []
 	for h: Array in _hands():

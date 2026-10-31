@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Builds SuperSmaskZero for every export preset (Windows, Linux and
-Web) into builds/<preset>/, with the engine's notices and the credits
+"""Builds SuperSmaskZero for every export preset (Windows and Linux) into builds/<preset>/, with the engine's notices and the credits
 beside it.
 
     ./build_game.sh                 every preset whose export template is installed
-    ./build_game.sh Web Linux       just the ones named (an error if one can't be built)
+    ./build_game.sh Linux           just the ones named (an error if one can't be built)
     ./build_game.sh --zip           and a zip of each, builds/SuperSmaskZero-<preset>-<commit>.zip
 
 Uses the stock editor in the Godot folder next to the repository (or next to
@@ -33,7 +32,6 @@ else:
 TEMPLATE_FOR = {
     "Windows Desktop": "windows_release_x86_64.exe",
     "Linux": "linux_release.x86_64",
-    "Web": "web_nothreads_release.zip",
 }
 
 script_dir = os.path.dirname(os.path.abspath(__file__))

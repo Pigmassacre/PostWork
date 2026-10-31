@@ -29,10 +29,10 @@ func _ready() -> void:
 	_slider(column, "SOUNDS", "sounds", 0.1)
 	_slider(column, "SCREEN SHAKE", "shake", 0.25)
 	_toggle(column, "FLASHES", "flashes")
+	_toggle(column, "GLOW", "glow")
 	_toggle(column, "EASY MODE (+2 HULL, NO SCORES)", "spare_hull")
 	_toggle(column, "RUMBLE", "rumble")
-	if not OS.has_feature("web"):
-		_toggle(column, "FULL SCREEN", "fullscreen")
+	_toggle(column, "FULL SCREEN", "fullscreen")
 	var back := SmaskButton.new("BACK", 30)
 	back.pressed.connect(func() -> void: closed.emit())
 	column.add_child(back)

@@ -48,8 +48,7 @@ func _ready() -> void:
 	_add(column, "HIGH SCORES", func() -> void: Game.main.show_screen("scores", {}, 0.2))
 	_add(column, "OPTIONS", func() -> void: Game.main.show_screen("options", {}, 0.2))
 	_add(column, "CREDITS", func() -> void: Game.main.show_screen("credits", {}, 0.2))
-	if not OS.has_feature("web"):
-		_add(column, "QUIT", func() -> void: get_tree().quit())
+	_add(column, "QUIT", func() -> void: get_tree().quit())
 	UI.link_focus(_buttons)
 	for i in _buttons.size():
 		# They follow the slab's slant down the screen.
@@ -95,7 +94,7 @@ class TitleSlab extends Control:
 		var h := size.y
 		var top := 930.0 * k
 		var bottom := 660.0 * k
-		for band: Array in [[56.0, UI.PINK], [34.0, UI.hue()], [14.0, UI.YELLOW]]:
+		for band: Array in [[56.0, UI.glow(UI.PINK, 1.25)], [34.0, UI.hue()], [14.0, UI.YELLOW]]:
 			var w: float = band[0]
 			UI.fill(self, PackedVector2Array([Vector2(-10, -10), Vector2(top + w, -10), Vector2(bottom + w, h + 10), Vector2(-10, h + 10)]), band[1])
 		UI.fill(self, PackedVector2Array([Vector2(-10, -10), Vector2(top, -10), Vector2(bottom, h + 10), Vector2(-10, h + 10)]), UI.INK)

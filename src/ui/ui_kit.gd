@@ -60,6 +60,34 @@ static func hue(offset := 0.0, saturation := 0.95, value := 1.0) -> Color:
 	return Color.from_hsv(fposmod(Time.get_ticks_msec() * 0.00004 + offset, 1.0), saturation, value)
 
 
+## `color` past white, so it blooms: the more `amount`, the more.
+static func glow(color: Color, amount := 2.0) -> Color:
+	return Color(color.r * amount, color.g * amount, color.b * amount, color.a)
+
+
+## A soft streak, solid at `to` and gone by `from`.
+static func streak(ci: CanvasItem, from: Vector2, to: Vector2, width: float, color: Color) -> void:
+	var side := (to - from).orthogonal().normalized() * width * 0.5
+	var clear := Color(color, 0.0)
+	RenderingServer.canvas_item_add_triangle_array(ci.get_canvas_item(), PackedInt32Array([0, 1, 2, 0, 2, 3]),
+		PackedVector2Array([from - side * 0.2, to - side, to + side, from + side * 0.2]), PackedColorArray([clear, color, color, clear]))
+
+
+## A jagged comic star round `at`: rough, the same each time for the same `seed_value`.
+static func star(ci: CanvasItem, at: Vector2, radius: Vector2, points: int, seed_value: int, grow: float, color: Color) -> void:
+	var vertices := PackedVector2Array([at])
+	var colors := PackedColorArray([color])
+	var indices := PackedInt32Array()
+	var count := points * 2
+	for i in count:
+		var rough := 0.78 + 0.22 * sin(float(i + seed_value) * 12.9898) * sin(float(i * 3 + seed_value) * 4.1414)
+		var k := (1.0 if i % 2 == 0 else 0.62) * rough + grow
+		vertices.append(at + Vector2.from_angle(TAU * i / count) * radius * k)
+		colors.append(color)
+		indices.append_array([0, i + 1, (i + 1) % count + 1])
+	RenderingServer.canvas_item_add_triangle_array(ci.get_canvas_item(), indices, vertices, colors)
+
+
 ## A parallelogram: `rect`'s top pushed right, its bottom left, by `slant` of its
 ## height, with its corners rounded off.
 static func slab(ci: CanvasItem, rect: Rect2, color: Color, slant := SLANT, corner := 9.0) -> void:

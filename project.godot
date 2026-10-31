@@ -15,7 +15,7 @@ config/description="Smask everything. Count to zero."
 config/version="1.0"
 run/main_scene="res://src/main.tscn"
 config/quit_on_go_back=false
-config/features=PackedStringArray("4.7", "GL Compatibility")
+config/features=PackedStringArray("4.7", "Mobile")
 boot_splash/bg_color=Color(0.133333, 0.12549, 0.203922, 1)
 boot_splash/show_image=false
 config/icon="res://icon.svg"
@@ -38,7 +38,6 @@ window/stretch/aspect="expand"
 
 [rendering]
 
-renderer/rendering_method="gl_compatibility"
-renderer/rendering_method.mobile="gl_compatibility"
-textures/vram_compression/import_etc2_astc=true
+renderer/rendering_method="mobile"
+viewport/hdr_2d=true
 environment/defaults/default_clear_color=Color(0.133333, 0.12549, 0.203922, 1)

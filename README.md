@@ -4,7 +4,8 @@ Smask everything. Count to zero.
 
 An arcade shooter you can't aim. Your guns fire themselves. You fly, you drift, you
 charge, you SMASK. Clear eight hours, from 17:00 to midnight. Pixel-art game, full-HD
-UI. Made in Godot 4.7.2 for keyboard, mouse, pad and touch, on Windows, Linux and web.
+UI with real bloom. Made in Godot 4.7.2 for keyboard, mouse, pad and touch, on Windows
+and Linux. Needs Vulkan or D3D12.
 
 Started in 2016 as PostWork, an unfinished libGDX game. The Java is in this repo's
 history, up to commit `a340553`. Tune the numbers in `src/data/balance.gd`.
@@ -65,9 +66,9 @@ Options gives +2 hull, but no high scores.
 ```
 
 exports every preset in `export_presets.cfg` whose export template is installed
-(Windows, Linux and Web) into `builds/<preset>/`, with the engine's notices, the
-credits and the font's licence beside the game. `./build_game.sh Web Linux` builds
-just those, and `--zip` zips each. It uses the stock editor in `../Godot/`;
+(Windows and Linux) into `builds/<preset>/`, with the engine's notices, the
+credits and the font's licence beside the game. `./build_game.sh Linux` builds
+just that, and `--zip` zips each. It uses the stock editor in `../Godot/`;
 `GODOT=/path/to/godot` points it at another.
 
 ## Testing

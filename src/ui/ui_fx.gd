@@ -102,12 +102,12 @@ var _was_busy := false
 func _draw() -> void:
 	for r in _rings:
 		var t := r.age / r.total
-		draw_arc(r.pos, r.radius * UI.cubic_out(t), 0.0, TAU, 64, Color(r.color, 1.0 - t), 14.0 * (1.0 - t) + 1.0, true)
+		draw_arc(r.pos, r.radius * UI.cubic_out(t), 0.0, TAU, 64, Color(UI.glow(r.color, 2.4), 1.0 - t), 14.0 * (1.0 - t) + 1.0, true)
 	for s in _sparks:
 		var k := s.life / s.total
 		var size := s.size * k
 		draw_set_transform(s.pos, s.spin, Vector2.ONE)
-		UI.rect(self, Rect2(Vector2(-size, -size * 0.4), Vector2(size * 2.0, size * 0.8)), Color(s.color, minf(k * 2.0, 1.0)))
+		UI.rect(self, Rect2(Vector2(-size, -size * 0.4), Vector2(size * 2.0, size * 0.8)), Color(UI.glow(s.color, 2.2), minf(k * 2.0, 1.0)))
 	draw_set_transform_matrix(Transform2D.IDENTITY)
 	if _flash > 0.0:
 		draw_rect(Rect2(Vector2.ZERO, size), Color(_flash_color, _flash * 0.6))

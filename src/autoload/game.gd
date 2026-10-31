@@ -12,6 +12,7 @@ const DEFAULTS := {
 	"sounds": 0.8,
 	"shake": 1.0,
 	"flashes": true,
+	"glow": true,
 	"spare_hull": false,
 	"fullscreen": false,
 	"rumble": true,
@@ -93,7 +94,7 @@ func save() -> void:
 func apply_settings() -> void:
 	Audio.set_volume(Audio.MUSIC, float(settings.music))
 	Audio.set_volume(Audio.SOUNDS, float(settings.sounds))
-	if not (OS.has_feature("web") or DisplayServer.get_name() == "headless"):
+	if DisplayServer.get_name() != "headless":
 		var mode := DisplayServer.WINDOW_MODE_FULLSCREEN if settings.fullscreen else DisplayServer.WINDOW_MODE_WINDOWED
 		if DisplayServer.window_get_mode() != mode:
 			DisplayServer.window_set_mode(mode)

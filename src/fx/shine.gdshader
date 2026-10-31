@@ -19,7 +19,7 @@ void fragment() {
 	float t = clamp((local.y - from_y) / (to_y - from_y), 0.0, 1.0);
 	vec3 fill = t < 0.48 ? mix(top.rgb, middle.rgb, t / 0.48) : mix(middle.rgb, bottom.rgb, (t - 0.48) / 0.52);
 	float sweep = fract(TIME * 0.22) * 3.0 - 1.0;
-	float glint = 1.0 - smoothstep(0.0, 0.09, abs((local.x + local.y * 0.6) * 0.0013 - sweep));
-	fill = mix(fill, vec3(1.0), glint * 0.85);
+	float glint = 1.0 - smoothstep(0.0, 0.09, abs((local.x + local.y * 0.6) * 0.012 - sweep));
+	fill = mix(fill, vec3(2.4), glint * 0.85);
 	COLOR = vec4(fill, glyph.a);
 }
