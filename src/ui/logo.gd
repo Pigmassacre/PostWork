@@ -4,8 +4,8 @@ extends Control
 ## ship itself, in its big fat pixels, smashes through the word in one go, knocking every
 ## letter flying, bursts out of the K and overshoots, and settles back on the end of the
 ## word, its trail left burning through the letters: that's the logo. The hit shorts ZERO
-## on, a neon sign with a clock in its O. The whole lot rocks two degrees either way over
-## four seconds, as the original's start screen did, but for the star it's all on.
+## on, a neon sign with a clock in its O. SMASK and the ship rock two degrees either way
+## over four seconds, as the original's start screen did.
 
 const SMASK := "SMASK"
 const SIZE := 148
@@ -49,6 +49,7 @@ var ship_speed := 0.0
 ## How far along the word the trail it leaves goes.
 var trail_end := TRAIL_FROM
 var _pop := 0.0
+var _rock := 0.0
 ## When the hit started ZERO going; below 0, it hasn't.
 var _zero_from := -1.0
 var _zero_landed := false
@@ -112,10 +113,7 @@ func _process(frame_time: float) -> void:
 		_offsets[i] += _velocities[i] * delta
 		_spins[i] += (-_turns[i] * 170.0 - _spins[i] * 10.0) * delta
 		_turns[i] += _spins[i] * delta
-	var wave := sin(_time * PI * 0.5)
-	pivot_offset = size * 0.5
-	rotation_degrees = wave * 2.0
-	modulate.a = 0.9 + wave * 0.1
+	_rock = deg_to_rad(sin(_time * PI * 0.5) * 2.0)
 	queue_redraw()
 	_smask_layer.queue_redraw()
 	_zero_layer.queue_redraw()
@@ -195,7 +193,7 @@ func _letter_centre(i: int) -> Vector2:
 
 
 func _on_screen(on_word: Vector2) -> Vector2:
-	return get_global_transform() * (Transform2D(TILT, CENTRE) * on_word)
+	return get_global_transform() * (word_transform() * on_word)
 
 
 func flight() -> Flight:
@@ -206,9 +204,14 @@ func flame_time() -> float:
 	return _time
 
 
+## The line of the word, rocking about its middle.
+func word_transform() -> Transform2D:
+	return Transform2D(TILT + _rock, CENTRE)
+
+
 ## How a letter's drawn: down from too close as it lands, then on its spring.
 func letter_transform(i: int) -> Transform2D:
-	var word := Transform2D(TILT, Vector2.ONE, LEAN, CENTRE)
+	var word := Transform2D(TILT + _rock, Vector2.ONE, LEAN, CENTRE)
 	var k := clampf((_time - _land_at(i)) / LAND_TIME, 0.0, 1.0)
 	var scale_now := 1.0 + (1.0 - k * k) * 3.0 + _pop * 0.03
 	var at := _letter_centre(i) + _offsets[i]
@@ -240,10 +243,7 @@ func _draw_star() -> void:
 		return
 	var grow := _pop * 0.12 + sin(_time * 5.0) * 0.012
 	var radius := Vector2(405, 138) * k
-	# It stays put while the rest of the logo rocks.
-	var middle := size * 0.5
-	draw_set_transform_matrix(Transform2D(0.0, middle) * Transform2D(-rotation, Vector2.ZERO) * Transform2D(0.0, -middle))
-	UI.burst(self, CENTRE, 150.0, 480.0, 18, 0.0, Color(UI.glow(UI.hue(0.5), 1.1), 0.3))
+	UI.burst(self, CENTRE, 150.0, 480.0, 18, _time * 0.25, Color(UI.glow(UI.hue(0.5), 1.1), 0.3))
 	UI.star(self, CENTRE, radius, 15, 3, grow + 0.05, UI.glow(UI.PINK, 1.5))
 	UI.star(self, CENTRE, radius, 15, 3, grow, UI.INK)
 
@@ -386,7 +386,7 @@ class LogoTop extends Control:
 		var flying := logo.flight()
 		if flying == Logo.Flight.WAITING:
 			return
-		var word := Transform2D(Logo.TILT, Logo.CENTRE)
+		var word := logo.word_transform()
 		# What it's left burning through the letters.
 		var a := Vector2(Logo.TRAIL_FROM, 0)
 		var b := Vector2(logo.trail_end, 0)
