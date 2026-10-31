@@ -1,8 +1,9 @@
 class_name GameView
 extends Control
 ## Where the game's pixels live: its own little low-resolution screen, at least
-## 480 by 270 and always a whole number of the window's pixels, with the crisp full
-## resolution UI over it. All the distance between the two is the point.
+## 480 by 270 and always a whole number of the window's pixels, between the full
+## resolution city and floor under it and the crisp UI over it. All the distance
+## between them is the point.
 
 const BASE := Vector2(480, 270)
 
@@ -25,7 +26,11 @@ func _init() -> void:
 	viewport.snap_2d_vertices_to_pixel = true
 	viewport.size = Vector2i(BASE)
 	viewport.own_world_3d = true
+	viewport.transparent_bg = true
 	add_child(viewport)
+	var skyline := Skyline.new()
+	skyline.view = self
+	add_child(skyline)
 	_picture = TextureRect.new()
 	_picture.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	var picture_shader := ShaderMaterial.new()
@@ -71,6 +76,16 @@ func show_world(the_world: World) -> void:
 	viewport.add_child(world)
 
 
+## Puts the screen-wide effects over the city, the floor and the game's pixels.
+func add_post(material: ShaderMaterial) -> void:
+	var rect := ColorRect.new()
+	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	rect.material = material
+	add_child(rect)
+	move_child(rect, _shine.get_index())
+
+
 ## Where a place in the world is, in the UI's units.
 func world_to_ui(pos: Vector2) -> Vector2:
 	return viewport.get_canvas_transform() * pos * ui_scale
@@ -103,7 +118,6 @@ class WorldShine extends Control:
 			return
 		var by := view.ui_scale
 		var to := view.viewport.get_canvas_transform()
-		_walls(world, to, by)
 		_missiles(world, to, by)
 		for s in world.shots.list:
 			var at: Vector2 = to * s.pos * by
@@ -125,11 +139,6 @@ class WorldShine extends Control:
 				var a: Vector2 = to * (line[0] as Vector2) * by
 				var b: Vector2 = to * (world.boss.call("clip", line[1]) as Vector2) * by
 				draw_line(a, b, UI.glow(UI.RED, 1.2), by, false)
-
-	func _walls(world: World, to: Transform2D, by: float) -> void:
-		var area := Rect2(to * world.arena.position * by, world.arena.size * by).grow(by)
-		var c := world.edge_color()
-		draw_rect(area, UI.glow(c, 0.75 + world.fx.wall_hit * 1.5), false, by * 2.0)
 
 	func _missiles(world: World, to: Transform2D, by: float) -> void:
 		var m := world.missiles

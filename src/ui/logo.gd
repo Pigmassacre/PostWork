@@ -1,10 +1,10 @@
 class_name Logo
 extends Control
-## SUPER SMASK ZERO. The letters of SMASK slam down one by one on a comic star, and
-## then every few seconds the ship itself, in its big fat pixels, comes screaming
-## through the word and knocks every letter flying, before they spring back. ZERO's a
-## neon sign with a clock in its O. The whole lot rocks two degrees either way over
-## four seconds, breathing with it, as the original's start screen did.
+## SUPER SMASK ZERO. The letters of SMASK slam down one by one on a comic star. Then the
+## ship itself, in its big fat pixels, comes screaming through the word, knocks every
+## letter flying and stops dead on the end of it, its trail left burning through the
+## letters: that's the logo. ZERO's a neon sign with a clock in its O. The whole lot
+## rocks two degrees either way over four seconds, as the original's start screen did.
 
 const SMASK := "SMASK"
 const SIZE := 148
@@ -17,10 +17,12 @@ const LAND_GAP := 0.1
 const LAND_TIME := 0.16
 const ZERO_AT := 0.86
 const FIRST_PASS := 1.5
-const PASS_EVERY := 6.5
-const PASS_TIME := 0.42
+const STRIKE_TIME := 0.6
 const PASS_FROM := -640.0
-const PASS_TO := 860.0
+const PARK_AT := 432.0
+const TRAIL_FROM := -440.0
+
+enum Flight { WAITING, STRIKING, PARKED }
 
 var _time := 0.0
 var _offsets: Array[Vector2] = []
@@ -32,8 +34,13 @@ var _hit: Array[float] = []
 var _passed: Array[bool] = []
 var _lefts: Array[float] = []
 var _widths: Array[float] = []
-var _pass_clock := FIRST_PASS
-var _pass := -1.0
+var _flight := Flight.WAITING
+var _flight_clock := FIRST_PASS
+var _flight_t := 0.0
+## The ship, along the word.
+var ship_at := Vector2.ZERO
+## How far along the word the trail it leaves goes.
+var trail_end := TRAIL_FROM
 var _pop := 0.0
 var _zero_landed := false
 var _smask_layer: LogoSmask
@@ -115,17 +122,35 @@ func _land_letters() -> void:
 
 
 func _fly_ship(delta: float) -> void:
-	if _pass < 0.0:
-		_pass_clock -= delta
-		if _pass_clock <= 0.0:
-			_pass = 0.0
-			_passed.fill(false)
-			Audio.play("smask", -9.0, 1.0)
-		return
-	_pass += delta / PASS_TIME
-	var x := ship_x()
+	match _flight:
+		Flight.WAITING:
+			_flight_clock -= delta
+			if _flight_clock <= 0.0:
+				_flight = Flight.STRIKING
+				Audio.play("smask", -9.0, 1.0)
+		Flight.STRIKING:
+			_flight_t += delta / STRIKE_TIME
+			ship_at.x = lerpf(PASS_FROM, PARK_AT, UI.cubic_out(minf(_flight_t, 1.0)))
+			trail_end = ship_at.x - 44.0
+			_knock_as_it_goes()
+			if _flight_t >= 1.0:
+				_park()
+
+
+func _park() -> void:
+	_flight = Flight.PARKED
+	_pop = 1.0
+	if UI.fx:
+		var at := _on_screen(ship_at)
+		UI.fx.sparks(at, UI.YELLOW, 24, 1000.0)
+		UI.fx.ring(at, 200.0, UI.YELLOW)
+		UI.fx.shake(6.0)
+	Audio.play("boom", -9.0, 1.1)
+
+
+func _knock_as_it_goes() -> void:
 	for i in SMASK.length():
-		if not _passed[i] and x >= _lefts[i] + _widths[i] * 0.5:
+		if not _passed[i] and ship_at.x >= _lefts[i] + _widths[i] * 0.5:
 			_passed[i] = true
 			var way := -1.0 if i % 2 == 0 else 1.0
 			_velocities[i] += Vector2(620.0, way * 1150.0)
@@ -133,11 +158,8 @@ func _fly_ship(delta: float) -> void:
 			_hit[i] = 1.0
 			if UI.fx:
 				UI.fx.sparks(_on_screen(_letter_centre(i)), UI.YELLOW, 16, 1200.0)
+				UI.fx.shake(5.4)
 			Audio.play("hit", -9.0, 0.7 + i * 0.12)
-	if _pass >= 1.0:
-		_pass = -1.0
-		_pass_clock = PASS_EVERY
-		_pop = 1.0
 
 
 func _land_at(i: int) -> float:
@@ -152,12 +174,12 @@ func _on_screen(on_word: Vector2) -> Vector2:
 	return global_position + CENTRE + on_word.rotated(TILT)
 
 
-func ship_x() -> float:
-	return lerpf(PASS_FROM, PASS_TO, _pass)
+func flight() -> Flight:
+	return _flight
 
 
-func passing() -> bool:
-	return _pass >= 0.0
+func flame_time() -> float:
+	return _time
 
 
 ## How a letter's drawn: down from too close as it lands, then on its spring.
@@ -294,13 +316,24 @@ class LogoTop extends Control:
 			if logo.hit_of(i) > 0.0:
 				draw_set_transform_matrix(logo.letter_transform(i))
 				draw_string(font, Vector2(-logo.width_of(i) * 0.5, Logo.SIZE * 0.36), Logo.SMASK[i], HORIZONTAL_ALIGNMENT_LEFT, -1, Logo.SIZE, Color(UI.glow(UI.WHITE, 3.0), logo.hit_of(i)))
-		if logo.passing():
-			var word := Transform2D(Logo.TILT, Logo.CENTRE)
-			var x := logo.ship_x()
-			draw_set_transform_matrix(word)
-			UI.streak(self, Vector2(x - 620.0, 0), Vector2(x - 20.0, 0), 62.0, Color(UI.glow(UI.YELLOW, 2.2), 0.8))
-			UI.streak(self, Vector2(x - 360.0, 0), Vector2(x - 20.0, 0), 20.0, UI.glow(UI.WHITE, 3.0))
-			var tex := Sprites.get_tex("ship3")
-			draw_set_transform_matrix(word * Transform2D(PI * 0.5, Vector2(SHIP_SCALE, SHIP_SCALE), 0.0, Vector2(x, 0)))
-			draw_texture(tex, -tex.get_size() * 0.5)
+		var flying := logo.flight()
+		if flying == Logo.Flight.WAITING:
+			return
+		var word := Transform2D(Logo.TILT, Logo.CENTRE)
+		# What it's left burning through the letters.
+		draw_set_transform_matrix(word)
+		var a := Vector2(Logo.TRAIL_FROM, 0)
+		var b := Vector2(logo.trail_end, 0)
+		UI.streak(self, a, b, 34.0, Color(UI.INK, 0.9))
+		UI.streak(self, a, b, 24.0, UI.glow(UI.PINK, 1.5))
+		UI.streak(self, a, b, 11.0, UI.glow(UI.WHITE, 1.8))
+		draw_set_transform_matrix(word * Transform2D(0.0, logo.ship_at))
+		# Its engine: flat out, then ticking over.
+		var flame := 26.0 + sin(logo.flame_time() * 37.0) * 7.0 + sin(logo.flame_time() * 61.0) * 5.0
+		if flying == Logo.Flight.STRIKING:
+			flame = 300.0
+		UI.streak(self, Vector2(-44.0 - flame, 0), Vector2(-40, 0), 20.0, UI.glow(UI.WHITE, 2.0))
+		var tex := Sprites.get_tex("ship3")
+		draw_set_transform_matrix(word * Transform2D(PI * 0.5, Vector2(SHIP_SCALE, SHIP_SCALE), 0.0, logo.ship_at))
+		draw_texture(tex, -tex.get_size() * 0.5)
 		draw_set_transform_matrix(Transform2D.IDENTITY)

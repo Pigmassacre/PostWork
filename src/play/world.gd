@@ -52,15 +52,12 @@ var _wave_clock := 0.0
 var _warnings: Array[Dictionary] = []
 var _grid := {}
 var _camera: Camera2D
-var _floor_layer: Layer
 var _main_layer: Layer
 var _add_layer: Layer
 var _slowmo := 1.0
 var _clear_clock := 0.0
 var _shrink := false
 var _post_material: ShaderMaterial
-var _floor_tile: Texture2D
-var _skyline := Skyline.new()
 var _shown_remaining := 0
 var _time_outside := 0.0
 
@@ -79,12 +76,9 @@ func setup(the_run: Run, is_demo := false) -> void:
 
 
 func _ready() -> void:
-	_floor_tile = Sprites.get_tex("bg")
 	_camera = Camera2D.new()
 	add_child(_camera)
 	_camera.make_current()
-	_floor_layer = _layer(_paint_floor)
-	_floor_layer.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
 	_main_layer = _layer(_paint_main)
 	_add_layer = _layer(_paint_add)
 	var add := CanvasItemMaterial.new()
@@ -428,7 +422,6 @@ func pointer() -> Vector2:
 
 func _process(delta: float) -> void:
 	fx.step(delta)
-	_skyline.step(delta)
 	_time_outside += delta
 	hue += delta * HUE_SPEED * (1.0 + 0.25 * float(run.multiplier() - 1))
 	if fx.freeze > 0.0:
@@ -448,7 +441,6 @@ func _process(delta: float) -> void:
 	_update_post()
 	floor_pop = maxf(floor_pop - delta * 4.0, 0.0)
 	zero_time = maxf(zero_time - delta, 0.0)
-	_floor_layer.queue_redraw()
 	_main_layer.queue_redraw()
 	_add_layer.queue_redraw()
 
@@ -691,7 +683,7 @@ func _update_post() -> void:
 
 
 ## How far the evening's gone, 0 to 1: the sky darkens and the colours deepen.
-func _night() -> float:
+func night() -> float:
 	return clampf(float(run.hour_index) / float(Hours.EVENING.size() - 1), 0.0, 1.0)
 
 
@@ -699,28 +691,14 @@ func edge_color() -> Color:
 	return Sprites.hsl(hue + 0.08, 0.8, 0.62 + fx.wall_hit * 0.35)
 
 
-func _floor_color() -> Color:
-	# The tile's a dark grey, so its colour's worked up well past white to show.
-	var c := Sprites.hsl(hue, 0.55, lerpf(0.55, 0.32, _night()))
-	return Color(c.r * 2.4, c.g * 2.4, c.b * 2.4)
+## The colour of the floor, as it goes round the hues and the evening gets darker.
+func floor_tint() -> Color:
+	return Sprites.hsl(hue, 0.5, lerpf(0.27, 0.18, night()))
 
 
-func _paint_floor(c: CanvasItem) -> void:
-	var view := get_viewport_rect().size
-	var seen := Rect2(_camera.position - view * 0.5 - Vector2(16, 16), view + Vector2(32, 32))
-	# The evening itself. The original's hue going round for ever is the floor's, below.
-	var night := _night()
-	_skyline.draw(c, seen, _camera.position, arena, night)
-	# The floor hangs over the city, and throws a shadow on it.
-	c.draw_rect(Rect2(arena.position + Vector2(4, 7), arena.size), Color(0, 0, 0, 0.45))
-	var tile_rect := arena
-	var tint := _floor_color()
-	c.draw_rect(tile_rect, Sprites.hsl(hue, 0.3, lerpf(0.13, 0.06, night)))
-	c.draw_texture_rect(_floor_tile, tile_rect, true, tint)
-	# The walls.
-	var edge := edge_color()
-	c.draw_rect(arena.grow(1.0), edge, false, 2.0)
-	c.draw_rect(arena.grow(3.0), Color(edge, 0.3), false, 1.0)
+## Where the camera's looking, in the game's pixels.
+func camera_centre() -> Vector2:
+	return _camera.position
 
 
 func _paint_main(c: CanvasItem) -> void:

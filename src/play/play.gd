@@ -25,16 +25,9 @@ func open(args: Dictionary) -> void:
 	world.ship_dead.connect(_on_ship_dead)
 	world.evening_over.connect(_on_evening_over)
 	world.hint_wanted.connect(_on_hint)
-	var post_layer := CanvasLayer.new()
-	post_layer.layer = 5
-	_view.viewport.add_child(post_layer)
-	var rect := ColorRect.new()
-	rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_post = ShaderMaterial.new()
 	_post.shader = POST_SHADER
-	rect.material = _post
-	post_layer.add_child(rect)
+	_view.add_post(_post)
 	var layer := CanvasLayer.new()
 	layer.layer = 10
 	add_child(layer)

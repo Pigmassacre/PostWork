@@ -11,7 +11,7 @@ func _ready() -> void:
 	var cards := [
 		["FLY", "%s to steer. You drift. Speed is power." % move, "ship3", UI.BLUE],
 		["AUTO-FIRE", "Guns aim themselves. Faster flying, harder hits.", "starball1", UI.CYAN],
-		["CHARGE", "Hold %s. Guns stop. Time slows. Aim." % smask, "ship4", UI.ORANGE],
+		["CHARGE", "Hold %s. Guns stop. Time slows. Longer hits harder and flies further." % smask, "ship4", UI.ORANGE],
 		["SMASK", "Release to ram. Gold means safe. Kills reset it. Walls explode.", "yellowcrab1", UI.YELLOW],
 		["SHELLS", "Missiles bounce off. SMASK breaks them.", "hermit1", UI.SOFT],
 		["ZERO", "The floor shows what's left. Hit zero. Reach midnight.", "coin1", UI.PINK],

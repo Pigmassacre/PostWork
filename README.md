@@ -44,7 +44,7 @@ Or open the folder in the Godot 4.7 editor and press Play.
 | Pause | Esc or P | Start | Esc | top right corner |
 
 - **Auto-fire:** the faster you fly, the harder missiles hit.
-- **SMASK:** hold to charge, release to ram. Safe while gold, and the ring round the
+- **SMASK:** hold to charge, release to ram. Longer hits harder and flies further. Safe while gold, and the ring round the
   ship shows how long. Kills reset it. Walls make a shockwave. Only a SMASK cracks shells.
 - **Hours:** the floor shows what's left. Hit zero, get +1 hull, pick a perk.
 
