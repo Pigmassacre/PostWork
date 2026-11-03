@@ -7,6 +7,11 @@ extends Control
 const BANNER_TIME := 1.9
 ## How long it takes to go.
 const OUT_TIME := 0.34
+## How long the hull round the ship stays bright after it changes.
+const HULL_NEAR_TIME := 2.5
+const HULL_RADIUS := 76.0
+const HULL_PIP := 0.2
+const HULL_GAP := 0.07
 
 var world: World
 var view: GameView
@@ -29,6 +34,8 @@ var _last_minutes := 0
 var _clock_pop := 0.0
 var _last_hull := -1
 var _hull_hit := 0.0
+## How long the hull round the ship stays up bright, after it's changed.
+var _hull_near := 0.0
 var _was_ready := true
 var _ready_ping := 0.0
 var _chips: PerkChips
@@ -70,6 +77,7 @@ func _process(delta: float) -> void:
 	_count_pop = maxf(_count_pop - delta * 5.0, 0.0)
 	_clock_pop = maxf(_clock_pop - delta * 5.0, 0.0)
 	_hull_hit = maxf(_hull_hit - delta * 2.5, 0.0)
+	_hull_near = maxf(_hull_near - delta, 0.0)
 	_ready_ping = maxf(_ready_ping - delta * 3.0, 0.0)
 	var run := world.run
 	var before := _shown_score
@@ -88,9 +96,13 @@ func _process(delta: float) -> void:
 	if run.minutes != _last_minutes:
 		_last_minutes = run.minutes
 		_clock_pop = 1.0
+	if _last_hull >= 0 and run.hull != _last_hull:
+		_hull_near = HULL_NEAR_TIME
 	if _last_hull >= 0 and run.hull < _last_hull:
 		_hull_hit = 1.0
 		UI.fx.sparks(Vector2(40.0 + run.hull * 44.0, 112.0), UI.RED, 18, 800.0)
+		if world.ship.state != Ship.State.DEAD:
+			UI.fx.sparks(_hull_pip_at(run.hull, run.max_hull), UI.RED, 10, 500.0)
 	_last_hull = run.hull
 	var ready_now: bool = world.ship.cooldown <= 0.0
 	if ready_now and not _was_ready:
@@ -104,6 +116,7 @@ func _draw() -> void:
 	_draw_count()
 	_draw_words()
 	_draw_ship_gauge()
+	_draw_ship_hull()
 	_draw_score()
 	_draw_clock()
 	_draw_multiplier()
@@ -176,6 +189,47 @@ func _draw_ship_gauge() -> void:
 		draw_arc(at, radius - 8.0, start, start + TAU * back, 48, Color(UI.WHITE, 0.55), 4.0, true)
 	if _ready_ping > 0.0:
 		draw_arc(at, radius + (1.0 - _ready_ping) * 40.0, 0.0, TAU, 48, Color(UI.glow(UI.CYAN, 2.4), _ready_ping), 3.0 + _ready_ping * 6.0, true)
+
+
+## Under the ship, a pip for each bit of hull: dim, but bright after a hit or a
+## coffee, and throbbing red on the last one.
+func _draw_ship_hull() -> void:
+	var ship := world.ship
+	var run := world.run
+	if ship.state == Ship.State.DEAD or run.max_hull <= 0:
+		return
+	var at := view.world_to_ui(ship.pos)
+	var near := clampf(_hull_near / 0.6, 0.0, 1.0)
+	var last := run.hull == 1
+	var a := 1.0 if last else lerpf(0.45, 1.0, near)
+	var pip := _hull_pip_size(run.max_hull)
+	for i in run.max_hull:
+		var mid := _hull_pip_angle(i, run.max_hull)
+		var from := mid - pip * 0.5
+		var to := mid + pip * 0.5
+		draw_arc(at, HULL_RADIUS, from - 0.02, to + 0.02, 8, Color(UI.INK, a * 0.8), 13.0, true)
+		if i < run.hull:
+			var color := UI.CYAN
+			if last:
+				color = UI.RED if int(_time * 8.0) % 2 == 0 else UI.WHITE
+			draw_arc(at, HULL_RADIUS, from, to, 8, Color(UI.glow(color, 1.0 + near), a), 7.0, true)
+		else:
+			draw_arc(at, HULL_RADIUS, from, to, 8, Color(UI.RED, a * (0.25 + _hull_hit * 0.75)), 3.0, true)
+
+
+## The pips sit in a row centred under the ship, closer packed when there are many.
+func _hull_pip_size(count: int) -> float:
+	return minf(HULL_PIP, PI / float(count) - HULL_GAP)
+
+
+func _hull_pip_angle(i: int, count: int) -> float:
+	var step := _hull_pip_size(count) + HULL_GAP
+	return PI * 0.5 + (float(count - 1) * 0.5 - i) * step
+
+
+## Where pip `i` is on screen, relative to the HUD.
+func _hull_pip_at(i: int, count: int) -> Vector2:
+	return view.world_to_ui(world.ship.pos) + Vector2.from_angle(_hull_pip_angle(i, count)) * HULL_RADIUS
 
 
 func _draw_score() -> void:

@@ -732,6 +732,7 @@ func _paint_warning(c: CanvasItem, w: Dictionary) -> void:
 
 
 func _paint_add(c: CanvasItem) -> void:
+	pickups.draw_add(c)
 	for e in enemies:
 		e.draw_flash(c)
 	if ship.is_smasking():

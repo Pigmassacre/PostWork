@@ -85,7 +85,7 @@ The game can play itself. These are the options, after a `--`:
 `--autoplay` flies the ship with the title's demo pilot and prints each hour's
 time and score and how it ended; `--invincible` so it can't lose; `--hour=5`,
 `--perks=twin,fuse` and `--mode=graveyard` start a run there; `--shots=4,9`
-saves screenshots to `shots/`; `--show=perks`, `pause`, `over` or `smask` brings that up; `--input-test` plays through the title, the flying, the SMASK and the pause
+saves screenshots to `shots/`; `--show=perks`, `pause`, `over`, `smask` or `pickups` brings that up; `--input-test` plays through the title, the flying, the SMASK and the pause
 menu with real input events and says what it saw. All of them are in `src/main.gd`.
 
 The assets are made from the sources by `tools/make_sprites.py`,

@@ -2,6 +2,9 @@ class_name PauseMenu
 extends Control
 ## Esc: the evening waits, in a great freeze-frame behind a slab.
 
+## The standing under the buttons waits for them to land first.
+const STANDING_DELAY := 0.22
+
 var _resume: SmaskButton
 var _buttons: Array[SmaskButton] = []
 var _options_panel: Control
@@ -84,11 +87,39 @@ func _draw() -> void:
 	draw_string(UI.title_font(), Vector2(7, 7), "PAUSED", HORIZONTAL_ALIGNMENT_LEFT, -1, 130, UI.PINK)
 	draw_string(UI.title_font(), Vector2.ZERO, "PAUSED", HORIZONTAL_ALIGNMENT_LEFT, -1, 130, UI.YELLOW)
 	UI.straight(self)
-	var run := Game.run
-	if run:
-		var y := 700.0
-		UI.outlined(self, UI.display_font(), Vector2(90, y), run.hour().name, 32, UI.CYAN)
-		UI.outlined(self, UI.title_font(), Vector2(90, y + 74), "%s   X%d" % [UI.format_score(run.score), run.multiplier()], 50, UI.WHITE)
+	if Game.run:
+		_draw_standing(Game.run)
+
+
+## Where the evening's got to, under the buttons: a stripe wipes in, the hour
+## slams down on it, and the score counts up to what it is.
+func _draw_standing(run: Run) -> void:
+	var t := _t - STANDING_DELAY
+	if t <= 0.0:
+		return
+	var wipe := UI.cubic_out(t / 0.18)
+	var at := Vector2(60, 800)
+	# The stripe, along the slant of the buttons above.
+	UI.slab(self, Rect2(at + Vector2(-80, -8), Vector2(560 * wipe, 6)), UI.PINK, 0.8, 2.0)
+	var hour_in := UI.back_out((t - 0.06) / 0.3, 1.6)
+	if hour_in > 0.0:
+		UI.tilt(self, at + Vector2(-60.0 * (1.0 - hour_in), 46), -0.03, 0.6 + 0.4 * hour_in, -0.16)
+		var clock := "%s   %s" % [run.clock_now(), run.hour().name]
+		UI.outlined(self, UI.display_font(), Vector2.ZERO, clock, 32, Color(UI.CYAN, clampf(hour_in * 2.0, 0.0, 1.0)), 10)
+		UI.straight(self)
+	var score_t := clampf((t - 0.14) / 0.45, 0.0, 1.0)
+	if score_t > 0.0:
+		var slam := 1.0 + (1.0 - UI.back_out(score_t * 1.6, 2.2)) * 0.6
+		var shown := roundi(run.score * UI.cubic_out(score_t))
+		UI.tilt(self, at + Vector2(-14, 124), -0.03, slam, -0.16)
+		UI.outlined(self, UI.title_font(), Vector2.ZERO, UI.format_score(shown), 58, UI.WHITE, 16)
+		var w := UI.text_width(UI.title_font(), UI.format_score(shown), 58)
+		var mult_in := UI.back_out((score_t - 0.7) / 0.3, 2.4)
+		if mult_in > 0.0:
+			var mult := "X%d" % run.multiplier()
+			UI.tilt(self, at + Vector2(w + 20.0, 124), -0.08, mult_in, -0.16)
+			UI.outlined(self, UI.title_font(), Vector2.ZERO, mult, 44, UI.YELLOW, 14)
+		UI.straight(self)
 
 
 func _input(event: InputEvent) -> void:

@@ -58,6 +58,10 @@ func open(args: Dictionary) -> void:
 			run.hull = 1
 			world.ship.invulnerable = 0.0
 			world.ship.hurt(world.ship.pos + Vector2.ONE)
+		elif Game.debug_show == "pickups":
+			world.pickups.drop_coffee(world.ship.pos + Vector2(40, 0))
+			for i in 8:
+				world.pickups.drop_coin(world.ship.pos + Vector2(-30, 20) + Vector2.from_angle(i * 0.8) * 10.0)
 		elif Game.debug_show == "smask":
 			world.ship.state = Ship.State.CHARGING
 			world.ship.charge = 1.0

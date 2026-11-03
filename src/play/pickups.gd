@@ -2,6 +2,8 @@ class_name Pickups
 extends RefCounted
 ## Coins from what's been killed, and now and then a coffee.
 
+const OUTLINE := Color("0b0a14")
+
 class Pickup:
 	var pos: Vector2
 	var vel: Vector2
@@ -81,10 +83,19 @@ func _collect(p: Pickup) -> void:
 	world.fx.spark_at(p.pos, Color("fbf236"))
 
 
+## They blink out before they're gone.
+func _blinked_out(p: Pickup) -> bool:
+	return p.life < 1.5 and int(p.life * 10.0) % 2 == 0
+
+
+## A coffee bobs, so it never sits still like the rest.
+func _bob(p: Pickup) -> Vector2:
+	return Vector2(0, -2.0 - 2.0 * absf(sin(p.age * 4.0))) if p.coffee else Vector2.ZERO
+
+
 func draw(canvas: CanvasItem) -> void:
 	for p in list:
-		# They blink out before they're gone.
-		if p.life < 1.5 and int(p.life * 10.0) % 2 == 0:
+		if _blinked_out(p):
 			continue
 		var tex: Texture2D
 		if p.coffee:
@@ -92,4 +103,33 @@ func draw(canvas: CanvasItem) -> void:
 			canvas.draw_texture(tex, (p.pos + Vector2(1, 2) - tex.get_size() * 0.5).round(), Color(0, 0, 0, 0.35))
 		else:
 			tex = Sprites.get_tex("coin%d" % [1, 2, 3, 4, 3, 2][int(p.age * 12.0) % 6])
-		canvas.draw_texture(tex, (p.pos - tex.get_size() * 0.5).round())
+		var at := (p.pos + _bob(p) - tex.get_size() * 0.5).round()
+		# A dark edge all round, so it stands out from the bits of what's been killed.
+		for o: Vector2 in [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]:
+			canvas.draw_texture(tex, at + o, OUTLINE)
+		canvas.draw_texture(tex, at)
+
+
+## Over the top, added: coins shine gold, so they're never taken for what's flying at
+## you; a coffee shines and sends out rings, so it's seen from across the floor.
+func draw_add(canvas: CanvasItem) -> void:
+	var glow := Sprites.get_tex("glow")
+	for p in list:
+		if _blinked_out(p):
+			continue
+		if not p.coffee:
+			Sprites.draw(canvas, glow, p.pos, 0.0, Color(1.0, 0.85, 0.2, 0.5), 0.55)
+			# Now and then a glint.
+			var glint := fposmod(p.age * 0.7 + float(p.pos.x) * 0.013, 1.0)
+			if glint < 0.08:
+				var k := 1.0 - absf(glint - 0.04) / 0.04
+				var at := p.pos.round() + Vector2(1, -1)
+				canvas.draw_rect(Rect2(at - Vector2(2, 0), Vector2(5, 1)), Color(1, 1, 0.8, k))
+				canvas.draw_rect(Rect2(at - Vector2(0, 2), Vector2(1, 5)), Color(1, 1, 0.8, k))
+			continue
+		var at := p.pos + _bob(p)
+		var throb := 0.5 + 0.5 * sin(p.age * 6.0)
+		Sprites.draw(canvas, glow, at, 0.0, Color(1.0, 0.6, 0.35, 0.2 + 0.15 * throb), 1.1)
+		# A ring every so often, going out.
+		var t := fposmod(p.age, 1.1) / 1.1
+		canvas.draw_arc(p.pos.round(), 6.0 + t * 22.0, 0.0, TAU, 24, Color(1.6, 1.05, 0.7, 1.0 - t), 1.0)
